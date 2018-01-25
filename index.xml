@@ -11,12 +11,553 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</title>
+      <link>https://t-student.github.io/post/brms01/</link>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/brms01/</guid>
+      <description>
+
+&lt;p&gt;The title was stolen directly from the excellent 2016 &lt;a href=&#34;https://arxiv.org/abs/1506.06201&#34; target=&#34;_blank&#34;&gt;paper&lt;/a&gt; by Tanner Sorensen and Shravan Vasishth. Here I recreate their analysis using &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/index.html&#34; target=&#34;_blank&#34;&gt;brms&lt;/a&gt; R package, primarily as a self-teach exercise. I am going to very much assume that the basic ideas of Bayesian analysis are already understood. I will add some informtion on prior and posterior predictive checks because I think not doing so missing a large part of the point of a Bayesian analysis. The original tutorial provided a hands-on introduction to fitting LMMs in a Bayesian framework using the probabilistic programming language &lt;a href=&#34;http://mc-stan.org/&#34; target=&#34;_blank&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with the data. In brief the we have reading times (&lt;code&gt;rt&lt;/code&gt;) in milliseconds of the head noun of the relative clause recorded in two conditions with 37 subjects and 15 items. The data have some missing values, but the focus here was on a complete case analysis because missing values are a can of worms in Stan and deserve a tutorial of their own. In total we are looking at 547 data points.&lt;/p&gt;
+
+&lt;p&gt;Quoting Sorensen:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A &lt;strong&gt;subject relative&lt;/strong&gt; is a sentence like &lt;em&gt;&amp;ldquo;The senator who interrogated the journalist resigned&amp;rdquo;&lt;/em&gt; where a noun (senator) is modified by a relative clause (who interrogated the journalist), and the modified noun is the grammatical subject of the relative clause. In an &lt;strong&gt;object relative&lt;/strong&gt;, the noun modified by the relative clause is the grammatical object of the relative clause like &lt;em&gt;&amp;ldquo;The senator who the journalist interrogated resigned&amp;rdquo;&lt;/em&gt;. In both cases, the noun that is modified (senator) is called the head noun.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;You can pick up what you need &lt;a href=&#34;https://github.com/vasishth/BayesLMMTutorial/blob/master/data/gibsonwu2012data.txt&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; and save it to a local folder, but you can also read that file directly.  We only need a part of the data so lets wrap it up in a function.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;library&lt;/span&gt;(tidyverse)
+&lt;span style=&#34;color:#f92672&#34;&gt;library&lt;/span&gt;(brms)
+
+get.data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(){
+  df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; read.table(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;https://raw.githubusercontent.com/vasishth/BayesLMMTutorial/master/data/gibsonwu2012data.txt&amp;#39;&lt;/span&gt;)  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# head(df.r)&lt;/span&gt;
+  
+  df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.r &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
+    dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;filter(region &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headnoun&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
+    dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;select(&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;word) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
+    dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;mutate(subj &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.factor&lt;/span&gt;(subj),
+                  item &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.factor&lt;/span&gt;(item),
+                  so &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ifelse&lt;/span&gt;(type &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;subj-ext&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)) 
+  &lt;span style=&#34;color:#75715e&#34;&gt;# head(df.r)&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# sort(as.numeric(unique(df.r$subj)))&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# sort(as.numeric(unique(df.r$item)))&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# nrow(df.r)&lt;/span&gt;
+  
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;(df.r)
+}
+
+
+df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data()
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Distribution of reading times. &lt;/span&gt;
+plot(density(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt), main &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Distribution of reading times&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the above code you will note that the &lt;code&gt;so&lt;/code&gt; variable contains an indicator of &amp;lsquo;o&amp;rsquo; (object relative) and &amp;rsquo;s&amp;rsquo; (subject relative) that are coded as 1 and -1 respectively. When coding up Stan models you need to be a bit more careful with your data &amp;ndash; we might come back to this later.&lt;/p&gt;
+
+&lt;!-- A quick look at the reading times shows us what we expect to see, namely a heavily skewed distribution. 
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;https://t-student.github.io/media/brms-tutorial-01.png&#34; /&gt;
+    
+    
+    &lt;figcaption&gt;
+        &lt;h4&gt;PDF of reading times&lt;/h4&gt;
+        
+    &lt;/figcaption&gt;
+    
+&lt;/figure&gt;
+ --&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/index.html&#34; target=&#34;_blank&#34;&gt;brms&lt;/a&gt; package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current &lt;code&gt;stan-dev&lt;/code&gt; &lt;a href=&#34;https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations&#34; target=&#34;_blank&#34;&gt;reccommendations&lt;/a&gt; nor a Cauchy&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; distribution as per Gelman et al. 2008 &lt;a href=&#34;https://arxiv.org/pdf/0901.4011.pdf&#34; target=&#34;_blank&#34;&gt;paper&lt;/a&gt;. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;an-initial-model&#34;&gt;An Initial Model&lt;/h2&gt;
+
+&lt;p&gt;Prior to looking at the data, what do we know about average reading speed? Well, obviously, the lower bound is a little be greater than zero and a high value might be a couple of seconds. So, lets just say a typcial value is about 1000 millisecs and you could expect anywhere between about 100 and 2000 milliseconds and that gives us some guidance on what the intercept looks like. We are pulling numbers out of the air here, but at least we have a rough idea of what the typical value might be and we can (should) conduct sensitivity analyses with uninformative priors (that typically correspond with frequentist results).&lt;/p&gt;
+
+&lt;p&gt;$$ rt_i \sim Lognormal(\mu_i, \sigma) \\\ \mu_i = \beta_0 + \beta_1 so_i \\\  \beta_0 \sim Normal(6, 1) \\\  \beta_1 \sim Normal(0, 10) \\\  \sigma \sim Student-t(3, 0, 10) $$&lt;/p&gt;
+
+&lt;p&gt;OK, let&amp;rsquo;s fit a model. The brms package can have multi-dimensional formula so we specify the formula explicitly as &lt;code&gt;myf&lt;/code&gt; and use this approach repeatedly.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# brms formula, more later...&lt;/span&gt;
+myf &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; bf(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so)
+priors &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get_prior(myf,
+                    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+                    family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal())
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(0, 10)&amp;#34;&lt;/span&gt;
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(6, 1)&amp;#34;&lt;/span&gt;
+priors
+
+blm0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brms&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;brm(myf, 
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+            family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal(),
+            prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; priors,
+            control &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(max_treedepth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;),
+            iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;,
+            chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, cores &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, seed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5453&lt;/span&gt;, save_model &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;brm1.txt&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(blm0, waic &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;blm0&lt;/code&gt; is an instance of a &lt;code&gt;brmsfit&lt;/code&gt; object. The &lt;code&gt;summary&lt;/code&gt; view gives the following output, which is similar to the fixed effects model presented by Sorensen. What are these results telling us? First, the Rhat values are equal to 1, so the chains look like they converged OK. Second, the reading time for subject-relative has a central value around $exp(6.06 + 0.04) = 446$ millisecs and the object-relative has a central value of around $exp(6.06 - 0.04) = 412$ millisecs. These values align to the exponentiated mean of the log reading times for the two groups.&lt;/p&gt;
+
+&lt;!--We expect typical values to be $exp(2 \times 0.6) = 3.3$ --&gt;
+
+&lt;pre&gt;&lt;code&gt; Family: lognormal 
+  Links: mu = identity; sigma = identity 
+Formula: rt ~ so 
+   Data: df.r (Number of observations: 547) 
+Samples: 2 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+         total post-warmup samples = 2000
+    ICs: LOO = NA; WAIC = 7625.74; R2 = NA
+ 
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept     6.06      0.03     6.01     6.11       1917 1.00
+so           -0.04      0.03    -0.09     0.01       2000 1.00
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sigma     0.60      0.02     0.57     0.63       2000 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The marginal posterior distributions for each of the three parameters are shown below. The distribution of &lt;code&gt;b_s0&lt;/code&gt; is mostly below zero suggesting that the object-relative is easier to read. However, the 95\% &lt;em&gt;credible interval&lt;/em&gt; includes zero so the evidence is not particularly strong. Unlike frequentist analyses, the results give us a view on the uncertainty in the error term (&lt;code&gt;sigma&lt;/code&gt;) which ranges from 0.57 to 0.63 on the log scale.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;https://t-student.github.io/media/brms01-posterior1.png&#34; /&gt;
+    
+    
+    &lt;figcaption&gt;
+        &lt;h4&gt;Posterior distribution for estimated parameters&lt;/h4&gt;
+        
+    &lt;/figcaption&gt;
+    
+&lt;/figure&gt;
+
+
+&lt;p&gt;Here&amp;rsquo;s a view of the observed data overlayed with the posterior distribution for reading times showing the estimated typical reading time. The right hand plot shows a &lt;strong&gt;posterior predictive distribution&lt;/strong&gt;, which embodies both the uncertainty inherent in our distributional assumption for the response and the uncertainty in the estimated parameters. The idea behind examining the posterior predictive distribution is that it should generate data that looks similar to the observed data. &lt;a href=&#34;http://xcelab.net/rm/statistical-rethinking/&#34; target=&#34;_blank&#34;&gt;McElreath&lt;/a&gt; provides the clearest exposition I have read on this concept. The posterior predictive is a simulation of our original data conditional on the observed values.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Posterior means&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Posterior predictive&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-posterior2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-posterior3.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Another option for model checking is to use the &lt;a href=&#34;https://cran.r-project.org/web/packages/bayesplot/index.html&#34; target=&#34;_blank&#34;&gt;bayesplot&lt;/a&gt; package, which provides a swag-full of posterior predictive checks that are more sophisticated than the single generated dataset shown above. Below we can see that simulated data has a much lower maximum value than that observed in the original data and the median of the simulated values is actually quite a lot higher than we observed. Both these diagnostics suggest the current model does not characterise the data well.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;PPC (max)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;PPC (median)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-ppc4.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-ppc5.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Posterior predictive checks grouped by subject and object relative (see below) appear to show that the issues manifest to a greater extent in the subject relative group. An outline of the code for the last few plots is also shown below.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;PPC (max)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;PPC (median)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-ppc6.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/brms01-ppc7.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Look at the posterior distribution&lt;/span&gt;
+m.post &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.matrix&lt;/span&gt;(blm0)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(m.post)
+df.post1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data_frame&lt;/span&gt;(type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;subj-ext&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;obj-ext&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;)), 
+                      rt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(m.post[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; m.post[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;], m.post[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; m.post[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;])  )
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;324&lt;/span&gt;)
+idx &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; base&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;sample&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.post1), &lt;span style=&#34;color:#ae81ff&#34;&gt;600&lt;/span&gt;, replace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F)
+df.post1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.post1[idx, ]
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Posterior&lt;/span&gt;
+ggplot(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r , aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; type, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rt))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_jitter(width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;, height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;red&amp;#34;&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_jitter(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.post1, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; type, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(rt) ), 
+              width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;, height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;blue&amp;#34;&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  ylab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reading time (millisec)&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; xlab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Single draw just for demonstration&lt;/span&gt;
+pp.tmp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brms&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;posterior_predict(blm0, newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(so &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)))
+&lt;span style=&#34;color:#66d9ef&#34;&gt;dim&lt;/span&gt;(pp.tmp)
+
+df.post2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data_frame&lt;/span&gt;(type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;subj-ext&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;obj-ext&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;)), 
+                      rt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(pp.tmp[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;], pp.tmp[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;])  )
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;284729&lt;/span&gt;)
+idx &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; base&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;sample&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.post2), &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;, replace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F)
+df.post2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.post2[idx, ]
+str(df.post2)
+
+ggplot(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r , aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; type, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rt))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_jitter(width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;, height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;red&amp;#34;&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_jitter(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.post2, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; type, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rt ), 
+              width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;, height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;blue&amp;#34;&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  ylab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Reading time (millisec)&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; xlab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# More useful PPC&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;library&lt;/span&gt;(bayesplot)
+ppc_dens_overlay(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, yrep[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;, ])
+
+ppc_stat(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, yrep, stat &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;max&amp;#34;&lt;/span&gt;)
+ppc_stat(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, yrep, stat &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;median&amp;#34;&lt;/span&gt;)
+
+ppc_stat_grouped(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, yrep, stat &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;max&amp;#34;&lt;/span&gt;, group &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;so)
+ppc_stat_grouped(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, yrep, stat &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;median&amp;#34;&lt;/span&gt;, group &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;so)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&#34;relaxing-the-equal-variance-assumption&#34;&gt;Relaxing the equal variance assumption&lt;/h2&gt;
+
+&lt;p&gt;While Sorensen do not explore this avenue, one possibility is that we may have reasonable distributional assumptions but the notion of a shared variance across groups may not be accurate. The brms package readily supports this refinement via its forumla interface that we used earlier. We do not nominate any priors for the &lt;code&gt;sigma&lt;/code&gt; model parameters so they will just be assigned uninformative defaults.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;myf &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; bf(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so, sigma &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so)
+priors &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get_prior(myf,
+                    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+                    family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal())
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(0, 10)&amp;#34;&lt;/span&gt;
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(6, 1)&amp;#34;&lt;/span&gt;
+
+blm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brm(myf, 
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+            family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal(),
+            prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; priors,
+            control &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(max_treedepth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;),
+            iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;,
+            chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, cores &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, seed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5453&lt;/span&gt;, save_model &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;brm1.txt&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(blm1, waic &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The results (below) suggest that the variation in reading times are different across subject and object groups. However, posterior predictive checks on the maximum and median values (not shown) are still not representative of the observed values. We won&amp;rsquo;t take this further yet, but we might return to it later.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; Family: lognormal 
+  Links: mu = identity; sigma = log 
+Formula: rt ~ so 
+         sigma ~ so
+   Data: df.r (Number of observations: 547) 
+Samples: 2 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+         total post-warmup samples = 2000
+    ICs: LOO = NA; WAIC = 7614.42; R2 = NA
+ 
+Population-Level Effects: 
+                Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept           6.06      0.02     6.01     6.11       1897 1.00
+sigma_Intercept    -0.53      0.03    -0.58    -0.46       2000 1.00
+so                 -0.04      0.03    -0.09     0.01       1768 1.00
+sigma_so           -0.11      0.03    -0.17    -0.05       1892 1.00
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;modelling-the-repeat-measures&#34;&gt;Modelling the Repeat Measures&lt;/h2&gt;
+
+&lt;p&gt;Given we know there are repeat measures in the data, we should model it as such or risk violating an assumption of independence. We do this by specifying person-level and item-level variability in the model. I won&amp;rsquo;t say most, but a lot of people refer to these as &lt;em&gt;random intercepts&lt;/em&gt;. Here is the revised model. You can see that the $\beta_{person[i]}$ and $\beta_{item[i]}$ make adjustments to the intercept term dependent on the particular person and the particular item, hence the random intercept terminology.&lt;/p&gt;
+
+&lt;p&gt;$$ rt_i \sim Lognormal(\mu_i, \sigma) \\\ \mu_i = \beta_0 + \beta_{person[i]} + \beta_{item[i]} +  \beta_1 so_i \\\  \beta_0 \sim Normal(6, 1) \\\  \beta_{person} \sim Normal(0, \sigma_{person}) \\\ \beta_{item} \sim Normal(0, \sigma_{item}) \\\ \beta_1 \sim Normal(0, 10) \\\  \sigma, \sigma_{person} , \sigma_{item} \sim Student-t(3, 0, 10)  $$&lt;/p&gt;
+
+&lt;p&gt;It is a straight forward exercise to ask &lt;code&gt;brms&lt;/code&gt; to fit this model. For the sake of simplicity, we will not continue to model the standard deviation across groups and I haven&amp;rsquo;t specified all the priors but it would be simple to do so.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Random effects model&lt;/span&gt;
+df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data()
+myf &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; bf(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item))
+priors &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get_prior(myf,
+                    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+                    family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal())
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(0, 10)&amp;#34;&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# &amp;gt; priors&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#                   prior     class      coef group resp dpar nlpar bound&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 1         normal(0, 10)         b                                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 2         normal(0, 10)         b        so                            &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 3 student_t(3, 5.9, 10) Intercept                                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 4   student_t(3, 0, 10)        sd                                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 5                              sd            item                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 6                              sd Intercept  item                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 7                              sd            subj                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 8                              sd Intercept  subj                      &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 9   student_t(3, 0, 10)     sigma                  &lt;/span&gt;
+
+
+blm2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brm(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item), 
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+            family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal(),
+            prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; priors,
+            control &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(max_treedepth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;),
+            iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;,
+            chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, cores &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, seed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5453&lt;/span&gt;, save_model &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;brm1.stan&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(blm2)
+
+
+post1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brms&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;posterior_predict(blm2)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;dim&lt;/span&gt;(post1)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;head&lt;/span&gt;(post1[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;])
+hist(post1[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;])
+bayesplot&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;ppc_dens_overlay(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt, post1[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;, ])&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The results show us that the modelling the subject level and item level variance was worthwhile in that both the random intercept variance estimates are substantially above zero. Additionally, the estimates align closely with those of Sorensen. However, the estimate for the difference between the reading times continues to represent only weak evidence of an effect.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; Family: lognormal 
+  Links: mu = identity; sigma = identity 
+Formula: rt ~ so + (1 | subj) + (1 | item) 
+   Data: df.r (Number of observations: 547) 
+Samples: 2 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+         total post-warmup samples = 2000
+    ICs: LOO = NA; WAIC = NA; R2 = NA
+ 
+Group-Level Effects: 
+~item (Number of levels: 15) 
+              Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)     0.20      0.05     0.12     0.32        655 1.00
+
+~subj (Number of levels: 37) 
+              Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)     0.26      0.04     0.19     0.35        867 1.00
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept     6.06      0.07     5.92     6.21        588 1.01
+so           -0.04      0.02    -0.08     0.01       2000 1.00
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sigma     0.52      0.02     0.49     0.55       2000 1.00
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next we introduce varying slopes into the model, which allows us to characterise the variation in the &lt;strong&gt;difference&lt;/strong&gt; in reading time across individuals and items. As per Sorensen, we initially prohibit correlation between the varying interecpts and slopes. The required implementation is as follows.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data()
+&lt;span style=&#34;color:#75715e&#34;&gt;# The latter (-1 + ) part prevents correlation between random effects&lt;/span&gt;
+(priors &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get_prior(bf(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+                         (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+                         (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item)),   
+                    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+                    family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal()))
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(0, 10)&amp;#34;&lt;/span&gt;
+blm3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brm(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+              (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+              (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;-1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item), 
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+            family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal(),
+            prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; priors,
+            control &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(max_treedepth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;),
+            iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;,
+            chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, cores &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, seed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5453&lt;/span&gt;, save_model &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;brm1.stan&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(blm3)
+VarCorr(blm3)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;While there is evidence for including the random slopes, the estimate of the difference between subject and object relatives has weakened.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Family: lognormal 
+  Links: mu = identity; sigma = identity 
+Formula: rt ~ so + (1 | subj) + (-1 + so | subj) + (1 | item) + (-1 + so | item) 
+   Data: df.r (Number of observations: 547) 
+Samples: 2 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+         total post-warmup samples = 2000
+    ICs: LOO = NA; WAIC = NA; R2 = NA
+ 
+Group-Level Effects: 
+~item (Number of levels: 15) 
+              Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)     0.20      0.05     0.12     0.32        797 1.00
+sd(so)            0.04      0.03     0.00     0.11        782 1.00
+
+~subj (Number of levels: 37) 
+              Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)     0.25      0.04     0.18     0.34        668 1.01
+sd(so)            0.06      0.03     0.00     0.13        619 1.00
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept     6.06      0.08     5.92     6.22        458 1.00
+so           -0.04      0.03    -0.09     0.02       2000 1.00
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sigma     0.52      0.02     0.49     0.55       2000 1.00
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Finally, we remove the restriction on correlation between the varying slopes and intercepts as implemented below.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;df.r &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data()
+(priors &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get_prior(bf(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+                          (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+                          (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item)),
+                     data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+                     family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal()))
+priors&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prior[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;normal(0, 10)&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# mypriors1 &amp;lt;- c(brms::set_prior(&amp;#34;cauchy(0, 2.5)&amp;#34;, class = &amp;#34;b&amp;#34;))&lt;/span&gt;
+blm4 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; brm(rt &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; so &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+              (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;subj) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+              (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; so&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;item), 
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.r,
+            family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lognormal(),
+            prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; priors,
+            control &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(max_treedepth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;),
+            iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2000&lt;/span&gt;,
+            chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, cores &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, seed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5453&lt;/span&gt;, save_model &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;brm1.stan&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(blm4)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The results suggest no correlation between the varying intercepts and slopes for the item but a negative correlation between the person level varying intercepts and slopes. The implication is that if a person has a slower than average reading time then they will read object relatives.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; Family: lognormal 
+  Links: mu = identity; sigma = identity 
+Formula: rt ~ so + (1 + so | subj) + (1 + so | item) 
+   Data: df.r (Number of observations: 547) 
+Samples: 2 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+         total post-warmup samples = 2000
+    ICs: LOO = NA; WAIC = NA; R2 = NA
+ 
+Group-Level Effects: 
+~item (Number of levels: 15) 
+                  Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)         0.21      0.05     0.13     0.33        660 1.00
+sd(so)                0.04      0.03     0.00     0.10        961 1.00
+cor(Intercept,so)    -0.00      0.53    -0.92     0.92       2000 1.00
+
+~subj (Number of levels: 37) 
+                  Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sd(Intercept)         0.25      0.04     0.19     0.34        624 1.00
+sd(so)                0.07      0.03     0.01     0.13        680 1.00
+cor(Intercept,so)    -0.61      0.30    -0.98     0.16       1392 1.00
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept     6.06      0.07     5.92     6.21        492 1.00
+so           -0.03      0.03    -0.09     0.02       1160 1.00
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+sigma     0.51      0.02     0.48     0.55       2000 1.00
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unfortunately, that is all I have time for today. Hopefully, I will get an opportunity not to far in the future to check the interpretation and add some more details.&lt;/p&gt;
+
+&lt;!-- 
+## To do
+
+1. Prior predictive - how sane are our priors?
+1. Correlation between the covariates?
+2. varying intercepts 45 mins
+3. varying intercepts varying slopes 45 mins
+4. correlation between the two 40 mins
+5. conclusions
+
+
+
+Of course, one may want to simplify the model for reasons of parsimony, or easier interpretability. Model selection can be carried out by evaluating predictive performance of the model, with methods such as Leave One Out (LOO) Cross-validation, or by using information criteria like the Watanabe Akaike (or Widely Available) Information Criterion (WAIC). See Nicenboim and Vasishth (2016) for discussion and example code.
+
+
+&lt;script src=&#34;//gist.github.com/t-student/b93167cf529607038406.js&#34;&gt;&lt;/script&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;section&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;main&amp;#34;&lt;/span&gt;&amp;gt;
+  &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+   &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;h1&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;title&amp;#34;&lt;/span&gt;&amp;gt;{{ .Title }}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;h1&lt;/span&gt;&amp;gt;
+    {{ range .Data.Pages }}
+        {{ .Render &amp;#34;summary&amp;#34;}}
+    {{ end }}
+  &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;section&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;//www.youtube.com/embed/w7Ft2ymGmfc&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%;&#34; allowfullscreen frameborder=&#34;0&#34; title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+
+
+--&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;The &lt;a href=&#34;https://en.wikipedia.org/wiki/Cauchy_distribution&#34; target=&#34;_blank&#34;&gt;Cauchy&lt;/a&gt; distribution is truly quite a bizarre, some would say pathological, distribution as neither the expeccted value nor variance are defined. It also ryhmes with grouchy - no wonder.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Referral for Expert Physical Activity Counseling: A Pragmatic RCT</title>
       <link>https://t-student.github.io/publication/newcoach01/</link>
       <pubDate>Sun, 01 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/newcoach01/</guid>
-      <description>&lt;p&gt;More detail can easily be written here using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Effects of Assault Type on Cognitive Behaviour Therapy for Coexisting Depression and Alcohol Misuse</title>
+      <link>https://t-student.github.io/publication/bailey2017/</link>
+      <pubDate>Sat, 01 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/publication/bailey2017/</guid>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Disparities in the incidence of acute myocardial infarction: long-term trends from the Hunter region</title>
+      <link>https://t-student.github.io/publication/davies2017/</link>
+      <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/publication/davies2017/</guid>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Insulin resistance correlates with maculopathy and severity of retinopathy in young adults with Type 1 Diabetes Mellitus</title>
+      <link>https://t-student.github.io/publication/rowe2017/</link>
+      <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/publication/rowe2017/</guid>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>A single-arm longitudinal study to evaluate a decision aid for women who have been offered neoadjuvant systemic therapy for operable breast cancer (ANZ1301 DOMINO)</title>
+      <link>https://t-student.github.io/publication/zdenkowski2017/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/publication/zdenkowski2017/</guid>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
 </description>
     </item>
     

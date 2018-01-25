@@ -5,8 +5,53 @@
     
     <url>
     
+      <loc>https://t-student.github.io/post/brms01/</loc>
+      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>https://t-student.github.io/publication/newcoach01/</loc>
       <lastmod>2017-10-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/publication/bailey2017/</loc>
+      <lastmod>2017-07-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/publication/davies2017/</loc>
+      <lastmod>2017-05-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/publication/rowe2017/</loc>
+      <lastmod>2017-05-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/publication/zdenkowski2017/</loc>
+      <lastmod>2017-01-01T00:00:00+00:00</lastmod>
     </url>
     
   
@@ -86,6 +131,16 @@
     
     <url>
     
+      <loc>https://t-student.github.io/tags/bayesian/</loc>
+      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>https://t-student.github.io/categories/</loc>
       <priority>0</priority>
     </url>
@@ -117,6 +172,26 @@
     
       <loc>https://t-student.github.io/project/</loc>
       <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/r/</loc>
+      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/stan/</loc>
+      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
     
