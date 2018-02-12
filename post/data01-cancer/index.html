@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &lsquo;what if&rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the simstudy and data.table R packages.
+Distribution of lung cancer incidence in Australia The Australian Institute of Health and Welfare publish incidence and mortality data.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/data01-cancer/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/data01-cancer/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/data01-cancer/">
+  <meta property="og:title" content="Simulating Lung Cancer Incidence data in R | t-student">
+  <meta property="og:description" content="The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &lsquo;what if&rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the simstudy and data.table R packages.
+Distribution of lung cancer incidence in Australia The Australian Institute of Health and Welfare publish incidence and mortality data.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-02-10T00:00:00&#43;11:00">
+  
+  <meta property="article:modified_time" content="2018-02-10T00:00:00&#43;11:00">
+  
+
+  
+
+  <title>Simulating Lung Cancer Incidence data in R | t-student</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Simulating Lung Cancer Incidence data in R</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-02-10 00:00:00 &#43;1100 AEDT" itemprop="datePublished dateModified">
+      Feb 10, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Simulating%20Lung%20Cancer%20Incidence%20data%20in%20R&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fdata01-cancer%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fdata01-cancer%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fdata01-cancer%2f&amp;title=Simulating%20Lung%20Cancer%20Incidence%20data%20in%20R"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fdata01-cancer%2f&amp;title=Simulating%20Lung%20Cancer%20Incidence%20data%20in%20R"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Simulating%20Lung%20Cancer%20Incidence%20data%20in%20R&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fdata01-cancer%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &lsquo;what if&rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the <code>simstudy</code> and <code>data.table</code> R packages.</p>
+
+<h1 id="distribution-of-lung-cancer-incidence-in-australia">Distribution of lung cancer incidence in Australia</h1>
+
+<p>The Australian Institute of Health and Welfare publish incidence and mortality data. Data by cancer type is provided <a href="https://www.aihw.gov.au/reports/cancer/acim-books/contents/acim-books" target="_blank">here</a>. I downloaded the lung-cancer file, which originally looked like this:</p>
+
+<p><img src="/media/data01-cancer1.png" alt="" /></p>
+
+<p>I copied the 2014 data for the males and females into a new spreadsheet and loaded it into R.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#f92672">library</span>(data.table)
+<span style="color:#f92672">library</span>(readxl)
+
+<span style="color:#75715e"># see https://www.aihw.gov.au/reports/cancer/acim-books/contents/acim-books</span>
+dt.rates <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="color:#f92672">::</span>read_excel(<span style="color:#e6db74">&#34;rates.xlsx&#34;</span>), key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex,age.bin&#34;</span>)
+<span style="color:#66d9ef">head</span>(dt.rates)</code></pre></div>
+
+<pre><code>   sex age.bin rate.per.100k
+1:   f       0    0.19356413
+2:   f       5    0.02926882
+3:   f      10    0.16013852
+4:   f      15    0.29336471
+5:   f      20    0.57427154
+6:   f      25    0.54157117
+</code></pre>
+
+<p>Table 6 from the data cube on Australian Demographics published by the ABS and found <a href="http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/3101.0Jun%202017?OpenDocument" target="_blank">here</a> gives the age class distribution by sex in Australia as at the end of 2017. Again, I copied the data I needed and ditched the rest.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">dt.ages <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="color:#f92672">::</span>read_excel(<span style="color:#e6db74">&#34;rates.xlsx&#34;</span>), key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex,age.bin&#34;</span>)
+<span style="color:#66d9ef">head</span>(dt.ages)</code></pre></div>
+
+<p>The age distribution across sex is similar with females living very slightly longer.</p>
+
+<p><img src="/media/data01-agedist.png" alt="" /></p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/3101.0Jun%202017?OpenDocument</span>
+dt.ages <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="color:#f92672">::</span>read_excel(<span style="color:#e6db74">&#34;ageclass.xlsx&#34;</span>), key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex,age.bin&#34;</span>)
+<span style="color:#66d9ef">head</span>(dt.ages)</code></pre></div>
+
+<p>Now I use the <a href="https://cran.r-project.org/web/packages/simstudy/index.html" target="_blank">simstudy</a> package to generate some new data. I assume that males and females are distributed 50:50 within the population. I only try to get an approximate</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Set the seed for reproducibility</span>
+<span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">345</span>)
+
+<span style="color:#75715e"># Create a definition for males and a separate one for females. </span>
+def <span style="color:#f92672">&lt;-</span> defData(varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sex&#34;</span>, dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nonrandom&#34;</span>, formula <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
+def <span style="color:#f92672">&lt;-</span> defData(def, varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;age.bin.idx&#34;</span>, 
+               formula <span style="color:#f92672">=</span> <span style="color:#66d9ef">paste0</span>(dt.ages<span style="color:#f92672">$</span>prop[dt.ages<span style="color:#f92672">$</span>sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;m&#34;</span>],  collapse <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;;&#34;</span>), 
+               dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;categorical&#34;</span>)
+
+n.pop <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">50000</span>
+dtm <span style="color:#f92672">&lt;-</span> genData(n.pop, def)
+
+def <span style="color:#f92672">&lt;-</span> defData(varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sex&#34;</span>, dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nonrandom&#34;</span>, formula <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+def <span style="color:#f92672">&lt;-</span> defData(def, varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;age.bin.idx&#34;</span>, 
+               formula <span style="color:#f92672">=</span> <span style="color:#66d9ef">paste0</span>(dt.ages<span style="color:#f92672">$</span>prop[dt.ages<span style="color:#f92672">$</span>sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;f&#34;</span>],  collapse <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;;&#34;</span>), 
+               dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;categorical&#34;</span>)
+n.pop <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">50000</span>
+dtf <span style="color:#f92672">&lt;-</span> genData(n.pop, def)
+
+<span style="color:#75715e"># Our working data set:</span>
+dt <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">rbind</span>(dtm, dtf)
+dt<span style="color:#f92672">$</span>id <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">nrow</span>(dt)
+
+<span style="color:#75715e"># Replace the sex var with something more readable</span>
+dt[, sex <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,sex] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;m&#34;</span>, <span style="color:#e6db74">&#34;f&#34;</span>)]
+dt[, age.bin <span style="color:#f92672">:=</span> (age.bin.idx<span style="color:#ae81ff">-1</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>]
+
+<span style="color:#75715e"># For each age bin, which was modelled on the APS proportion of age</span>
+<span style="color:#75715e"># class data, assign a random age between the start and end of age bin </span>
+<span style="color:#75715e"># interval. Use a random uniform distribution.</span>
+dt[, age <span style="color:#f92672">:=</span> runif(<span style="color:#ae81ff">1</span>, age.bin, age.bin <span style="color:#f92672">+</span> <span style="color:#ae81ff">4.999</span>), by <span style="color:#f92672">=</span> id]
+
+<span style="color:#75715e"># Create an indicator for greater than age 18 to differentially</span>
+<span style="color:#75715e"># assign a smoking probability.</span>
+dt[, age18 <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,age] <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>)]
+dt[, psmk <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,sex] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.18</span> <span style="color:#f92672">*</span> dt[,age18], <span style="color:#ae81ff">0.14</span> <span style="color:#f92672">*</span> dt[,age18])]
+
+<span style="color:#75715e"># Bernouli trial to say whether smoker or not.</span>
+dt[, smk <span style="color:#f92672">:=</span> rbinom(<span style="color:#66d9ef">nrow</span>(dt), <span style="color:#ae81ff">1</span>,  prob <span style="color:#f92672">=</span> dt[,psmk])]
+dt
+
+<span style="color:#75715e"># Set key in order to making joining trivial</span>
+setkey(dt,sex,age.bin)
+
+<span style="color:#75715e"># Left join by key</span>
+dt <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">merge</span>(dt, dt.rates, all.x<span style="color:#f92672">=</span><span style="color:#66d9ef">TRUE</span>)
+
+<span style="color:#75715e"># Create the </span>
+dt[, cancer <span style="color:#f92672">:=</span> rbinom(<span style="color:#66d9ef">nrow</span>(dt), <span style="color:#ae81ff">1</span>,  prob <span style="color:#f92672">=</span> rate.per.100k<span style="color:#f92672">/</span><span style="color:#ae81ff">100000</span>)]
+dt</code></pre></div>
+
+<p>The end result looks like this:</p>
+
+<pre><code>       sex age.bin    id age.bin.idx        age age18 psmk smk rate.per.100k cancer
+     1:   f       0 50003           1  1.9907349     0 0.00   0     0.1935641      0
+     2:   f       0 50036           1  4.8925030     0 0.00   0     0.1935641      0
+     3:   f       0 50043           1  0.9762412     0 0.00   0     0.1935641      0
+     4:   f       0 50046           1  3.8317576     0 0.00   0     0.1935641      0
+     5:   f       0 50048           1  3.4270826     0 0.00   0     0.1935641      0
+    ---                                                                             
+ 99996:   m      85 49289          18 89.3857581     1 0.14   0   450.0924556      0
+ 99997:   m      85 49326          18 86.2884594     1 0.14   0   450.0924556      0
+ 99998:   m      85 49330          18 89.6440606     1 0.14   1   450.0924556      0
+ 99999:   m      85 49373          18 88.3372412     1 0.14   0   450.0924556      0
+100000:   m      85 49928          18 86.4949185     1 0.14   0   450.0924556      0
+</code></pre>
+
+<p>As a very quick and dirty sanity check (always do a sanity check of some kind) we can compare the number of cancer cases in our simulated data with the rates we obtained earlier by scaling up each sex by age bin group. For example:</p>
+
+<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Sanity</span>
+df.san <span style="color:#f92672">&lt;-</span> as_data_frame(dt) 
+df.tmp <span style="color:#f92672">&lt;-</span> df.san <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>group_by(sex, age.bin) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>summarise(scale <span style="color:#f92672">=</span> <span style="color:#ae81ff">100000</span> <span style="color:#f92672">/</span> n())
+  
+df.san <span style="color:#f92672">&lt;-</span> df.san <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>filter(cancer <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>group_by(sex, age.bin) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>summarise(sim.n <span style="color:#f92672">=</span> n()) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>ungroup() <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>left_join(<span style="color:#ae81ff">.</span>, df.tmp, by <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#e6db74">&#34;sex&#34;</span>, <span style="color:#e6db74">&#34;age.bin&#34;</span>)) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>mutate(sim.n <span style="color:#f92672">=</span> sim.n <span style="color:#f92672">*</span> <span style="color:#66d9ef">scale</span>) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>select(<span style="color:#f92672">-</span><span style="color:#66d9ef">scale</span>) <span style="color:#f92672">%&gt;%</span>
+  dplyr<span style="color:#f92672">::</span>left_join(<span style="color:#ae81ff">.</span>, dt.rates, by <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#e6db74">&#34;sex&#34;</span>, <span style="color:#e6db74">&#34;age.bin&#34;</span>)) <span style="color:#f92672">%&gt;%</span>
+  tidyr<span style="color:#f92672">::</span>gather(<span style="color:#e6db74">&#34;var&#34;</span>, <span style="color:#e6db74">&#34;value&#34;</span>, <span style="color:#f92672">-</span>sex, <span style="color:#f92672">-</span>age.bin)
+<span style="color:#75715e">#</span>
+
+ggplot(df.san) <span style="color:#f92672">+</span>
+  geom_point(aes(x <span style="color:#f92672">=</span> age.bin, y <span style="color:#f92672">=</span> sim.n), size <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)<span style="color:#f92672">+</span>
+  geom_point(aes(x <span style="color:#f92672">=</span> age.bin, y <span style="color:#f92672">=</span> rate.per.100k), 
+             size <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, colour <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;blue&#34;</span>)<span style="color:#f92672">+</span>
+  facet_grid(<span style="color:#f92672">~</span>sex)
+
+<span style="color:#75715e">#</span></code></pre></div></p>
+
+<p>This gives the following plot, which suggests that we have constructed something similar to the predicted cancer rates stratified by sex and age group although the older ages in the male group appear to diverge somewhat.</p>
+
+<p><img src="/media/data01-simres.png" alt="" /></p>
+
+<p>Next we will use this data to do some modelling and explore coverage probabilities in logistic regression.</p>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/simulation">simulation</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/dtaa.table">dtaa.table</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/brms01/">A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+
