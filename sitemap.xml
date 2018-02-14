@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>https://t-student.github.io/post/poisson01-interaction/</loc>
+      <lastmod>2018-02-14T00:00:00+11:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>https://t-student.github.io/post/data01-cancer/</loc>
       <lastmod>2018-02-10T00:00:00+11:00</lastmod>
     </url>
@@ -141,7 +150,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/bayesian/</loc>
-      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+      <lastmod>2018-02-14T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -200,7 +209,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/r/</loc>
-      <lastmod>2018-02-10T00:00:00+11:00</lastmod>
+      <lastmod>2018-02-14T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -220,7 +229,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/stan/</loc>
-      <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+      <lastmod>2018-02-14T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
     
