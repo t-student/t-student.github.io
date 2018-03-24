@@ -8,9 +8,7 @@
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://t-student.github.io/publication/index.xml" rel="self" type="application/rss+xml" />
-    
+    <atom:link href="/publication/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Referral for Expert Physical Activity Counseling: A Pragmatic RCT</title>
@@ -18,7 +16,8 @@
       <pubDate>Sun, 01 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/newcoach01/</guid>
-      <description></description>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
     </item>
     
     <item>
@@ -27,7 +26,8 @@
       <pubDate>Sat, 01 Jul 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/bailey2017/</guid>
-      <description></description>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
     </item>
     
     <item>
@@ -36,7 +36,8 @@
       <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/davies2017/</guid>
-      <description></description>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
     </item>
     
     <item>
@@ -45,7 +46,8 @@
       <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/rowe2017/</guid>
-      <description></description>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
     </item>
     
     <item>
@@ -54,7 +56,8 @@
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
       
       <guid>https://t-student.github.io/publication/zdenkowski2017/</guid>
-      <description></description>
+      <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
+</description>
     </item>
     
   </channel>

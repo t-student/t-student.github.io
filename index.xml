@@ -11,6 +11,394 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Logistic Regression - Power Analysis</title>
+      <link>https://t-student.github.io/post/logistic01-powersim/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-powersim/</guid>
+      <description>
+
+&lt;p&gt;If you have multiple treatment options that lead to different outcomes, you will only be able to detect a difference in the average outcome under conditions where there is sufficient &lt;em&gt;statistical power&lt;/em&gt; to do so. &lt;em&gt;Statistical power&lt;/em&gt; is the probability that we detect an effect when there really is an effect to be detected. As statistical power increases the probability of making a Type II error (concluding there is no effect when, in fact, there is one) decreases.&lt;/p&gt;
+
+&lt;p&gt;Statistical power is affected by the size of the effect, the statistical significance criteria (typically 0.05) and the size of the sample. It is possible to miss a real effect simply by not taking a large enough sample. Power analyses help us by allowing us to explore the experimental conditions for a range of sample sizes.&lt;/p&gt;
+
+&lt;p&gt;In this post we look at how power varies in a logistic regression setting. First we compare treatment groups directly and then we compare treatment groups stratified by a characteristic of the mother that is also associated with the response of interest - e.g. a genetic disposition for a disease.&lt;/p&gt;
+
+&lt;h2 id=&#34;rct-steroidal-treatments-for-reducing-the-risk-of-having-an-ashthmatic-child&#34;&gt;RCT Steroidal Treatments for Reducing the Risk of having an Ashthmatic Child.&lt;/h2&gt;
+
+&lt;p&gt;Consider a steroidal intervention that influences the likelihood of having an ashmatic child. Assume a pilot study suggests the observed proportion of asthmatic kids in the control arm is 17.4% and in the treatment arm is 10%. This implies a relative risk (RR) of 0.575 - the probability of a kid having ashmatic in the treatment arm is 0.58 times that in the control arm.&lt;/p&gt;
+
+&lt;p&gt;Robert Grant gives us a way to convert odds-ratios (OR) to RR &lt;a href=&#34;https://robertgrantstats.wordpress.com/2014/01/27/how-to-convert-odds-ratios-to-relative-risks/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;, specifically $RR = \frac{OR}{1 – p + (p \times OR)}$. Turning this formula around we find the unadjusted odds-ratio is about 0.5329 - the odds of an &amp;ldquo;average&amp;rdquo; parent having an asthmatic kid in the treatment arm are around 0.53 times the odds of an equivalent parent having an asthmatic kid in the control arm.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say we want to work out a sample size for a formal parallel arm RCT. We suspect that we will only be able to get 650 people and the odds of an event in the intervention group are about half the odds of an event in the control group. What sort of power do we expect to obtain with this sample?&lt;/p&gt;
+
+&lt;h3 id=&#34;method&#34;&gt;Method&lt;/h3&gt;
+
+&lt;p&gt;Assume:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Balanced groups (randomly selected) of 325 mothers per arm&lt;/li&gt;
+&lt;li&gt;Proportion having asthmatic kid in control is 0.174&lt;/li&gt;
+&lt;li&gt;The odds ratio associated with the steroidal treatment is 0.5329&lt;/li&gt;
+&lt;li&gt;Adopt a linear predictor solely based on group membership&lt;/li&gt;
+&lt;li&gt;Simulate a sample of kids by:
+
+&lt;ol&gt;
+&lt;li&gt;Computing probability of asthma based on the exponentiated logits.&lt;/li&gt;
+&lt;li&gt;Draw from binomial distribution parameterised as $Bin(n, p)$ where n is the (total) sample size and p the probability of ashmatic child.&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;Fit a GLM with specification y ~ grp using the sample data and from this predict the probability for the control and treatment groups along with the difference in probability and estimated OR&lt;/li&gt;
+&lt;li&gt;Bootstrap (299 replicates) to get the 0.025 and 0.975 quantiles of the difference&lt;/li&gt;
+&lt;li&gt;Repeat the above 999 times&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The above can be decomposed into separate functions - one to generate a simulated dataset, one to retrieve the bootstrap statistics of interest and one to contain these two, which we will call from a loop with 999 iterations.&lt;/p&gt;
+
+&lt;h3 id=&#34;data-generation&#34;&gt;Data Generation&lt;/h3&gt;
+
+&lt;p&gt;This first function creates a dataset representative of the data we might observe in our real experiment. Each time the method is called a new data set will be created. Ignore the single nucleotide polymorphisms (&lt;a href=&#34;https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism&#34; target=&#34;_blank&#34;&gt;SNP&lt;/a&gt;) variables for now.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;get.data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(n.arm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;325&lt;/span&gt;, 
+                     p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.174&lt;/span&gt;,
+                     or.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5329&lt;/span&gt;,
+                     or.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.5&lt;/span&gt;, 
+                     include.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F){
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# We create a linear predictor from which we generate data.&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# y ~ b0 + b1 * grp&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# or &lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# y ~ b0 + b1 * grp + b2 * snp&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# The response of interest is asthma, denoted as 1/0 (yes/no).&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Assume proportion in the ctl group with asthma is 0.174.&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# So, assuming the control group is the referant, &lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# the baseline odds are:&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# p / (1-p) = 0.210653753&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Taking the log of this gives us the intercept term&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# log(0.21) = -1.55754&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# The OR for intervention is 0.5329:&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# log(0.5329) = -0.6294215&lt;/span&gt;
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Baseline odds:&lt;/span&gt;
+  b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; p.ctl))
+  &lt;span style=&#34;color:#75715e&#34;&gt;# b1 is the coef for trt effect&lt;/span&gt;
+  b1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(or.trt)
+   
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Group membership (0 = ctl, 1 = trt arm)&lt;/span&gt;
+  grp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n.arm), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n.arm))
+  
+  snp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NA&lt;/span&gt;
+  
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (include.snp){
+    b2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(or.snp)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;# Genetic disposition to asthmatic kids in 86% of the population.&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# The 86% is arbitrary and made up just for the example.&lt;/span&gt;
+    snp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;n.arm, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.86&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;# Linear predictor a combination of group and genetic disposition&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# for having an asthmatic kid&lt;/span&gt;
+    logit.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; b0 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b1 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b2 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; snp
+  } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+    &lt;span style=&#34;color:#75715e&#34;&gt;# Linear predictor for the simple group comparison&lt;/span&gt;
+    logit.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; b0 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b1 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp 
+  }
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Gives us a randomly generated sequence of asthmatic kids&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# based on individual probability of event.&lt;/span&gt;
+  p.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y))
+  y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;n.arm, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.y)
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Our pseudo sample.&lt;/span&gt;
+  df.dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(id &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;length&lt;/span&gt;(grp), 
+                       grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp, 
+                       snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; snp,
+                       p.y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.y,
+                       y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y)
+  
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;(df.dat)
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&#34;bootstrap-function&#34;&gt;Bootstrap Function&lt;/h3&gt;
+
+&lt;p&gt;This function is used by the call to the &lt;code&gt;boot&lt;/code&gt; function - more context can be found in the R help section for &lt;code&gt;boot&lt;/code&gt;. Given a dataset and indices the function fits a GLM using a supplied formula/specification and returns estimates and predictions from the fitted model.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Boot strapped logistic giving diff between proportions&lt;/span&gt;
+boot.glm &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(df.b, 
+                     indices, 
+                     myformula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; myformula,
+                     df.new &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.new) {
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# GLM Logistic&lt;/span&gt;
+  d &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.b[indices, ]
+  m &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(myformula, family&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;binomial, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; d)
+  
+  prop &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; predict(m, newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.new, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;response&amp;#34;&lt;/span&gt;)
+  p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; prop[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]
+  p.trt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; prop[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;]
+  p.diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; p.trt
+  est.or &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(coef(m))[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;]
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# s &amp;lt;- summary(m)&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# est.or.pval &amp;lt;- s$coefficients[&amp;#34;stageint.2&amp;#34;, &amp;#34;Pr(&amp;gt;|z|)&amp;#34;]&lt;/span&gt;
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;as.numeric&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.ctl,
+               p.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.trt,
+               p.diff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.diff,
+               est.or &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; est.or))
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&#34;simulation-function&#34;&gt;Simulation Function&lt;/h3&gt;
+
+&lt;p&gt;This function encapsulates the code required to perform a single iteration of the simulation. It calls on the &lt;code&gt;get.data&lt;/code&gt; described earlier then bootstraps a GLM model (with a pre-specified formula) to obtain parameter estimates and confidence intervals and dumps them into a data.frame that is returned to the calling function.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;sim.glm &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(x,
+                    n.arm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;325&lt;/span&gt;, 
+                    p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.174&lt;/span&gt;,
+                    or.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5329&lt;/span&gt;,
+                    or.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.5&lt;/span&gt;, 
+                    boot.reps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;299&lt;/span&gt;,
+                    include.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F){
+  
+  
+  df.dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data(n.arm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.arm, 
+                     p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.ctl,
+                     or.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; or.trt,
+                     or.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; or.snp, 
+                     include.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; include.snp)
+
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Specify the required formula to fit&lt;/span&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(include.snp){
+    myformula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; snp
+    df.new &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+  }&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{
+    myformula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp
+    df.new &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))
+  }
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Bootstrap&lt;/span&gt;
+  bb &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; boot&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;boot(df.dat, 
+                   statistic&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;boot.glm, 
+                   R&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;boot.reps, 
+                   myformula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; myformula, 
+                   df.new &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.new)
+  
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;# First look at differences&lt;/span&gt;
+  glm.prob.diff.est &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;mean&lt;/span&gt;(bb&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;t&lt;/span&gt;[,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;])
+  glm.prob.diff.lwr &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.numeric&lt;/span&gt;(quantile(bb&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;t&lt;/span&gt;[,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;], probs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.025&lt;/span&gt;))
+  glm.prob.diff.upr &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.numeric&lt;/span&gt;(quantile(bb&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;t&lt;/span&gt;[,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;], probs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.975&lt;/span&gt;))
+  glm.prob.sig.diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ifelse&lt;/span&gt;(glm.prob.diff.est &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; glm.prob.diff.lwr &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Now look at OR&lt;/span&gt;
+  glm.or.est &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;mean&lt;/span&gt;(bb&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;t&lt;/span&gt;[,&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;])
+
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Note that for the snp tests, the probability of having an asthmatic kid&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# is conditional on presence of snp.&lt;/span&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(include.snp){
+    &lt;span style=&#34;color:#75715e&#34;&gt;# names(df.dat)&lt;/span&gt;
+    df.tmp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.dat[df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;grp&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;snp&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, ] 
+    n.pre &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.tmp)
+    p.pre &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(df.tmp&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.tmp)
+    
+    df.tmp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.dat[df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;grp&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;snp&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, ] 
+    n.post &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.tmp)
+    p.post &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(df.tmp&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.tmp)
+  }&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{
+    n.pre &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.dat)
+    p.pre &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.dat)
+    
+    n.post &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.dat)
+    p.post &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(df.dat&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(df.dat)
+  }
+
+  
+  df.simres &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(n.pre &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.pre,
+                          n.post &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.post,
+                          p.pre &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.pre,
+                          p.post &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.post,
+                          glm.prob.diff.est &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; glm.prob.diff.est,
+                          glm.prob.diff.lwr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; glm.prob.diff.lwr,
+                          glm.prob.diff.upr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; glm.prob.diff.upr,
+                          glm.prob.sig.diff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; glm.prob.sig.diff, 
+                          glm.or.est &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; glm.or.est,
+                          simid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; x)
+
+  df.simres
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&#34;bringing-it-together&#34;&gt;Bringing it together&lt;/h3&gt;
+
+&lt;p&gt;Here we incorporate the functions into a &lt;a href=&#34;https://en.wikipedia.org/wiki/Monte_Carlo_method&#34; target=&#34;_blank&#34;&gt;monte carlo simulation&lt;/a&gt;. We initialise variables and then start a loop using parallel processing (to reduce run time if multiple cores are available). The results from each simulation is stored in the &lt;code&gt;df.out2&lt;/code&gt; &lt;code&gt;data.frame&lt;/code&gt;. We can interogate &lt;code&gt;df.out2&lt;/code&gt; to get insight into the distribution of various estimates of interest.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Initialise variables&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;354&lt;/span&gt;)
+nsim &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;999&lt;/span&gt;
+n.arm &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;650&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# c(500, 550, 600, 650, 700)&lt;/span&gt;
+p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.174&lt;/span&gt;
+or.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5329&lt;/span&gt;
+or.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.5&lt;/span&gt;
+boot.reps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;299&lt;/span&gt;
+include.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Run the analysis in parallel across multiple CPU cores&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Initiate cluster&lt;/span&gt;
+no_cores &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; detectCores() &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+cl &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; makeCluster(no_cores)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Specify all the functions that are required by the sim.&lt;/span&gt;
+clusterExport(cl&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cl, &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;get.data&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;boot.glm&amp;#34;&lt;/span&gt;))
+
+l.res2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; parLapply(cl, 
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(nsim), 
+                    fun &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim.glm, 
+                    n.arm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.arm, 
+                    p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.ctl,
+                    or.trt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; or.trt,
+                    or.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; or.snp,
+                    boot.reps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; boot.reps,
+                    include.snp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; include.snp)
+
+stopCluster(cl)
+
+
+df.out2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.data.frame&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;do.call&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rbind&lt;/span&gt;, l.res2))
+&lt;span style=&#34;color:#66d9ef&#34;&gt;mean&lt;/span&gt;(df.out2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;glm.prob.sig.diff)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
+
+&lt;p&gt;By setting the &lt;code&gt;include.snp&lt;/code&gt; variable to &lt;code&gt;TRUE&lt;/code&gt; we can run a second analysis using the same code that introduces a SNP covariate into the data generation process and the GLM specification to see what effect it has on power.&lt;/p&gt;
+
+&lt;h3 id=&#34;results&#34;&gt;Results&lt;/h3&gt;
+
+&lt;p&gt;The figure below shows the probability density for the lower bound of the difference in proportions of children born with asthma in each group. The central values for each group were 0.1 and 0.174 for the treatment and control groups respectively, aligning with the prespecified values. The proportion of the simulations where the &lt;strong&gt;lower bound&lt;/strong&gt; of a 95% confidence interval for each of the estimated differences is greater than zero is 0.76, i.e. a little under 80%.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/power01-diff01.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Important Note: We are looking at the difference in predicted proportions with asthma. We would get a different result if we were just looking at the significance of the odds ratio estimated from the GLM.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The next figure shows the same plot obtained from the analysis stratified by the SNP status. In this case the proportion of the simulations where the &lt;strong&gt;lower bound&lt;/strong&gt; of a 95% confidence interval for each of the estimated differences is greater than zero is 0.87 giving 87% power.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/power01-diff02.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;By introducing a patient characteristic that was related to the response we were able to increase power without adjusting the sample size assumptions.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
+      <link>https://t-student.github.io/post/logistic01-interaction/</link>
+      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-interaction/</guid>
+      <description>&lt;p&gt;The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.&lt;/p&gt;
+
+&lt;p&gt;The logistic regression model that we consider is:&lt;/p&gt;
+
+&lt;p&gt;$$
+log Pr(Y = 1) = \beta_0 + \beta_1 grp + \beta_2 time + \beta_3 grp \times time
+$$&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;250&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# Define the parameters&lt;/span&gt;
+b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4&lt;/span&gt;
+b1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.1&lt;/span&gt;
+b2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;
+b3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.3&lt;/span&gt;
+
+n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1200&lt;/span&gt;
+grp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+time &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Model for the means&lt;/span&gt;
+p &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; b0 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b1 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b2 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b3 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time
+
+df.fig &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp, time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p)
+df.fig&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, p)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# The probability of death&lt;/span&gt;
+ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_point()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_line()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Timepoint&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Proportion Death&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Proportion of deaths observed in the simulated data&lt;/span&gt;
+df.tmp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.fig &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;group_by(grp, time) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;summarise(p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;n())
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# The Simulated data&lt;/span&gt;
+ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_jitter(height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_point(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.tmp, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp)))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_line(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.tmp, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp)))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Timepoint&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Died&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, 
+                     sec.axis &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sec_axis(&lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;, 
+                                         name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Proportion Death&amp;#34;&lt;/span&gt;,
+                                         breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The probabilities and simulated data are shown below:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Means (p parameter)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Simulated data&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/logit01-interactionfig1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/logit01-interactionfig2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Now we fit a logistic regression model to the simulated data using the following commands:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.fig, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; binomial()))
+&lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(coef(lm1))
+
+predict(lm1, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;response&amp;#34;&lt;/span&gt;, newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), 
+                                                     time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
+
+&lt;p&gt;which gives us parameter estimates and predicted values as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Coefficients:
+            Estimate Std. Error z value Pr(&amp;gt;|z|)    
+(Intercept)  -0.4331     0.1333  -3.248  0.00116 ** 
+grp          -0.2935     0.1949  -1.506  0.13210    
+time          0.9363     0.1144   8.188 2.65e-16 ***
+grp:time     -1.6395     0.1757  -9.333  &amp;lt; 2e-16 ***
+
+exp(coef(lm1))
+(Intercept)         grp        time    grp:time 
+  0.6485035   0.7456175   2.5506104   0.1940778 
+
+predict(lm1, type = &amp;quot;response&amp;quot;, newdata = data.frame(grp = c(0, 0, 0, 1, 1, 1), time = c(0, 1, 2, 0, 1, 2)))
+        1         2         3         4         5         6 
+0.3933892 0.6232216 0.8083892 0.3259346 0.1931308 0.1059346 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The exponentiated intercept term represents the baseline odds of death. Similarly, the exponentiated group and time main effects are odds-ratios. However, the exponentiated interaction term is a ratio of odds-ratios.&lt;/p&gt;
+
+&lt;p&gt;The baseline odds are $exp(-0.4331) = 0.6485$. I have a terrible time thinking in odds (mainly because they are unbounded to the right) so I always convert to probabilities. The baseline odds of death equate to $odds/(1+odds) = 0.393$. This aligns with the &lt;code&gt;b0&lt;/code&gt; parameter in the linear predictor so things look good.&lt;/p&gt;
+
+&lt;p&gt;While the main effect for suggests that the treatment group have lower odds of death at baseline, the effect is not significant at the 0.05 level. Nevertheless we know that the probability of death diverges over time and the interaction term is clearly significant so the main effect is usually retained in the model. The result suggests that the odds of death at baseline are a factor of $exp(-0.2935) = 0.746$ lower in the treatment group compared to the control group, i.e. 0.6485 \times 0.746 = 0.484$. In probabilities this implies that the probability of death at baseline in the treatment group is 0.326.&lt;/p&gt;
+
+&lt;p&gt;In the control group we expect an increase in the odds of death by a factor of $exp(0.94) = 2.55$ for every unit increase in time. For example, at the first timepoint we expect the odds of death in the control group to be the baseline odds multiplied by 2.55, which is 1.654. This equates to a probability of death equal to 0.62, which aligns approximately with our pre-specified probability of 0.6 (and the predicted values from the code above). Similarly, at the second time point we expect that the odds of death in the control group is a whopping $exp(-0.43 + 2 \times 0.936) = 4.22, again correctly equating to the pre-specified probability of death of 0.808.&lt;/p&gt;
+
+&lt;p&gt;The interpretation of the interaction term becomes clear when considering the expected probability of death over time. First we note that in the first timepoint, the odds of death in the treatment group are $exp(-0.43-0.29+0.94-1.64) = 0.24$ equating to a probability of 0.1931. As we saw before, the odds ratio for time in the control group is $exp(0.936) = 2.55$. Similarly the OR for time in the treatment group is $exp(0.9363 + -1.6395) = 0.495$. The ratio of these two values is $0.495 / 2.55 = 0.194$ which equates to the exponentiated interaction term.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Interpreting Interaction Terms in a GLM (Poisson family, log link)</title>
       <link>https://t-student.github.io/post/poisson01-interaction/</link>
       <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
