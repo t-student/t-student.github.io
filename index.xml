@@ -11,6 +11,52 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Installing Python on Windows 10</title>
+      <link>https://t-student.github.io/post/installpython3/</link>
+      <pubDate>Mon, 26 Mar 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/installpython3/</guid>
+      <description>
+
+&lt;p&gt;I have decided to start doing more coding in Python, so I needed to install it. The title says it all but this is just to record what I did. In brief:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;install a package manager (equivalent to apt in linux)&lt;/li&gt;
+&lt;li&gt;use python to install pip (a package manager for python)&lt;/li&gt;
+&lt;li&gt;install an environment manager so that you can support different sets of dependencies with minimal hassle&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I started with the instructions &lt;a href=&#34;http://docs.python-guide.org/en/latest/starting/install3/win/#install3-windows&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;. They work fairly seemlessly. However, the following is what I did.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-package-manager&#34;&gt;Installing Package Manager&lt;/h2&gt;
+
+&lt;p&gt;You need to do this with administrator privaleges otherwise it won&amp;rsquo;t work. I used the instructions found &lt;a href=&#34;https://chocolatey.org/install#installing-behind-a-proxy&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; that are for installing where you are behind a proxy.&lt;/p&gt;
+
+&lt;p&gt;To launch a command prompt with admin privaleges do Start, then type cmd, right click on the command launcher and choose more, then run as an admin.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-python-3&#34;&gt;Installing Python 3&lt;/h2&gt;
+
+&lt;p&gt;Again use administrator privaleges to invoke &lt;code&gt;python -m pip install -U pip&lt;/code&gt; at the command line.&lt;/p&gt;
+
+&lt;h2 id=&#34;pipenv-and-virtualenv-environment-manager&#34;&gt;Pipenv and Virtualenv environment manager&lt;/h2&gt;
+
+&lt;p&gt;This was a bit fiddly but purely down to the fact that the default install relies only on user privaleges. You end up with an error &lt;code&gt;&#39;pipenv&#39; is not recognized as an internal or external command&lt;/code&gt; because the path is not updated.&lt;/p&gt;
+
+&lt;p&gt;Once complete, run &lt;code&gt;py -m site --user-site&lt;/code&gt; which reports a directory path. It will be something like &lt;code&gt;C:\Users\mjones\AppData\Roaming\Python\Python36\site-packages&lt;/code&gt;. What you need to do is to add a directory to the &lt;code&gt;PATH&lt;/code&gt; environment variable that is the same as this user path but ends with &lt;code&gt;Scripts&lt;/code&gt; rather than &lt;code&gt;site-packages&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Pipenv manages library dependencies on a per project basis. You use &lt;code&gt;pipenv&lt;/code&gt; instead of &lt;code&gt;pip&lt;/code&gt;. For example, to install the &lt;code&gt;requests&lt;/code&gt; package, change into your project’s directory (or just an empty directory for this tutorial) and run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd myproject
+pipenv install requests
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pipenv will install the requests library and create a Pipfile for you in your project’s directory. The Pipfile is used to track which dependencies your project needs in case you need to re-install them, such as when you share your project with others. For more info, see &lt;a href=&#34;http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;virtualenv&lt;/code&gt; is a tool to create isolated Python environments. &lt;code&gt;virtualenv&lt;/code&gt; creates a folder which contains all the necessary executables to use the packages that a Python project would need.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Logistic Regression - Power Analysis</title>
       <link>https://t-student.github.io/post/logistic01-powersim/</link>
       <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
