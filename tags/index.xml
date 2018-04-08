@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on t-student</title>
+    <link>https://t-student.github.io/tags/</link>
+    <description>Recent content in Tags on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Content tagged as &#39;Academic&#39;</title>
+      <link>https://t-student.github.io/tags/academic/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/academic/</guid>
+      <description>Here is a list of all the content that has been tagged as academic.</description>
+    </item>
+    
+    <item>
+      <title>Bayesian</title>
+      <link>https://t-student.github.io/tags/bayesian/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bayesian</title>
+      <link>https://t-student.github.io/tags/bayesian/</link>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deep-learning</title>
+      <link>https://t-student.github.io/tags/deep-learning/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/deep-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Demo</title>
+      <link>https://t-student.github.io/tags/demo/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/demo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dtaa.table</title>
+      <link>https://t-student.github.io/tags/dtaa.table/</link>
+      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/dtaa.table/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Glm</title>
+      <link>https://t-student.github.io/tags/glm/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/glm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Power</title>
+      <link>https://t-student.github.io/tags/power/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/power/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://t-student.github.io/tags/python/</link>
+      <pubDate>Mon, 26 Mar 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>https://t-student.github.io/tags/r/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Simulation</title>
+      <link>https://t-student.github.io/tags/simulation/</link>
+      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/simulation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stan</title>
+      <link>https://t-student.github.io/tags/stan/</link>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zombies</title>
+      <link>https://t-student.github.io/tags/zombies/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/zombies/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

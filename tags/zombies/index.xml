@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Zombies on t-student</title>
+    <link>https://t-student.github.io/tags/zombies/</link>
+    <description>Recent content in Zombies on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 08 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/zombies/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Bayesian Zombies 101</title>
+      <link>https://t-student.github.io/post/basicbayesian/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/basicbayesian/</guid>
+      <description>I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
+OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of.</description>
+    </item>
+    
+  </channel>
+</rss>

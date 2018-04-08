@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on t-student</title>
+    <link>https://t-student.github.io/tags/python/</link>
+    <description>Recent content in Python on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Mon, 26 Mar 2018 00:00:00 +1100</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Installing Python on Windows 10</title>
+      <link>https://t-student.github.io/post/installpython3/</link>
+      <pubDate>Mon, 26 Mar 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/installpython3/</guid>
+      <description>I have decided to start doing more coding in Python, so I needed to install it. The title says it all but this is just to record what I did. In brief:
+ install a package manager (equivalent to apt in linux) use python to install pip (a package manager for python) install an environment manager so that you can support different sets of dependencies with minimal hassle  I started with the instructions here.</description>
+    </item>
+    
+  </channel>
+</rss>

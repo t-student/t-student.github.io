@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on t-student</title>
+    <link>https://t-student.github.io/tags/r/</link>
+    <description>Recent content in R on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 08 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Bayesian Zombies 101</title>
+      <link>https://t-student.github.io/post/basicbayesian/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/basicbayesian/</guid>
+      <description>I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
+OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of.</description>
+    </item>
+    
+    <item>
+      <title>Logistic Regression - Power Analysis</title>
+      <link>https://t-student.github.io/post/logistic01-powersim/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-powersim/</guid>
+      <description>If you have multiple treatment options that lead to different outcomes, you will only be able to detect a difference in the average outcome under conditions where there is sufficient statistical power to do so. Statistical power is the probability that we detect an effect when there really is an effect to be detected. As statistical power increases the probability of making a Type II error (concluding there is no effect when, in fact, there is one) decreases.</description>
+    </item>
+    
+    <item>
+      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
+      <link>https://t-student.github.io/post/logistic01-interaction/</link>
+      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-interaction/</guid>
+      <description>The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.</description>
+    </item>
+    
+    <item>
+      <title>Interpreting Interaction Terms in a GLM (Poisson family, log link)</title>
+      <link>https://t-student.github.io/post/poisson01-interaction/</link>
+      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
+      <description>The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.
+set.seed(250) # Define the parameters b0 &amp;lt;- 2 b1 &amp;lt;- 3 b2 &amp;lt;- 1.5 b3 &amp;lt;- 6 n &amp;lt;- 800 grp &amp;lt;- c(rep(0, n/2), rep(1, n/2)) time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4)) # Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * time df.</description>
+    </item>
+    
+    <item>
+      <title>Simulating Lung Cancer Incidence data in R</title>
+      <link>https://t-student.github.io/post/data01-cancer/</link>
+      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/data01-cancer/</guid>
+      <description>The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &amp;lsquo;what if&amp;rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the simstudy and data.table R packages.
+Distribution of lung cancer incidence in Australia The Australian Institute of Health and Welfare publish incidence and mortality data.</description>
+    </item>
+    
+    <item>
+      <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</title>
+      <link>https://t-student.github.io/post/brms01/</link>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/brms01/</guid>
+      <description>The title was stolen directly from the excellent 2016 paper by Tanner Sorensen and Shravan Vasishth. Here I recreate their analysis using brms R package, primarily as a self-teach exercise. I am going to very much assume that the basic ideas of Bayesian analysis are already understood. I will add some informtion on prior and posterior predictive checks because I think not doing so missing a large part of the point of a Bayesian analysis.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
+OK, Bayesian Analysis? Let&rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&rsquo;t have a bar of.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/basicbayesian/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/basicbayesian/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/basicbayesian/">
+  <meta property="og:title" content="Bayesian Zombies 101 | t-student">
+  <meta property="og:description" content="I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
+OK, Bayesian Analysis? Let&rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&rsquo;t have a bar of.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-04-08T00:00:00&#43;10:00">
+  
+  <meta property="article:modified_time" content="2018-04-08T00:00:00&#43;10:00">
+  
+
+  
+
+  <title>Bayesian Zombies 101 | t-student</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Bayesian Zombies 101</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-04-08 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      Apr 8, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    10 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Bayesian%20Zombies%20101&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fbasicbayesian%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fbasicbayesian%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fbasicbayesian%2f&amp;title=Bayesian%20Zombies%20101"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fbasicbayesian%2f&amp;title=Bayesian%20Zombies%20101"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Bayesian%20Zombies%20101&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fbasicbayesian%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>I find the <a href="http://xcelab.net/rm/statistical-rethinking/" target="_blank">Statistical Rethinking</a> text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.</p>
+
+<h2 id="ok-bayesian-analysis">OK, Bayesian Analysis?</h2>
+
+<p>Let&rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&rsquo;t have a bar of. Bayesian analysis is a fairly snappy way to go about this task.</p>
+
+<p><img src="/media/pirahna.jpg" alt="" /></p>
+
+<p>Now, let&rsquo;s get serious and work up to laying down some definitions and notation. First, the breed of inference we are interested in here is <a href="https://en.wikipedia.org/wiki/Statistical_inference" target="_blank">statistical inference</a>. Statistical inference involves using observations in a framework of presupposition and statistical models that aim at a logical conclusions. Generally we want to be able to make some statements about a scientific question relating to a population of interest.</p>
+
+<p>Examples - we flip a coin obtained from the local mint 10 times and it produces 7 heads. Should we believe the coin is fair? What about the other coins produced by the mint? We measure the heights of 10 men that play for a professional basket ball team. What does this tell us about the height of all men? <strong>Bayesian analysis</strong> gives us a formal method to combine what we already know with new evidence and characterises the remaining uncertainty in probability.</p>
+
+<h2 id="the-standard-zombie-example-of-bayesian-inference">The Standard (Zombie) Example of Bayesian Inference</h2>
+
+<p>In a bayesian analysis we characterise uncertainty using a small bag of tools. Let&rsquo;s introduce a few&hellip;</p>
+
+<h3 id="a-prior">A Prior</h3>
+
+<p>The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:</p>
+
+<p><img src="/media/zombiesprior.png" alt="" /></p>
+
+<p>I generated that snappy curve from a <a href="https://en.wikipedia.org/wiki/Beta_distribution" target="_blank">Beta distribution</a> by using paramter values equal to 1 and 27. In a more mathy bent we say:</p>
+
+<p>$$
+\theta \sim Beta(1, 27)
+$$</p>
+
+<p>In words - theta is distributed as a random variable originated from a beta distribution with shape parameters 1 and 27 - you can see why we favour the mathy version.</p>
+
+<h3 id="likelihood">Likelihood</h3>
+
+<p>Now, let&rsquo;s go to the mall and pick out 20 people at random under the assumption that all individuals have the same probability of being a zombie. However, not one of the people in the sample tries to even take a nimble at us and so we conclude (with perhaps undue certainty) that the sample we picked contained no zombies. We can, again, make this more formal by saying that the data generating process was a <a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Binomial distribution</a> where one of the parameters is our sample size and the other parameter represents the probability that a randomly selected individual is a zombie. Mathematically, we have:</p>
+
+<p>$$
+y|\theta \sim Bin(20, \theta)
+$$</p>
+
+<p>and therefore conditional on $\theta$ any given sample of mall people stands a chance of containing a zombie.</p>
+
+<h3 id="posterior">Posterior</h3>
+
+<p>In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability<sup class="footnote-ref" id="fnref:3"><a href="#fn:3">3</a></sup> and has the form:</p>
+
+<p>$$
+Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
+$$</p>
+
+<p>The <em>average likelihood</em> bit is computed over all the possible values of the parameter $\theta$ - the proportion of zombies which must be somewhere between zero to 1. Fortunately, we don&rsquo;t have to know how to work out the above directly because the product of a Beta prior and a Binomial likelihood is well known. Specifically, it is another Beta distribution but with different parameters based on the the data we observed and the prior parameters. The first parameter of the posterior beta distribution is $a + y$ and the second is $b + n - y$. In our case, a = 1, y = 0, b = 27 and n = 20 so we have the posterior is:</p>
+
+<p>$$
+Pr(\theta|y) \sim Beta(1, 47)
+$$</p>
+
+<p>If we were to draw another graph of the (new) relative strength of beliefs it would look something like the following (new beliefs in red):</p>
+
+<p><img src="/media/zombiesposterior.png" alt="" /></p>
+
+<p>So whereas initially we were 90% certain that less than 8.5% of the population are zombies, now we are 90% certain that less than 5% of the population are zombies. We have reduced our uncertainty by leveraging our existing beliefs and our sample observations.</p>
+
+<h2 id="grid-approximation">Grid Approximation</h2>
+
+<p>Unfortunately, the calculations are rarely this simple - we rarely have <a href="https://en.wikipedia.org/wiki/Conjugate_prior" target="_blank">conjugate</a> pairs of priors and likelihood like I contrived in the above example. However, we can get around this using sampling. In its simplest form we can use a <em>grid approximation</em>.</p>
+
+<p>In R the following code shows how this might play out. We first set up a posterior distribution and then we sample with replacement to get an approximation of the posterior distribution.</p>
+
+<pre><code># This is the range of parameter values and defines the precision
+# to which we can estimate the parameter of interest. 
+mygrid &lt;- seq(0, 1, length.out = 1000)
+# Defines our prior beliefs
+prior &lt;- dbeta(mygrid, 1, 27)
+# Defines the relative likelihood of the data (zero zombies out of 20) 
+# across all the possible parameter values
+likelihood &lt;- dbinom(0, size = 20, prob = mygrid)
+# Compute the posterior and normalise it
+posterior &lt;- likelihood * prior 
+posterior &lt;- posterior / sum(posterior)
+
+# This is analytic posterior - generally we don't have the
+# luxury of knowing this.
+analyticpost &lt;- dbeta(mygrid, 1, 47)
+
+# Sample from the posterior distribution
+myposteriorsample &lt;- sample(mygrid, prob = posterior, size = 1e4, replace = T)
+
+# Plot the samples
+plot(myposteriorsample, type = &quot;p&quot;, 
+     xlab = &quot;Sample index&quot;,
+     ylab = &quot;Proportion of zombies&quot;)
+
+# Plot the analytical and the sampled posterior distribution 
+x.idx &lt;- density(myposteriorsample)$x
+y.den &lt;- density(myposteriorsample)$y
+
+plot(mygrid, analyticpost, type = &quot;l&quot;,
+     xlab = &quot;Proportion of zombies&quot;,
+     ylab = &quot;Relative likelihood&quot;, xlim = c(0, 0.3))
+lines(x.idx, y.den, col = &quot;red&quot;)
+
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th align="center">Samples from posterior</th>
+<th align="center">Analytic and sampled posterior (red) probability density</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><img src="/media/zombiesamples.png" alt="" /></td>
+<td align="center"><img src="/media/zombiesmcmc.png" alt="" /></td>
+</tr>
+</tbody>
+</table>
+
+<p>Clearly the relatively likelihood at approximately zero is underestimated by the sampling approach but this is to do with the available precision and could be improved by increasing the resolution of the grid.</p>
+
+<p>The grid approximation is useful to get some understanding into the mechanics but does not scale well to more complex problems where we would more commonly use Markov Chain Monte Carlo <a href="https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo" target="_blank">MCMC</a> simulations.</p>
+
+<h2 id="posterior-summaries">Posterior Summaries</h2>
+
+<p>It is interesting to consider (moreso if you are a bit nerdy) how you might summarise our new state of knowledge inherent in the posterior distribution. There are a few options to condense what it is telling us into a 10 second soundbite for people without patience or interest.</p>
+
+<p>First, we can compute a 95% credible interval as below, which tells us that there is a 95% probability that the proportion of zombies in the community is between zero and 7.5%. A similar interval is the Highest Posterior Density Interval, but this interval is the narrowest interval that contains the specified probability mass. For this example it turns out to be about the same as the credible interval but that won&rsquo;t always be the case. We can obtain the point estimates of the mean, median and mode, which turn out to be 2.1%, 1.4% and 0.37%.</p>
+
+<p>All of these approaches are effectively <a href="https://en.wikipedia.org/wiki/Data_reduction" target="_blank">data reduction techniques</a> - we have reduced the posterior probability distribution to a one or two numbers in order to make what it is telling us more digestable.</p>
+
+<pre><code># Credible interval
+quantile(myposteriorsample, c(0.025, 0.975))
+rethinking::PI(myposteriorsample, 0.95)
+
+# HPDI
+rethinking::HPDI(myposteriorsample, 0.975)
+
+# Measures of centrality
+mean(myposteriorsample)
+median(myposteriorsample)
+
+# Mode
+rethinking::chainmode(myposteriorsample)
+
+</code></pre>
+
+<p>Another thing we can do is define a <strong>loss function</strong> and characterise the cost of adopting a particular summary under given conditions. This mostly comes into play when we want to make a <a href="https://en.wikipedia.org/wiki/Decision_theory" target="_blank">decision</a> such as whether we should go to the shops or not. Different loss functions imply different point estimates and a common loss function is to assume that the loss is proportional to the absolute difference between your decision and the correct answer. We can compute the loss over the entire parameter range using the following code, which gives us an value of 1.4%, identical to the median computed previous. In reality the loss function would need more thought and we might make the cost function penalise being wrong more harshly as might be well advised since encountering a zombie has stark <a href="https://en.wikipedia.org/wiki/Metaphysics" target="_blank">metaphyscial</a> implications.</p>
+
+<pre><code>loss &lt;- sapply(mygrid, function(d) sum(analyticpost * abs(d - mygrid)))
+mygrid[which.min(loss)]loss &lt;- sapply()
+
+</code></pre>
+
+<h2 id="model-checking">Model Checking</h2>
+
+<p>I know I have been banging for a bit now, but this last bit is important so stick with it. Here is the thing - all Bayesian models are generative so once you have a posterior distribution of the parameter of interest you can simulate new data. Ideally the predictions we make should contain both uncertainty in the distribution associated with a parameter and the uncertainty about the parameter itself. For example, if we use $\theta = 0.05$ or $\theta = 0.1$ we get a distribution of zombies like the figures below. So if there is a 5% probability that an individual is a zombie we would expect to zero or one zombies most of the time. However, if there was a 10% probability that an individual is a zombie we would mostly expect to see 1 or 2 in a sample of 20. In a nutshell, when $\theta = 0.05$ we expect to see a zero count of zombies more often than we do if $\theta = 0.1$.</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">Proportion of zombies 5%</th>
+<th align="center">10%</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><img src="/media/zombiesim1.png" alt="" /></td>
+<td align="center"><img src="/media/zombiesim2.png" alt="" /></td>
+</tr>
+</tbody>
+</table>
+
+<p>Now, the thing is, $\theta$ also has uncertainty as we have described by the posterior distribution and ideally we want to propagate this uncertainty into our predictions. To do this we average all of the prediction distributions together using the posterior of each value of $\theta$. This gives us a <a href="https://en.wikipedia.org/wiki/Posterior_predictive_distribution" target="_blank">posterior predictive distribution</a>, which is actually a lot easier to produce than to explain, the following gets us to where we want to be.</p>
+
+<pre><code># Distribution of observed zombies theta = 0.05
+z1 &lt;- rbinom(1e4, size = 20, prob = 0.05)
+# Distribution of observed zombies averaged across the posterior distribution
+z2 &lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
+</code></pre>
+
+<p><img src="/media/zombiesim3.png" alt="" /></p>
+
+<p>In this case we can be quite conforted by the fact that the posterior predictive aligns fairly well with what we observed since it looks like we generally encounter small numbers (0 or 1) zombies in our daily trip to the shops.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">OK, maybe more than 100% if you live in Jesmond.
+ <a class="footnote-return" href="#fnref:1"><sup>^</sup></a></li>
+<li id="fn:2">If you are starting to think that everything is uncertain in a Bayesian world then you may be onto something.
+ <a class="footnote-return" href="#fnref:2"><sup>^</sup></a></li>
+<li id="fn:3">That I refuse to go into right now.
+ <a class="footnote-return" href="#fnref:3"><sup>^</sup></a></li>
+</ol>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/bayesian">Bayesian</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/zombies">zombies</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
+    
+    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
+    
+    <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
+    
+    <li><a href="/post/data01-cancer/">Simulating Lung Cancer Incidence data in R</a></li>
+    
+    <li><a href="/post/brms01/">A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

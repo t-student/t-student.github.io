@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Glm on t-student</title>
+    <link>https://t-student.github.io/tags/glm/</link>
+    <description>Recent content in Glm on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Fri, 16 Feb 2018 00:00:00 +1100</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/glm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Logistic Regression - Power Analysis</title>
+      <link>https://t-student.github.io/post/logistic01-powersim/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-powersim/</guid>
+      <description>If you have multiple treatment options that lead to different outcomes, you will only be able to detect a difference in the average outcome under conditions where there is sufficient statistical power to do so. Statistical power is the probability that we detect an effect when there really is an effect to be detected. As statistical power increases the probability of making a Type II error (concluding there is no effect when, in fact, there is one) decreases.</description>
+    </item>
+    
+    <item>
+      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
+      <link>https://t-student.github.io/post/logistic01-interaction/</link>
+      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-interaction/</guid>
+      <description>The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.</description>
+    </item>
+    
+    <item>
+      <title>Interpreting Interaction Terms in a GLM (Poisson family, log link)</title>
+      <link>https://t-student.github.io/post/poisson01-interaction/</link>
+      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
+      <description>The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.
+set.seed(250) # Define the parameters b0 &amp;lt;- 2 b1 &amp;lt;- 3 b2 &amp;lt;- 1.5 b3 &amp;lt;- 6 n &amp;lt;- 800 grp &amp;lt;- c(rep(0, n/2), rep(1, n/2)) time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4)) # Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * time df.</description>
+    </item>
+    
+  </channel>
+</rss>

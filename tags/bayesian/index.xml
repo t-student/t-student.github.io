@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bayesian on t-student</title>
+    <link>https://t-student.github.io/tags/bayesian/</link>
+    <description>Recent content in Bayesian on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Fri, 19 Jan 2018 00:00:00 +1100</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/bayesian/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</title>
+      <link>https://t-student.github.io/post/brms01/</link>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/brms01/</guid>
+      <description>The title was stolen directly from the excellent 2016 paper by Tanner Sorensen and Shravan Vasishth. Here I recreate their analysis using brms R package, primarily as a self-teach exercise. I am going to very much assume that the basic ideas of Bayesian analysis are already understood. I will add some informtion on prior and posterior predictive checks because I think not doing so missing a large part of the point of a Bayesian analysis.</description>
+    </item>
+    
+  </channel>
+</rss>

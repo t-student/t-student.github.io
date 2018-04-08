@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Simulation on t-student</title>
+    <link>https://t-student.github.io/tags/simulation/</link>
+    <description>Recent content in Simulation on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sat, 10 Feb 2018 00:00:00 +1100</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Simulating Lung Cancer Incidence data in R</title>
+      <link>https://t-student.github.io/post/data01-cancer/</link>
+      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/data01-cancer/</guid>
+      <description>The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &amp;lsquo;what if&amp;rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the simstudy and data.table R packages.
+Distribution of lung cancer incidence in Australia The Australian Institute of Health and Welfare publish incidence and mortality data.</description>
+    </item>
+    
+  </channel>
+</rss>

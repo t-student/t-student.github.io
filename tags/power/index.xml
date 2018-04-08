@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Power on t-student</title>
+    <link>https://t-student.github.io/tags/power/</link>
+    <description>Recent content in Power on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Fri, 16 Feb 2018 00:00:00 +1100</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/power/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Logistic Regression - Power Analysis</title>
+      <link>https://t-student.github.io/post/logistic01-powersim/</link>
+      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-powersim/</guid>
+      <description>If you have multiple treatment options that lead to different outcomes, you will only be able to detect a difference in the average outcome under conditions where there is sufficient statistical power to do so. Statistical power is the probability that we detect an effect when there really is an effect to be detected. As statistical power increases the probability of making a Type II error (concluding there is no effect when, in fact, there is one) decreases.</description>
+    </item>
+    
+  </channel>
+</rss>
