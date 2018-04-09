@@ -11,6 +11,513 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Shiny 101</title>
+      <link>https://t-student.github.io/post/shiny01-overview/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-overview/</guid>
+      <description>
+
+&lt;p&gt;Shiny is a way to deploy your data analyses in an interactive format that is backed by R.&lt;/p&gt;
+
+&lt;h2 id=&#34;overview-think-inputs-and-outputs&#34;&gt;Overview - Think &lt;code&gt;inputs&lt;/code&gt; and &lt;code&gt;outputs&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).&lt;/p&gt;
+
+&lt;p&gt;Before we begin, your goto page for learning about this stuff is &lt;a href=&#34;https://shiny.rstudio.com/articles/&#34; target=&#34;_blank&#34;&gt;https://shiny.rstudio.com/articles/&lt;/a&gt;. Ok, let&amp;rsquo;s build an app - use this template:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage()
+server &amp;lt;- function(input, output){}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add input and output functions into the &lt;code&gt;fluidPage&lt;/code&gt; function. We could add any of:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;buttons&lt;/li&gt;
+&lt;li&gt;checkboxes (single and grouped)&lt;/li&gt;
+&lt;li&gt;date input and range&lt;/li&gt;
+&lt;li&gt;file input&lt;/li&gt;
+&lt;li&gt;numeric input&lt;/li&gt;
+&lt;li&gt;passwords&lt;/li&gt;
+&lt;li&gt;radios&lt;/li&gt;
+&lt;li&gt;select&lt;/li&gt;
+&lt;li&gt;sliders&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;All these functions take similar parameters, the first being a unique id (&lt;code&gt;inputId&lt;/code&gt;) and the second being a label to display to the user. After that there are a bunch of input specific parameters.&lt;/p&gt;
+
+&lt;p&gt;Outputs are plots, tables, text, etc that embed various visualisation elements to the user interface. All these outputs contain one required parameter &lt;code&gt;outputId&lt;/code&gt; which is a unique id for the object. For example, lets add a slider and a placeholder for a histogram that we are going to produce.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  plotOutput(&amp;quot;hist&amp;quot;)
+ 
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+  	n &amp;lt;- input$num
+  	hist(rnorm(n))
+  	})
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We use the server function to provide the content for the user interface. For each element you need to save the output within the &lt;code&gt;output&lt;/code&gt; list object as a named member. The second thing you need to do is to wrap the object that you want to save in a render function. For example we can render:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;static and interactive tables&lt;/li&gt;
+&lt;li&gt;images&lt;/li&gt;
+&lt;li&gt;plots&lt;/li&gt;
+&lt;li&gt;code blocks&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;li&gt;shiny ui elements&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;In the above example we have rendered a histogram based on some dummy data. We can use as many lines of code as we want between the &lt;code&gt;{}&lt;/code&gt; in the render function. Note that you can have multiple reactive variables within a &lt;code&gt;render*()&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;p&gt;We can access the values that the user selects with the slider in the server function. These are called reactive elements and shiny takes care of the updates. Ok, run the app, you should see something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shiny101-01.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Final note - to deploy your application you need to save it with the filename &lt;code&gt;app.R&lt;/code&gt;. However, if you have massive UI and server elements you can split the application into two files, one called &lt;code&gt;ui.R&lt;/code&gt; and the other called &lt;code&gt;server.R&lt;/code&gt;. Then, you add all your media content to the folder. After that you can deploy to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt; but first you need to create an account. After you have created an account, all you need to do is press publish application in the RStudio.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 2 - Reactivity</title>
+      <link>https://t-student.github.io/post/shiny01-stage2/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage2/</guid>
+      <description>
+
+&lt;p&gt;Shiny is a way to deploy your data analyses in an interactive format that is backed by R.&lt;/p&gt;
+
+&lt;h2 id=&#34;shiny-next-steps&#34;&gt;Shiny Next Steps&lt;/h2&gt;
+
+&lt;p&gt;In an earlier post we went over how to get a basic Shiny app together and deployed to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt;. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.&lt;/p&gt;
+
+&lt;h2 id=&#34;customising-reactions&#34;&gt;Customising Reactions&lt;/h2&gt;
+
+&lt;p&gt;So earlier we saw that we can update various outputs based on a users input. However, we can also reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button.&lt;/p&gt;
+
+&lt;p&gt;The first thing to understand about reactive elements is that they work together with reactive functions. For example, the &lt;code&gt;renderPlot&lt;/code&gt; function is a reactive function that expects to receive reactive variables such as &lt;code&gt;input$num&lt;/code&gt; discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds.&lt;/p&gt;
+
+&lt;p&gt;There are about 7 functions you need to know to work with reactivity a large proportion being the &lt;code&gt;render*()&lt;/code&gt; functions, but there are a few others we discuss here.&lt;/p&gt;
+
+&lt;h3 id=&#34;reactive&#34;&gt;&lt;code&gt;reactive&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;You can modularise code by using the function named &lt;code&gt;reactive&lt;/code&gt;. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within &lt;code&gt;reactive&lt;/code&gt;  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to &lt;code&gt;x&lt;/code&gt;. Whenever the input gets updated by the user the reactive method updates x. Now, within the &lt;code&gt;render&lt;/code&gt; functions what we need to do is call &lt;code&gt;x&lt;/code&gt; like we would call a function.&lt;/p&gt;
+
+&lt;p&gt;Note that &lt;code&gt;reactive&lt;/code&gt; caches its value &lt;em&gt;until it becomes invalid&lt;/em&gt; due to user input.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  textInput(inputId = &amp;quot;title&amp;quot;,
+            &amp;quot;Provide title&amp;quot;,
+            value = &amp;quot;Histogram of normal RV&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;),
+  verbatimTextOutput(&amp;quot;stats&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  
+  # New reactive part !!!
+  x &amp;lt;- reactive({rnorm(input$num)})
+  
+  output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- input$title
+    # Call x as you would a function !!!
+    hist(x(), main = mymain)
+  })
+  
+  output$stats &amp;lt;- renderPrint({
+    summary(x())
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;isolate&#34;&gt;&lt;code&gt;isolate&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;The &lt;code&gt;isolate&lt;/code&gt; function is the opposite of the &lt;code&gt;reactive&lt;/code&gt; function. This function makes user specified input inert. For example we could make the graph title not update until we change the slider by wrapping the title in an &lt;code&gt;isolate&lt;/code&gt; call as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Note that here we wrap the title and make it inert
+# until a user updates the slider.
+output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- isolate(input$title)
+    hist(x(), main = mymain)
+  })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;server-side-triggers&#34;&gt;Server-side Triggers&lt;/h2&gt;
+
+&lt;p&gt;Maybe we want to save a file to the system or do something that does not result in a UI update. In order to do this we implement a basic UI with a button for the user to click that we use to trigger the &lt;code&gt;observeEvent&lt;/code&gt; function. This function can wrap a whole bunch of R code (using reactive elements if we want it to do so) but it is only run if the button is pressed, i.e. it is inert to all other updates. However, if the user clicks the button then code encapsulated in &lt;code&gt;observeEvent&lt;/code&gt; will use all the latest reactive values. Here is an example that prints the number of clicks.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  actionButton(inputId = &amp;quot;clicks&amp;quot;,
+               label = &amp;quot;Click me&amp;quot;)
+)
+server &amp;lt;- function(input, output){
+  observeEvent(input$clicks, {
+    print(as.numeric(input$clicks))
+  }) 
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For more information, see the action buttons article on the shiny site.&lt;/p&gt;
+
+&lt;p&gt;There is a second server-side trigger called &lt;code&gt;observe&lt;/code&gt; but in practice &lt;code&gt;observeEvent&lt;/code&gt; is more useable.&lt;/p&gt;
+
+&lt;h2 id=&#34;delay-reactions-with-eventreactive&#34;&gt;Delay Reactions with &lt;code&gt;eventReactive&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;This enables us to do things like wait until a user has finished entering the title before we do an update. Here we add a button that will allow the user to control when the output updates.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage( 
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  textInput(inputId = &amp;quot;title&amp;quot;,
+            &amp;quot;Provide title&amp;quot;,
+            value = &amp;quot;Histogram of normal RV&amp;quot;),
+  actionButton(inputId = &amp;quot;go&amp;quot;,
+               label = &amp;quot;Update&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){  
+  x &amp;lt;- eventReactive(input$go, {rnorm(input$num)})
+  
+  output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- isolate(input$title)
+    hist(x(), main = mymain)
+  })
+  
+  output$stats &amp;lt;- renderPrint({
+    summary(x())
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;manage-state-with-reactivevalues&#34;&gt;Manage State with &lt;code&gt;reactiveValues&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;As a rule shiny does not permit you the way to update input values. However, sometimes this might be userful to do and so shiny provides a mechanism to construct your own reactive values. You might use this in a situation where you want to trigger a data update conditionally, like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shiny102-usingreactiveVal.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the above example the user is specifying whether they want to generate Normal or Uniform data. Here is an implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  actionButton(inputId = &amp;quot;norm&amp;quot;,label = &amp;quot;Normal&amp;quot;),
+  actionButton(inputId = &amp;quot;unif&amp;quot;,label = &amp;quot;Uniform&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  
+  rv &amp;lt;- reactiveValues(x = rnorm(100))
+  
+  observeEvent(input$norm, {rv$x &amp;lt;- rnorm(100)})
+  observeEvent(input$unif, {rv$x &amp;lt;- runif(100)})
+  
+  output$hist &amp;lt;- renderPlot({
+    hist(rv$x)
+  })
+  
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;reactiveValues&lt;/code&gt; are starting to move into a little more technical abstract ideas so, just to recap:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;reactiveValues&lt;/code&gt; create a list of reactive values&lt;/li&gt;
+&lt;li&gt;you can manipulate these values (usually with &lt;code&gt;observeEvent&lt;/code&gt;) and an action button&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Final food for thought:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;code outside the server function will be run once per R session whereas code inside the server function will be run once per end user. Take home - if you don&amp;rsquo;t need to run the code more than once per user then put it outside the server function.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Thanks for reading!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 3 - UI customisation</title>
+      <link>https://t-student.github.io/post/shiny01-stage3/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage3/</guid>
+      <description>
+
+&lt;p&gt;OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.&lt;/p&gt;
+
+&lt;h2 id=&#34;working-with-the-html&#34;&gt;Working with the HTML&lt;/h2&gt;
+
+&lt;p&gt;The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of &lt;code&gt;tags&lt;/code&gt; functions that will create HTML for you. Here is an example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  # a tag is an anchor
+  tags$h1(&amp;quot;Title 1&amp;quot;),
+  tags$a(href = &amp;quot;www.rstudio.com&amp;quot;, &amp;quot;RStudio&amp;quot;),
+  tags$p(&amp;quot;This is my app para 1.&amp;quot;),
+  tags$p(&amp;quot;This is my app para &amp;quot;, tags$strong(&amp;quot;2!!&amp;quot;)),
+  tags$br(), # Page break
+  tags$p(style = &amp;quot;font-family:Impact&amp;quot;, &amp;quot;This is my app para 3 with a custom style!!!&amp;quot;),
+  tags$hr(), # Horizontal rule
+  tags$code(&amp;quot;This is my app&amp;quot;),
+  tags$br(), # Page break
+  # To use your own media create a www folder and chuck your
+  # media in there then reference as follows:
+  tags$img(height = 100, width = 250, src = &amp;quot;shinyzombie.jpg&amp;quot;),
+  tags$br(), # Page break
+  tags$br(), # Page break
+  
+  HTML(&amp;quot;&amp;lt;h2&amp;gt;Just for completeness we can write raw HTML if we want to!!!&amp;lt;/h2&amp;gt;&amp;quot;),
+  
+  actionButton(inputId = &amp;quot;clicks&amp;quot;,
+               label = &amp;quot;Click me&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  observeEvent(input$clicks, {
+    print(as.numeric(input$clicks))
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;messing-with-the-layout&#34;&gt;Messing with the Layout&lt;/h2&gt;
+
+&lt;p&gt;We can place the UI elements wherever we want to. The main functions that we use to do this are &lt;code&gt;fluidRow()&lt;/code&gt; and &lt;code&gt;column&lt;/code&gt; which both insert &lt;code&gt;div&lt;/code&gt;s. &lt;code&gt;fluidRow()&lt;/code&gt; will divide you app into rows creating as many as you want. Next you can create (up to 12) columns within a row specifying both the width and offset of each column like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  fluidRow(column(3),  # Takes up 3 units of width
+           column(5)), # Takes up 5 units of width
+  fluidRow(
+           column(4, offset = 8) # Offset the start of the column
+           )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, if you actually want to see something you pass it to the row or column function like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  fluidRow(column(3, tags$p(&amp;quot;Hi!!! :)&amp;quot;)),  # Takes up 3 units of width
+           column(5, 
+                  sliderInput(inputId = &amp;quot;num&amp;quot;,
+                              label = &amp;quot;Choose a number please&amp;quot;,
+                              value = 25, min = 1, max = 100))), 
+  fluidRow(
+    column(6, offset = 1, 
+           plotOutput(&amp;quot;hist&amp;quot;)) 
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;stacking-layouts&#34;&gt;Stacking Layouts&lt;/h2&gt;
+
+&lt;p&gt;Panels are the basic UI aggregate element. To place a series of elements together into a panel we wrap them with the &lt;code&gt;wellPanel&lt;/code&gt; function. In total there are 12 types of panels supported by shiny:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Function&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;absolutePanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Rigid&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;conditionalPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Determines whether a panel is visible&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;fixedPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Does not scroll&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;headerPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Panel for title - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;inputPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A grouping panel&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;mainPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Displaying output - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;navlistPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stacking&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;sidebarPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Sidebar of inputs - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stackable&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabsetPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Multiple stacked&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;titlePanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Apps title&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;wellPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Panel with grey background&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;If you want to stack things on top of each other start with &lt;code&gt;tabPanel()&lt;/code&gt;. This is a small UI of its own and is a convenient way to break up the various elements of your app. These functions are designed to work in conjunction with &lt;code&gt;tabsetPanel()&lt;/code&gt;, &lt;code&gt;navlistPanel&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Here is a quick example.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  tabsetPanel(
+    tabPanel(&amp;quot;tab 1&amp;quot;, 
+             sliderInput(inputId = &amp;quot;num&amp;quot;,
+                                  label = &amp;quot;Choose a number please&amp;quot;,
+                                  value = 25, min = 1, max = 100)
+             ),
+    tabPanel(&amp;quot;tab 1&amp;quot;, 
+             plotOutput(&amp;quot;hist&amp;quot;)
+             )
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+
+
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shinytabpanel.png&#34; alt=&#34;Shiny `tabPanel` Output&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now &lt;code&gt;navlistPanel()&lt;/code&gt; is analogous to the &lt;code&gt;tabsetPanel()&lt;/code&gt; except it creates your navigation in a sidebar.&lt;/p&gt;
+
+&lt;h2 id=&#34;precanned-layouts&#34;&gt;Precanned Layouts&lt;/h2&gt;
+
+&lt;p&gt;We should have talked about this first&amp;hellip; Anyway, nevermind. These are convenience wrappers that let you put together a layout very quickly. The most common is &lt;code&gt;sidebarLayout()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sidebarLayout(
+    sidebarPanel(sliderInput(inputId = &amp;quot;num&amp;quot;,
+                             label = &amp;quot;Choose a number please&amp;quot;,
+                             value = 25, min = 1, max = 100)),
+    mainPanel(plotOutput(&amp;quot;hist&amp;quot;))
+    
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Other options are &lt;code&gt;fixedPage&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Note when you use &lt;code&gt;navbarPage()&lt;/code&gt; you do so by replace the &lt;code&gt;fluidPage()&lt;/code&gt; call. You can use the &lt;code&gt;navbarPage()&lt;/code&gt; with &lt;code&gt;navbarMenu()&lt;/code&gt; to give you drop down lists in the tabs. We can go further, but there is a tutorial on more advanced dashboards &lt;a href=&#34;https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;css&#34;&gt;CSS&lt;/h2&gt;
+
+&lt;p&gt;Shiny enables us to stylise our site with our own branding. The way that we do this is to link with a CSS file, writing a global CSS header or write the CSS into a tags style attribute. We can then apply CSS to tags, or classes or ids. This forms a hierarchy that we can use to automatically deal with various aspects of the site overriding the bits that we want to have different.&lt;/p&gt;
+
+&lt;p&gt;Shiny makes use of the Bootstrap 3 CSS framework, see &lt;a href=&#34;https://getbootstrap.com/&#34; target=&#34;_blank&#34;&gt;https://getbootstrap.com/&lt;/a&gt;. To use this we can create a &lt;code&gt;fluidPage()&lt;/code&gt; function that contains &lt;code&gt;&amp;lt;div class=&amp;quot;container-fluid&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt;. Alternatively we could specify our own CSS file using the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ui &amp;lt;- fluidPage(
+  tags$head(
+    tags$link(
+        rel = &amp;quot;stylesheet&amp;quot;,
+        type = &amp;quot;text/css&amp;quot;
+        href = &amp;quot;myfile.css&amp;quot;
+      )
+    )
+  
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or you can even just call &lt;code&gt;includeCSS(&amp;quot;myfile.css&amp;quot;)&lt;/code&gt; which will copy a CSS into every page. To learn more about CSS there is a free tutorial at &lt;a href=&#34;https://www.codecademy.com/tracks/web&#34; target=&#34;_blank&#34;&gt;https://www.codecademy.com/tracks/web&lt;/a&gt; which covers both HTML and CSS in about 7 hours.&lt;/p&gt;
+
+&lt;h2 id=&#34;google-analytics&#34;&gt;Google Analytics&lt;/h2&gt;
+
+&lt;p&gt;A final note, you can incorporate the google analytics into your application pretty easily if you want to have it, see &lt;a href=&#34;https://shiny.rstudio.com/articles/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;what-now&#34;&gt;What Now?&lt;/h2&gt;
+
+&lt;p&gt;Build an app!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Bayesian Zombies 101</title>
       <link>https://t-student.github.io/post/basicbayesian/</link>
       <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
@@ -36,7 +543,7 @@
 
 &lt;h3 id=&#34;a-prior&#34;&gt;A Prior&lt;/h3&gt;
 
-&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
+&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesprior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
@@ -60,7 +567,7 @@ $$&lt;/p&gt;
 
 &lt;h3 id=&#34;posterior&#34;&gt;Posterior&lt;/h3&gt;
 
-&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
+&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
 
 &lt;p&gt;$$
 Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
@@ -950,7 +1457,7 @@ plot(density(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt), ma
 
 &lt;!-- A quick look at the reading times shows us what we expect to see, namely a heavily skewed distribution. 
 
-&lt;figure&gt;
+&lt;figure &gt;
     
         &lt;img src=&#34;https://t-student.github.io/media/brms-tutorial-01.png&#34; /&gt;
     
@@ -963,7 +1470,7 @@ plot(density(df.r&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;rt), ma
 &lt;/figure&gt;
  --&gt;
 
-&lt;p&gt;The &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/index.html&#34; target=&#34;_blank&#34;&gt;brms&lt;/a&gt; package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current &lt;code&gt;stan-dev&lt;/code&gt; &lt;a href=&#34;https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations&#34; target=&#34;_blank&#34;&gt;reccommendations&lt;/a&gt; nor a Cauchy&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; distribution as per Gelman et al. 2008 &lt;a href=&#34;https://arxiv.org/pdf/0901.4011.pdf&#34; target=&#34;_blank&#34;&gt;paper&lt;/a&gt;. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/index.html&#34; target=&#34;_blank&#34;&gt;brms&lt;/a&gt; package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current &lt;code&gt;stan-dev&lt;/code&gt; &lt;a href=&#34;https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations&#34; target=&#34;_blank&#34;&gt;reccommendations&lt;/a&gt; nor a Cauchy&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; distribution as per Gelman et al. 2008 &lt;a href=&#34;https://arxiv.org/pdf/0901.4011.pdf&#34; target=&#34;_blank&#34;&gt;paper&lt;/a&gt;. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found &lt;a href=&#34;https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&#34;an-initial-model&#34;&gt;An Initial Model&lt;/h2&gt;
 
@@ -1021,7 +1528,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 &lt;p&gt;The marginal posterior distributions for each of the three parameters are shown below. The distribution of &lt;code&gt;b_s0&lt;/code&gt; is mostly below zero suggesting that the object-relative is easier to read. However, the 95\% &lt;em&gt;credible interval&lt;/em&gt; includes zero so the evidence is not particularly strong. Unlike frequentist analyses, the results give us a view on the uncertainty in the error term (&lt;code&gt;sigma&lt;/code&gt;) which ranges from 0.57 to 0.63 on the log scale.&lt;/p&gt;
 
 
-&lt;figure&gt;
+&lt;figure &gt;
     
         &lt;img src=&#34;https://t-student.github.io/media/brms01-posterior1.png&#34; /&gt;
     
@@ -1448,43 +1955,6 @@ Of course, one may want to simplify the model for reasons of parsimony, or easie
       <guid>https://t-student.github.io/publication/zdenkowski2017/</guid>
       <description>&lt;!-- More detail can easily be written here using *Markdown* and $\rm \LaTeX$ math code. --&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Example Talk</title>
-      <link>https://t-student.github.io/talk/example-talk/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/talk/example-talk/</guid>
-      <description>&lt;p&gt;Embed your slides or video here using &lt;a href=&#34;https://sourcethemes.com/academic/post/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;shortcodes&lt;/a&gt;. Further details can easily be added using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Deep Learning</title>
-      <link>https://t-student.github.io/project/deep-learning/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://t-student.github.io/project/deep-learning/</guid>
-      <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.&lt;/p&gt;
-
-&lt;p&gt;Nullam vel molestie justo. Curabitur vitae efficitur leo. In hac habitasse platea dictumst. Sed pulvinar mauris dui, eget varius purus congue ac. Nulla euismod, lorem vel elementum dapibus, nunc justo porta mi, sed tempus est est vel tellus. Nam et enim eleifend, laoreet sem sit amet, elementum sem. Morbi ut leo congue, maximus velit ut, finibus arcu. In et libero cursus, rutrum risus non, molestie leo. Nullam congue quam et volutpat malesuada. Sed risus tortor, pulvinar et dictum nec, sodales non mi. Phasellus lacinia commodo laoreet. Nam mollis, erat in feugiat consectetur, purus eros egestas tellus, in auctor urna odio at nibh. Mauris imperdiet nisi ac magna convallis, at rhoncus ligula cursus.&lt;/p&gt;
-
-&lt;p&gt;Cras aliquam rhoncus ipsum, in hendrerit nunc mattis vitae. Duis vitae efficitur metus, ac tempus leo. Cras nec fringilla lacus. Quisque sit amet risus at ipsum pharetra commodo. Sed aliquam mauris at consequat eleifend. Praesent porta, augue sed viverra bibendum, neque ante euismod ante, in vehicula justo lorem ac eros. Suspendisse augue libero, venenatis eget tincidunt ut, malesuada at lorem. Donec vitae bibendum arcu. Aenean maximus nulla non pretium iaculis. Quisque imperdiet, nulla in pulvinar aliquet, velit quam ultrices quam, sit amet fringilla leo sem vel nunc. Mauris in lacinia lacus.&lt;/p&gt;
-
-&lt;p&gt;Suspendisse a tincidunt lacus. Curabitur at urna sagittis, dictum ante sit amet, euismod magna. Sed rutrum massa id tortor commodo, vitae elementum turpis tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean purus turpis, venenatis a ullamcorper nec, tincidunt et massa. Integer posuere quam rutrum arcu vehicula imperdiet. Mauris ullamcorper quam vitae purus congue, quis euismod magna eleifend. Vestibulum semper vel augue eget tincidunt. Fusce eget justo sodales, dapibus odio eu, ultrices lorem. Duis condimentum lorem id eros commodo, in facilisis mauris scelerisque. Morbi sed auctor leo. Nullam volutpat a lacus quis pharetra. Nulla congue rutrum magna a ornare.&lt;/p&gt;
-
-&lt;p&gt;Aliquam in turpis accumsan, malesuada nibh ut, hendrerit justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sed erat nec justo posuere suscipit. Donec ut efficitur arcu, in malesuada neque. Nunc dignissim nisl massa, id vulputate nunc pretium nec. Quisque eget urna in risus suscipit ultricies. Pellentesque odio odio, tincidunt in eleifend sed, posuere a diam. Nam gravida nisl convallis semper elementum. Morbi vitae felis faucibus, vulputate orci placerat, aliquet nisi. Aliquam erat volutpat. Maecenas sagittis pulvinar purus, sed porta quam laoreet at.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>External Project</title>
-      <link>https://t-student.github.io/project/example-external-project/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://t-student.github.io/project/example-external-project/</guid>
-      <description></description>
     </item>
     
   </channel>

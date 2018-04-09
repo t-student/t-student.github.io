@@ -17,10 +17,12 @@
       
     
   
-  <meta name="description" content="">
+  <meta name="description" content="Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Overview - Think inputs and outputs Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).
+Before we begin, your goto page for learning about this stuff is https://shiny.rstudio.com/articles/. Ok, let&rsquo;s build an app - use this template:">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/project/example-external-project/">
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/shiny01-overview/">
 
   
 
@@ -82,24 +84,26 @@
   <link rel="icon" type="image/png" href="/img/icon.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://t-student.github.io/project/example-external-project/">
+  <link rel="canonical" href="https://t-student.github.io/post/shiny01-overview/">
 
   <meta property="twitter:card" content="summary_large_image">
   
   <meta property="og:site_name" content="t-student">
-  <meta property="og:url" content="https://t-student.github.io/project/example-external-project/">
-  <meta property="og:title" content="External Project | t-student">
-  <meta property="og:description" content="">
+  <meta property="og:url" content="https://t-student.github.io/post/shiny01-overview/">
+  <meta property="og:title" content="Shiny 101 | t-student">
+  <meta property="og:description" content="Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Overview - Think inputs and outputs Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).
+Before we begin, your goto page for learning about this stuff is https://shiny.rstudio.com/articles/. Ok, let&rsquo;s build an app - use this template:">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
+  <meta property="article:published_time" content="2018-04-09T00:00:00&#43;10:00">
   
-  <meta property="article:modified_time" content="2016-04-27T00:00:00&#43;00:00">
-  
-
+  <meta property="article:modified_time" content="2018-04-09T00:00:00&#43;10:00">
   
 
-  <title>External Project | t-student</title>
+  
+
+  <title>Shiny 101 | t-student</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
@@ -214,51 +218,76 @@
 </nav>
 
 
-<article class="article article-project" itemscope itemtype="http://schema.org/Article">
+<article class="article" itemscope itemtype="http://schema.org/Article">
 
   
 
 
   <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Shiny 101</h1>
 
-    <div class="pub-title">
-      <h1 itemprop="name">External Project</h1>
-      <span class="pub-authors" itemprop="author">&nbsp;</span>
-      <span class="pull-right">
-        
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-04-09 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      Apr 9, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    3 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
 <div class="share-box" aria-hidden="true">
   <ul class="share">
     <li>
       <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=External%20Project&amp;url=https%3a%2f%2ft-student.github.io%2fproject%2fexample-external-project%2f"
+         href="https://twitter.com/intent/tweet?text=Shiny%20101&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-overview%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-twitter"></i>
       </a>
     </li>
     <li>
       <a class="facebook"
-         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fproject%2fexample-external-project%2f"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-overview%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-facebook"></i>
       </a>
     </li>
     <li>
       <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fproject%2fexample-external-project%2f&amp;title=External%20Project"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-overview%2f&amp;title=Shiny%20101"
          target="_blank" rel="noopener">
         <i class="fa fa-linkedin"></i>
       </a>
     </li>
     <li>
       <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fproject%2fexample-external-project%2f&amp;title=External%20Project"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-overview%2f&amp;title=Shiny%20101"
          target="_blank" rel="noopener">
         <i class="fa fa-weibo"></i>
       </a>
     </li>
     <li>
       <a class="email"
-         href="mailto:?subject=External%20Project&amp;body=https%3a%2f%2ft-student.github.io%2fproject%2fexample-external-project%2f">
+         href="mailto:?subject=Shiny%20101&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-overview%2f">
         <i class="fa fa-envelope"></i>
       </a>
     </li>
@@ -266,49 +295,135 @@
 </div>
 
 
-      </span>
-    </div>
+  
 
-    
-    <a class="btn btn-primary btn-outline" href="http://example.org" target="_blank" rel="noopener">Go to Project Site</a>
-    
+</div>
 
-    <div class="article-style" itemprop="articleBody">
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.</p>
+
+<h2 id="overview-think-inputs-and-outputs">Overview - Think <code>inputs</code> and <code>outputs</code></h2>
+
+<p>Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).</p>
+
+<p>Before we begin, your goto page for learning about this stuff is <a href="https://shiny.rstudio.com/articles/" target="_blank">https://shiny.rstudio.com/articles/</a>. Ok, let&rsquo;s build an app - use this template:</p>
+
+<pre><code>library(shiny)
+
+ui &lt;- fluidPage()
+server &lt;- function(input, output){}
+shinyApp(ui = ui, server = server)
+</code></pre>
+
+<p>Add input and output functions into the <code>fluidPage</code> function. We could add any of:</p>
+
+<ol>
+<li>buttons</li>
+<li>checkboxes (single and grouped)</li>
+<li>date input and range</li>
+<li>file input</li>
+<li>numeric input</li>
+<li>passwords</li>
+<li>radios</li>
+<li>select</li>
+<li>sliders</li>
+<li>text</li>
+</ol>
+
+<p>All these functions take similar parameters, the first being a unique id (<code>inputId</code>) and the second being a label to display to the user. After that there are a bunch of input specific parameters.</p>
+
+<p>Outputs are plots, tables, text, etc that embed various visualisation elements to the user interface. All these outputs contain one required parameter <code>outputId</code> which is a unique id for the object. For example, lets add a slider and a placeholder for a histogram that we are going to produce.</p>
+
+<pre><code>library(shiny)
+
+ui &lt;- fluidPage(
+  
+  sliderInput(inputId = &quot;num&quot;,
+              label = &quot;Choose a number please&quot;,
+              value = 25, min = 1, max = 100),
+  plotOutput(&quot;hist&quot;)
+ 
+)
+server &lt;- function(input, output){
+  output$hist &lt;- renderPlot({
+  	n &lt;- input$num
+  	hist(rnorm(n))
+  	})
+}
+shinyApp(ui = ui, server = server)
+</code></pre>
+
+<p>We use the server function to provide the content for the user interface. For each element you need to save the output within the <code>output</code> list object as a named member. The second thing you need to do is to wrap the object that you want to save in a render function. For example we can render:</p>
+
+<ol>
+<li>static and interactive tables</li>
+<li>images</li>
+<li>plots</li>
+<li>code blocks</li>
+<li>text</li>
+<li>shiny ui elements</li>
+</ol>
+
+<p>In the above example we have rendered a histogram based on some dummy data. We can use as many lines of code as we want between the <code>{}</code> in the render function. Note that you can have multiple reactive variables within a <code>render*()</code> function.</p>
+
+<p>We can access the values that the user selects with the slider in the server function. These are called reactive elements and shiny takes care of the updates. Ok, run the app, you should see something like this:</p>
+
+<p><img src="/media/shiny101-01.JPG" alt="" /></p>
+
+<p>Final note - to deploy your application you need to save it with the filename <code>app.R</code>. However, if you have massive UI and server elements you can split the application into two files, one called <code>ui.R</code> and the other called <code>server.R</code>. Then, you add all your media content to the folder. After that you can deploy to <a href="http://www.shinyapps.io/" target="_blank">shinyapps.io</a> but first you need to create an account. After you have created an account, all you need to do is press publish application in the RStudio.</p>
+
+      </div>
+
       
-    </div>
-
-    
 
 
 <div class="article-tags">
   
-  <a class="btn btn-primary btn-outline" href="/tags/demo">demo</a>
+  <a class="btn btn-primary btn-outline" href="/tags/shiny">shiny</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/visualisation">visualisation</a>
   
 </div>
 
 
 
-
-    
-    
-    
-
-    
-      
-      
-      
-      
-
-      
-      
-      
-      
-    
-
+    </div>
   </div>
+
 </article>
 
 
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
+    
+    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
+    
+    <li><a href="/post/basicbayesian/">Bayesian Zombies 101</a></li>
+    
+    <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
+    
+    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
 
 <footer class="site-footer">
   <div class="container">

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="generator" content="Hugo 0.32.4" />
   <meta name="author" content="Mark Jones">
 
   
@@ -342,7 +342,7 @@ plot(density(df.r<span style="color:#f92672">$</span>rt), main <span style="colo
 
 <!-- A quick look at the reading times shows us what we expect to see, namely a heavily skewed distribution. 
 
-<figure>
+<figure >
     
         <img src="/media/brms-tutorial-01.png" />
     
@@ -355,7 +355,7 @@ plot(density(df.r<span style="color:#f92672">$</span>rt), main <span style="colo
 </figure>
  -->
 
-<p>The <a href="https://cran.r-project.org/web/packages/brms/index.html" target="_blank">brms</a> package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current <code>stan-dev</code> <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" target="_blank">reccommendations</a> nor a Cauchy<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> distribution as per Gelman et al. 2008 <a href="https://arxiv.org/pdf/0901.4011.pdf" target="_blank">paper</a>. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html" target="_blank">here</a>.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/brms/index.html" target="_blank">brms</a> package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current <code>stan-dev</code> <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" target="_blank">reccommendations</a> nor a Cauchy<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup> distribution as per Gelman et al. 2008 <a href="https://arxiv.org/pdf/0901.4011.pdf" target="_blank">paper</a>. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html" target="_blank">here</a>.</p>
 
 <h2 id="an-initial-model">An Initial Model</h2>
 
@@ -413,7 +413,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <p>The marginal posterior distributions for each of the three parameters are shown below. The distribution of <code>b_s0</code> is mostly below zero suggesting that the object-relative is easier to read. However, the 95\% <em>credible interval</em> includes zero so the evidence is not particularly strong. Unlike frequentist analyses, the results give us a view on the uncertainty in the error term (<code>sigma</code>) which ranges from 0.57 to 0.63 on the log scale.</p>
 
 
-<figure>
+<figure >
     
         <img src="/media/brms01-posterior1.png" />
     

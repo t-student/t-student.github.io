@@ -5,6 +5,33 @@
     
     <url>
     
+      <loc>https://t-student.github.io/post/shiny01-overview/</loc>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/post/shiny01-stage2/</loc>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/post/shiny01-stage3/</loc>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>https://t-student.github.io/post/basicbayesian/</loc>
       <lastmod>2018-04-08T00:00:00+10:00</lastmod>
     </url>
@@ -285,7 +312,17 @@
     <url>
     
       <loc>https://t-student.github.io/tags/r/</loc>
-      <lastmod>2018-04-08T00:00:00+10:00</lastmod>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/shiny/</loc>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -316,6 +353,16 @@
     
       <loc>https://t-student.github.io/tags/</loc>
       <lastmod>2017-01-01T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/visualisation/</loc>
+      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
