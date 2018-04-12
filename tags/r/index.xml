@@ -7,10 +7,63 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Sun, 08 Apr 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Wed, 11 Apr 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Inverse transform sampling</title>
+      <link>https://t-student.github.io/post/inversecdfrand/</link>
+      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/inversecdfrand/</guid>
+      <description>Imagine you are in the perilous and life threatening situation of being asked to generate random numbers. Compounding the peril is that we have also been asked to ensure that the probability of choosing a given number is linearly proportional to its magnitude.
+OK, let&amp;rsquo;s start by imagining what the probability density function will look like - probably something list this:
+The area under the pdf must integrate to 1 so if the pdf is a linearly increasing function with support (arbitrarily say) 0 to 3.</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 4 - Dynamic Dashboards</title>
+      <link>https://t-student.github.io/post/shiny01-dyndash/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-dyndash/</guid>
+      <description>Dashboards extend the functionality of shiny. Shiny uses Bootstrap for layout whereas Shinydashboard uses AdminLTE, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.
+library(shiny) library(shinydashboard) ui &amp;lt;- dashboardPage( dashboardHeader(), dashboardSidebar(), dashboardBody() ) server &amp;lt;- function(input, output){ } shinyApp(ui, server)  Before we go any further, I should note, the docs are here.</description>
+    </item>
+    
+    <item>
+      <title>Shiny 101</title>
+      <link>https://t-student.github.io/post/shiny01-overview/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-overview/</guid>
+      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Overview - Think inputs and outputs Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).
+Before we begin, your goto page for learning about this stuff is https://shiny.rstudio.com/articles/. Ok, let&amp;rsquo;s build an app - use this template:</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 2 - Reactivity</title>
+      <link>https://t-student.github.io/post/shiny01-stage2/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage2/</guid>
+      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 3 - UI customisation</title>
+      <link>https://t-student.github.io/post/shiny01-stage3/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage3/</guid>
+      <description>OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.
+Working with the HTML The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of tags functions that will create HTML for you. Here is an example:
+library(shiny) ui &amp;lt;- fluidPage( # a tag is an anchor tags$h1(&amp;quot;Title 1&amp;quot;), tags$a(href = &amp;quot;www.</description>
+    </item>
     
     <item>
       <title>Bayesian Zombies 101</title>
@@ -47,7 +100,7 @@ OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking
       
       <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
       <description>The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.
-set.seed(250) # Define the parameters b0 &amp;lt;- 2 b1 &amp;lt;- 3 b2 &amp;lt;- 1.5 b3 &amp;lt;- 6 n &amp;lt;- 800 grp &amp;lt;- c(rep(0, n/2), rep(1, n/2)) time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4)) # Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * time df.</description>
+set.seed(250)# Define the parameters b0 &amp;lt;- 2b1 &amp;lt;- 3b2 &amp;lt;- 1.5b3 &amp;lt;- 6n &amp;lt;- 800grp &amp;lt;- c(rep(0, n/2), rep(1, n/2))time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4))# Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * timedf.</description>
     </item>
     
     <item>

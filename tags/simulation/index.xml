@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Sat, 10 Feb 2018 00:00:00 +1100</lastBuildDate>
+    <lastBuildDate>Wed, 11 Apr 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Inverse transform sampling</title>
+      <link>https://t-student.github.io/post/inversecdfrand/</link>
+      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/inversecdfrand/</guid>
+      <description>Imagine you are in the perilous and life threatening situation of being asked to generate random numbers. Compounding the peril is that we have also been asked to ensure that the probability of choosing a given number is linearly proportional to its magnitude.
+OK, let&amp;rsquo;s start by imagining what the probability density function will look like - probably something list this:
+The area under the pdf must integrate to 1 so if the pdf is a linearly increasing function with support (arbitrarily say) 0 to 3.</description>
+    </item>
     
     <item>
       <title>Simulating Lung Cancer Incidence data in R</title>

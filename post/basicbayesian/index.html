@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -103,6 +103,7 @@ OK, Bayesian Analysis? Let&rsquo;s start with inference. What we are talking abo
 
   <title>Bayesian Zombies 101 | t-student</title>
 
+  
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
 
@@ -319,7 +320,7 @@ OK, Bayesian Analysis? Let&rsquo;s start with inference. What we are talking abo
 
 <h3 id="a-prior">A Prior</h3>
 
-<p>The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup> of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:</p>
+<p>The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:</p>
 
 <p><img src="/media/zombiesprior.png" alt="" /></p>
 
@@ -343,7 +344,7 @@ $$</p>
 
 <h3 id="posterior">Posterior</h3>
 
-<p>In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior<sup class="footnote-ref" id="fnref:2"><a rel="footnote" href="#fn:2">2</a></sup>. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability<sup class="footnote-ref" id="fnref:3"><a rel="footnote" href="#fn:3">3</a></sup> and has the form:</p>
+<p>In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability<sup class="footnote-ref" id="fnref:3"><a href="#fn:3">3</a></sup> and has the form:</p>
 
 <p>$$
 Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
@@ -529,9 +530,9 @@ z2 &lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
     
     <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
     
-    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
-    
     <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
+    
+    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
     
     <li><a href="/post/data01-cancer/">Simulating Lung Cancer Incidence data in R</a></li>
     

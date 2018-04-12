@@ -96,16 +96,34 @@
     <item>
       <title>R</title>
       <link>https://t-student.github.io/tags/r/</link>
-      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/r/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>Regression</title>
+      <link>https://t-student.github.io/tags/regression/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Shiny</title>
+      <link>https://t-student.github.io/tags/shiny/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/shiny/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Simulation</title>
       <link>https://t-student.github.io/tags/simulation/</link>
-      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
+      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/simulation/</guid>
       <description></description>
@@ -117,6 +135,24 @@
       <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
       
       <guid>https://t-student.github.io/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stata</title>
+      <link>https://t-student.github.io/tags/stata/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/stata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Visualisation</title>
+      <link>https://t-student.github.io/tags/visualisation/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/visualisation/</guid>
       <description></description>
     </item>
     

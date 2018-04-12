@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -103,6 +103,7 @@ Distribution of lung cancer incidence in Australia The Australian Institute of H
 
   <title>Simulating Lung Cancer Incidence data in R | t-student</title>
 
+  
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
 
@@ -314,7 +315,7 @@ Distribution of lung cancer incidence in Australia The Australian Institute of H
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#f92672">library</span>(data.table)
 <span style="color:#f92672">library</span>(readxl)
 
-<span style="color:#75715e"># see https://www.aihw.gov.au/reports/cancer/acim-books/contents/acim-books</span>
+<span style="color:#75715e"># see https://www.aihw.gov.au/reports/cancer/acim-books/contents/acim-books</span>
 dt.rates <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="color:#f92672">::</span>read_excel(<span style="color:#e6db74">&#34;rates.xlsx&#34;</span>), key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex,age.bin&#34;</span>)
 <span style="color:#66d9ef">head</span>(dt.rates)</code></pre></div>
 
@@ -336,16 +337,16 @@ dt.rates <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="
 
 <p><img src="/media/data01-agedist.png" alt="" /></p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/3101.0Jun%202017?OpenDocument</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/3101.0Jun%202017?OpenDocument</span>
 dt.ages <span style="color:#f92672">&lt;-</span> data.table(readxl<span style="color:#f92672">::</span>read_excel(<span style="color:#e6db74">&#34;ageclass.xlsx&#34;</span>), key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex,age.bin&#34;</span>)
 <span style="color:#66d9ef">head</span>(dt.ages)</code></pre></div>
 
 <p>Now I use the <a href="https://cran.r-project.org/web/packages/simstudy/index.html" target="_blank">simstudy</a> package to generate some new data. I assume that males and females are distributed 50:50 within the population. I only try to get an approximate</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Set the seed for reproducibility</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Set the seed for reproducibility</span>
 <span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">345</span>)
 
-<span style="color:#75715e"># Create a definition for males and a separate one for females. </span>
+<span style="color:#75715e"># Create a definition for males and a separate one for females. </span>
 def <span style="color:#f92672">&lt;-</span> defData(varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sex&#34;</span>, dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nonrandom&#34;</span>, formula <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
 def <span style="color:#f92672">&lt;-</span> defData(def, varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;age.bin.idx&#34;</span>, 
                formula <span style="color:#f92672">=</span> <span style="color:#66d9ef">paste0</span>(dt.ages<span style="color:#f92672">$</span>prop[dt.ages<span style="color:#f92672">$</span>sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;m&#34;</span>],  collapse <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;;&#34;</span>), 
@@ -361,35 +362,35 @@ def <span style="color:#f92672">&lt;-</span> defData(def, varname <span style="c
 n.pop <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">50000</span>
 dtf <span style="color:#f92672">&lt;-</span> genData(n.pop, def)
 
-<span style="color:#75715e"># Our working data set:</span>
+<span style="color:#75715e"># Our working data set:</span>
 dt <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">rbind</span>(dtm, dtf)
 dt<span style="color:#f92672">$</span>id <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">nrow</span>(dt)
 
-<span style="color:#75715e"># Replace the sex var with something more readable</span>
+<span style="color:#75715e"># Replace the sex var with something more readable</span>
 dt[, sex <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,sex] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;m&#34;</span>, <span style="color:#e6db74">&#34;f&#34;</span>)]
 dt[, age.bin <span style="color:#f92672">:=</span> (age.bin.idx<span style="color:#ae81ff">-1</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>]
 
-<span style="color:#75715e"># For each age bin, which was modelled on the APS proportion of age</span>
-<span style="color:#75715e"># class data, assign a random age between the start and end of age bin </span>
-<span style="color:#75715e"># interval. Use a random uniform distribution.</span>
+<span style="color:#75715e"># For each age bin, which was modelled on the APS proportion of age</span>
+<span style="color:#75715e"># class data, assign a random age between the start and end of age bin </span>
+<span style="color:#75715e"># interval. Use a random uniform distribution.</span>
 dt[, age <span style="color:#f92672">:=</span> runif(<span style="color:#ae81ff">1</span>, age.bin, age.bin <span style="color:#f92672">+</span> <span style="color:#ae81ff">4.999</span>), by <span style="color:#f92672">=</span> id]
 
-<span style="color:#75715e"># Create an indicator for greater than age 18 to differentially</span>
-<span style="color:#75715e"># assign a smoking probability.</span>
+<span style="color:#75715e"># Create an indicator for greater than age 18 to differentially</span>
+<span style="color:#75715e"># assign a smoking probability.</span>
 dt[, age18 <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,age] <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>)]
 dt[, psmk <span style="color:#f92672">:=</span> <span style="color:#66d9ef">ifelse</span>(dt[,sex] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.18</span> <span style="color:#f92672">*</span> dt[,age18], <span style="color:#ae81ff">0.14</span> <span style="color:#f92672">*</span> dt[,age18])]
 
-<span style="color:#75715e"># Bernouli trial to say whether smoker or not.</span>
+<span style="color:#75715e"># Bernouli trial to say whether smoker or not.</span>
 dt[, smk <span style="color:#f92672">:=</span> rbinom(<span style="color:#66d9ef">nrow</span>(dt), <span style="color:#ae81ff">1</span>,  prob <span style="color:#f92672">=</span> dt[,psmk])]
 dt
 
-<span style="color:#75715e"># Set key in order to making joining trivial</span>
+<span style="color:#75715e"># Set key in order to making joining trivial</span>
 setkey(dt,sex,age.bin)
 
-<span style="color:#75715e"># Left join by key</span>
+<span style="color:#75715e"># Left join by key</span>
 dt <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">merge</span>(dt, dt.rates, all.x<span style="color:#f92672">=</span><span style="color:#66d9ef">TRUE</span>)
 
-<span style="color:#75715e"># Create the </span>
+<span style="color:#75715e"># Create the </span>
 dt[, cancer <span style="color:#f92672">:=</span> rbinom(<span style="color:#66d9ef">nrow</span>(dt), <span style="color:#ae81ff">1</span>,  prob <span style="color:#f92672">=</span> rate.per.100k<span style="color:#f92672">/</span><span style="color:#ae81ff">100000</span>)]
 dt</code></pre></div>
 
@@ -411,7 +412,7 @@ dt</code></pre></div>
 
 <p>As a very quick and dirty sanity check (always do a sanity check of some kind) we can compare the number of cancer cases in our simulated data with the rates we obtained earlier by scaling up each sex by age bin group. For example:</p>
 
-<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Sanity</span>
+<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Sanity</span>
 df.san <span style="color:#f92672">&lt;-</span> as_data_frame(dt) 
 df.tmp <span style="color:#f92672">&lt;-</span> df.san <span style="color:#f92672">%&gt;%</span>
   dplyr<span style="color:#f92672">::</span>group_by(sex, age.bin) <span style="color:#f92672">%&gt;%</span>
@@ -427,7 +428,7 @@ df.san <span style="color:#f92672">&lt;-</span> df.san <span style="color:#f9267
   dplyr<span style="color:#f92672">::</span>select(<span style="color:#f92672">-</span><span style="color:#66d9ef">scale</span>) <span style="color:#f92672">%&gt;%</span>
   dplyr<span style="color:#f92672">::</span>left_join(<span style="color:#ae81ff">.</span>, dt.rates, by <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#e6db74">&#34;sex&#34;</span>, <span style="color:#e6db74">&#34;age.bin&#34;</span>)) <span style="color:#f92672">%&gt;%</span>
   tidyr<span style="color:#f92672">::</span>gather(<span style="color:#e6db74">&#34;var&#34;</span>, <span style="color:#e6db74">&#34;value&#34;</span>, <span style="color:#f92672">-</span>sex, <span style="color:#f92672">-</span>age.bin)
-<span style="color:#75715e">#</span>
+<span style="color:#75715e">#</span>
 
 ggplot(df.san) <span style="color:#f92672">+</span>
   geom_point(aes(x <span style="color:#f92672">=</span> age.bin, y <span style="color:#f92672">=</span> sim.n), size <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)<span style="color:#f92672">+</span>

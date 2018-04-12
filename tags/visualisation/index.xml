@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Visualisation on t-student</title>
+    <link>https://t-student.github.io/tags/visualisation/</link>
+    <description>Recent content in Visualisation on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Tue, 10 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/visualisation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Shiny Stage 4 - Dynamic Dashboards</title>
+      <link>https://t-student.github.io/post/shiny01-dyndash/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-dyndash/</guid>
+      <description>Dashboards extend the functionality of shiny. Shiny uses Bootstrap for layout whereas Shinydashboard uses AdminLTE, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.
+library(shiny) library(shinydashboard) ui &amp;lt;- dashboardPage( dashboardHeader(), dashboardSidebar(), dashboardBody() ) server &amp;lt;- function(input, output){ } shinyApp(ui, server)  Before we go any further, I should note, the docs are here.</description>
+    </item>
+    
+    <item>
+      <title>Shiny 101</title>
+      <link>https://t-student.github.io/post/shiny01-overview/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-overview/</guid>
+      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Overview - Think inputs and outputs Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).
+Before we begin, your goto page for learning about this stuff is https://shiny.rstudio.com/articles/. Ok, let&amp;rsquo;s build an app - use this template:</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 2 - Reactivity</title>
+      <link>https://t-student.github.io/post/shiny01-stage2/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage2/</guid>
+      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
+Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</description>
+    </item>
+    
+    <item>
+      <title>Shiny Stage 3 - UI customisation</title>
+      <link>https://t-student.github.io/post/shiny01-stage3/</link>
+      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/shiny01-stage3/</guid>
+      <description>OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.
+Working with the HTML The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of tags functions that will create HTML for you. Here is an example:
+library(shiny) ui &amp;lt;- fluidPage( # a tag is an anchor tags$h1(&amp;quot;Title 1&amp;quot;), tags$a(href = &amp;quot;www.</description>
+    </item>
+    
+  </channel>
+</rss>

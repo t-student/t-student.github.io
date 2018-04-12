@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Stata on t-student</title>
+    <link>https://t-student.github.io/tags/stata/</link>
+    <description>Recent content in Stata on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Tue, 10 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/stata/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Linear Regression in Stata</title>
+      <link>https://t-student.github.io/post/stata-regression/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/stata-regression/</guid>
+      <description>Simple Linear Regression OK, lets load the R mtcars data set, have a look at it and fit a simple linear regression model to a couple of the variables.
+// Change directory to the one where the mtcars.csv file lives. cd C:\Users\mjones\Dropbox\code-examples\stata\regression101 // Load csv insheet using &amp;quot;mtcars.csv&amp;quot;, clear // Add a record ID gen case_id = _n // Descriptive stats and conditional listings of data describe list in 1/5 list mpg cyl disp hp drat in 1/3 codebook mpg cyl summarize mpg summarize mpg, detail tabulate carb gear list car mpg if carb &amp;lt; 4 // Scatterplot matrix graph matrix mpg cyl disp hp, half // Basic regression regress mpg hp  The results suggest that there is an association between miles per gallon and horse power.</description>
+    </item>
+    
+  </channel>
+</rss>

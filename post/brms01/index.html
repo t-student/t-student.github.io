@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -101,6 +101,7 @@
 
   <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34; | t-student</title>
 
+  
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
 
@@ -316,7 +317,7 @@
 
 get.data <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(){
   df.r <span style="color:#f92672">&lt;-</span> read.table(<span style="color:#e6db74">&#39;https://raw.githubusercontent.com/vasishth/BayesLMMTutorial/master/data/gibsonwu2012data.txt&#39;</span>)  
-  <span style="color:#75715e"># head(df.r)</span>
+  <span style="color:#75715e"># head(df.r)</span>
   
   df.r <span style="color:#f92672">&lt;-</span> df.r <span style="color:#f92672">%&gt;%</span>
     dplyr<span style="color:#f92672">::</span>filter(region <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;headnoun&#34;</span>) <span style="color:#f92672">%&gt;%</span>
@@ -324,10 +325,10 @@ get.data <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
     dplyr<span style="color:#f92672">::</span>mutate(subj <span style="color:#f92672">=</span> <span style="color:#66d9ef">as.factor</span>(subj),
                   item <span style="color:#f92672">=</span> <span style="color:#66d9ef">as.factor</span>(item),
                   so <span style="color:#f92672">=</span> <span style="color:#66d9ef">ifelse</span>(type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;subj-ext&#34;</span>, <span style="color:#ae81ff">-1</span>, <span style="color:#ae81ff">1</span>)) 
-  <span style="color:#75715e"># head(df.r)</span>
-  <span style="color:#75715e"># sort(as.numeric(unique(df.r$subj)))</span>
-  <span style="color:#75715e"># sort(as.numeric(unique(df.r$item)))</span>
-  <span style="color:#75715e"># nrow(df.r)</span>
+  <span style="color:#75715e"># head(df.r)</span>
+  <span style="color:#75715e"># sort(as.numeric(unique(df.r$subj)))</span>
+  <span style="color:#75715e"># sort(as.numeric(unique(df.r$item)))</span>
+  <span style="color:#75715e"># nrow(df.r)</span>
   
   <span style="color:#66d9ef">return</span>(df.r)
 }
@@ -335,14 +336,14 @@ get.data <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
 
 df.r <span style="color:#f92672">&lt;-</span> get.data()
 
-<span style="color:#75715e"># Distribution of reading times. </span>
+<span style="color:#75715e"># Distribution of reading times. </span>
 plot(density(df.r<span style="color:#f92672">$</span>rt), main <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Distribution of reading times&#34;</span>)</code></pre></div>
 
 <p>In the above code you will note that the <code>so</code> variable contains an indicator of &lsquo;o&rsquo; (object relative) and &rsquo;s&rsquo; (subject relative) that are coded as 1 and -1 respectively. When coding up Stan models you need to be a bit more careful with your data &ndash; we might come back to this later.</p>
 
 <!-- A quick look at the reading times shows us what we expect to see, namely a heavily skewed distribution. 
 
-<figure >
+<figure>
     
         <img src="/media/brms-tutorial-01.png" />
     
@@ -355,7 +356,7 @@ plot(density(df.r<span style="color:#f92672">$</span>rt), main <span style="colo
 </figure>
  -->
 
-<p>The <a href="https://cran.r-project.org/web/packages/brms/index.html" target="_blank">brms</a> package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current <code>stan-dev</code> <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" target="_blank">reccommendations</a> nor a Cauchy<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup> distribution as per Gelman et al. 2008 <a href="https://arxiv.org/pdf/0901.4011.pdf" target="_blank">paper</a>. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html" target="_blank">here</a>.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/brms/index.html" target="_blank">brms</a> package supports a wide range of (non-)linear multivariate multilevel models using Stan for full Bayesian inference. Many distributional assumptions are supported. Additionally, brms provides the capability of extracting the underlying Stan code and thus gives a useful starting point if you want to do something more complicated. As a starting point we ignore the (very likely) possibility of correlated measures and fit a fixed effect model. We use weakly informative priors, but not the current <code>stan-dev</code> <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" target="_blank">reccommendations</a> nor a Cauchy<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> distribution as per Gelman et al. 2008 <a href="https://arxiv.org/pdf/0901.4011.pdf" target="_blank">paper</a>. Here, we adopt Normal priors, simply because they are easy to think about and rationalise. For reference, the parameterisations of the brms supported distributions can be found <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html" target="_blank">here</a>.</p>
 
 <h2 id="an-initial-model">An Initial Model</h2>
 
@@ -365,7 +366,7 @@ plot(density(df.r<span style="color:#f92672">$</span>rt), main <span style="colo
 
 <p>OK, let&rsquo;s fit a model. The brms package can have multi-dimensional formula so we specify the formula explicitly as <code>myf</code> and use this approach repeatedly.</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># brms formula, more later...</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># brms formula, more later...</span>
 myf <span style="color:#f92672">&lt;-</span> bf(rt <span style="color:#f92672">~</span> so)
 priors <span style="color:#f92672">&lt;-</span> get_prior(myf,
                     data <span style="color:#f92672">=</span> df.r,
@@ -413,7 +414,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <p>The marginal posterior distributions for each of the three parameters are shown below. The distribution of <code>b_s0</code> is mostly below zero suggesting that the object-relative is easier to read. However, the 95\% <em>credible interval</em> includes zero so the evidence is not particularly strong. Unlike frequentist analyses, the results give us a view on the uncertainty in the error term (<code>sigma</code>) which ranges from 0.57 to 0.63 on the log scale.</p>
 
 
-<figure >
+<figure>
     
         <img src="/media/brms01-posterior1.png" />
     
@@ -480,7 +481,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 </tbody>
 </table>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Look at the posterior distribution</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Look at the posterior distribution</span>
 m.post <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">as.matrix</span>(blm0)
 <span style="color:#66d9ef">nrow</span>(m.post)
 df.post1 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data_frame</span>(type <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">rep</span>(<span style="color:#e6db74">&#39;subj-ext&#39;</span>, <span style="color:#ae81ff">2000</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#e6db74">&#39;obj-ext&#39;</span>, <span style="color:#ae81ff">2000</span>)), 
@@ -489,7 +490,7 @@ df.post1 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">da
 idx <span style="color:#f92672">&lt;-</span> base<span style="color:#f92672">::</span><span style="color:#66d9ef">sample</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">nrow</span>(df.post1), <span style="color:#ae81ff">600</span>, replace <span style="color:#f92672">=</span> F)
 df.post1 <span style="color:#f92672">&lt;-</span> df.post1[idx, ]
 
-<span style="color:#75715e"># Posterior</span>
+<span style="color:#75715e"># Posterior</span>
 ggplot(data <span style="color:#f92672">=</span> df.r , aes(x <span style="color:#f92672">=</span> type, y <span style="color:#f92672">=</span> rt))<span style="color:#f92672">+</span>
   geom_jitter(width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>, height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, colour <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;red&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>)<span style="color:#f92672">+</span>
   geom_jitter(data <span style="color:#f92672">=</span> df.post1, aes(x <span style="color:#f92672">=</span> type, y <span style="color:#f92672">=</span> <span style="color:#66d9ef">exp</span>(rt) ), 
@@ -497,7 +498,7 @@ ggplot(data <span style="color:#f92672">=</span> df.r , aes(x <span style="color
   ylab(<span style="color:#e6db74">&#34;Reading time (millisec)&#34;</span>) <span style="color:#f92672">+</span> xlab(<span style="color:#e6db74">&#34;&#34;</span>)
 
 
-<span style="color:#75715e"># Single draw just for demonstration</span>
+<span style="color:#75715e"># Single draw just for demonstration</span>
 pp.tmp <span style="color:#f92672">&lt;-</span> brms<span style="color:#f92672">::</span>posterior_predict(blm0, newdata <span style="color:#f92672">=</span> <span style="color:#66d9ef">data.frame</span>(so <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">-1</span>, <span style="color:#ae81ff">1</span>)))
 <span style="color:#66d9ef">dim</span>(pp.tmp)
 
@@ -515,7 +516,7 @@ ggplot(data <span style="color:#f92672">=</span> df.r , aes(x <span style="color
   ylab(<span style="color:#e6db74">&#34;Reading time (millisec)&#34;</span>) <span style="color:#f92672">+</span> xlab(<span style="color:#e6db74">&#34;&#34;</span>)
 
 
-<span style="color:#75715e"># More useful PPC</span>
+<span style="color:#75715e"># More useful PPC</span>
 <span style="color:#f92672">library</span>(bayesplot)
 ppc_dens_overlay(df.r<span style="color:#f92672">$</span>rt, yrep[<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">50</span>, ])
 
@@ -572,7 +573,7 @@ sigma_so           -0.11      0.03    -0.17    -0.05       1892 1.00
 
 <p>It is a straight forward exercise to ask <code>brms</code> to fit this model. For the sake of simplicity, we will not continue to model the standard deviation across groups and I haven&rsquo;t specified all the priors but it would be simple to do so.</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Random effects model</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Random effects model</span>
 df.r <span style="color:#f92672">&lt;-</span> get.data()
 myf <span style="color:#f92672">&lt;-</span> bf(rt <span style="color:#f92672">~</span> so <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>subj) <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>item))
 priors <span style="color:#f92672">&lt;-</span> get_prior(myf,
@@ -580,17 +581,17 @@ priors <span style="color:#f92672">&lt;-</span> get_prior(myf,
                     family <span style="color:#f92672">=</span> lognormal())
 priors<span style="color:#f92672">$</span>prior[<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">&lt;-</span> <span style="color:#e6db74">&#34;normal(0, 10)&#34;</span>
 
-<span style="color:#75715e"># &gt; priors</span>
-<span style="color:#75715e">#                   prior     class      coef group resp dpar nlpar bound</span>
-<span style="color:#75715e"># 1         normal(0, 10)         b                                      </span>
-<span style="color:#75715e"># 2         normal(0, 10)         b        so                            </span>
-<span style="color:#75715e"># 3 student_t(3, 5.9, 10) Intercept                                      </span>
-<span style="color:#75715e"># 4   student_t(3, 0, 10)        sd                                      </span>
-<span style="color:#75715e"># 5                              sd            item                      </span>
-<span style="color:#75715e"># 6                              sd Intercept  item                      </span>
-<span style="color:#75715e"># 7                              sd            subj                      </span>
-<span style="color:#75715e"># 8                              sd Intercept  subj                      </span>
-<span style="color:#75715e"># 9   student_t(3, 0, 10)     sigma                  </span>
+<span style="color:#75715e"># &gt; priors</span>
+<span style="color:#75715e">#                   prior     class      coef group resp dpar nlpar bound</span>
+<span style="color:#75715e"># 1         normal(0, 10)         b                                      </span>
+<span style="color:#75715e"># 2         normal(0, 10)         b        so                            </span>
+<span style="color:#75715e"># 3 student_t(3, 5.9, 10) Intercept                                      </span>
+<span style="color:#75715e"># 4   student_t(3, 0, 10)        sd                                      </span>
+<span style="color:#75715e"># 5                              sd            item                      </span>
+<span style="color:#75715e"># 6                              sd Intercept  item                      </span>
+<span style="color:#75715e"># 7                              sd            subj                      </span>
+<span style="color:#75715e"># 8                              sd Intercept  subj                      </span>
+<span style="color:#75715e"># 9   student_t(3, 0, 10)     sigma                  </span>
 
 
 blm2 <span style="color:#f92672">&lt;-</span> brm(rt <span style="color:#f92672">~</span> so <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>subj) <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>item), 
@@ -641,7 +642,7 @@ sigma     0.52      0.02     0.49     0.55       2000 1.00
 <p>Next we introduce varying slopes into the model, which allows us to characterise the variation in the <strong>difference</strong> in reading time across individuals and items. As per Sorensen, we initially prohibit correlation between the varying interecpts and slopes. The required implementation is as follows.</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">df.r <span style="color:#f92672">&lt;-</span> get.data()
-<span style="color:#75715e"># The latter (-1 + ) part prevents correlation between random effects</span>
+<span style="color:#75715e"># The latter (-1 + ) part prevents correlation between random effects</span>
 (priors <span style="color:#f92672">&lt;-</span> get_prior(bf(rt <span style="color:#f92672">~</span> so <span style="color:#f92672">+</span> 
                          (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>subj) <span style="color:#f92672">+</span> (<span style="color:#ae81ff">-1</span> <span style="color:#f92672">+</span> so <span style="color:#f92672">|</span>subj) <span style="color:#f92672">+</span> 
                          (<span style="color:#ae81ff">1</span><span style="color:#f92672">|</span>item) <span style="color:#f92672">+</span> (<span style="color:#ae81ff">-1</span> <span style="color:#f92672">+</span> so<span style="color:#f92672">|</span>item)),   
@@ -700,7 +701,7 @@ sigma     0.52      0.02     0.49     0.55       2000 1.00
                      data <span style="color:#f92672">=</span> df.r,
                      family <span style="color:#f92672">=</span> lognormal()))
 priors<span style="color:#f92672">$</span>prior[<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">&lt;-</span> <span style="color:#e6db74">&#34;normal(0, 10)&#34;</span>
-<span style="color:#75715e"># mypriors1 &lt;- c(brms::set_prior(&#34;cauchy(0, 2.5)&#34;, class = &#34;b&#34;))</span>
+<span style="color:#75715e"># mypriors1 &lt;- c(brms::set_prior(&#34;cauchy(0, 2.5)&#34;, class = &#34;b&#34;))</span>
 blm4 <span style="color:#f92672">&lt;-</span> brm(rt <span style="color:#f92672">~</span> so <span style="color:#f92672">+</span> 
               (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> so<span style="color:#f92672">|</span>subj) <span style="color:#f92672">+</span> 
               (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> so<span style="color:#f92672">|</span>item), 

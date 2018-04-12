@@ -37,7 +37,7 @@
       
       <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
       <description>The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.
-set.seed(250) # Define the parameters b0 &amp;lt;- 2 b1 &amp;lt;- 3 b2 &amp;lt;- 1.5 b3 &amp;lt;- 6 n &amp;lt;- 800 grp &amp;lt;- c(rep(0, n/2), rep(1, n/2)) time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4)) # Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * time df.</description>
+set.seed(250)# Define the parameters b0 &amp;lt;- 2b1 &amp;lt;- 3b2 &amp;lt;- 1.5b3 &amp;lt;- 6n &amp;lt;- 800grp &amp;lt;- c(rep(0, n/2), rep(1, n/2))time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4))# Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * timedf.</description>
     </item>
     
   </channel>

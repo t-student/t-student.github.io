@@ -5,6 +5,33 @@
     
     <url>
     
+      <loc>https://t-student.github.io/post/inversecdfrand/</loc>
+      <lastmod>2018-04-11T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/post/stata-regression/</loc>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/post/shiny01-dyndash/</loc>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>https://t-student.github.io/post/shiny01-overview/</loc>
       <lastmod>2018-04-09T00:00:00+10:00</lastmod>
     </url>
@@ -312,7 +339,17 @@
     <url>
     
       <loc>https://t-student.github.io/tags/r/</loc>
-      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+      <lastmod>2018-04-11T00:00:00+10:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/regression/</loc>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -322,7 +359,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/shiny/</loc>
-      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -332,7 +369,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/simulation/</loc>
-      <lastmod>2018-02-10T00:00:00+11:00</lastmod>
+      <lastmod>2018-04-11T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -343,6 +380,16 @@
     
       <loc>https://t-student.github.io/tags/stan/</loc>
       <lastmod>2018-01-19T00:00:00+11:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>https://t-student.github.io/tags/stata/</loc>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -362,7 +409,7 @@
     <url>
     
       <loc>https://t-student.github.io/tags/visualisation/</loc>
-      <lastmod>2018-04-09T00:00:00+10:00</lastmod>
+      <lastmod>2018-04-10T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
     
