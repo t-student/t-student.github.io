@@ -7,10 +7,44 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 11 Apr 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Wed, 25 Apr 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Date Anomolies</title>
+      <link>https://t-student.github.io/post/dates01/</link>
+      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/dates01/</guid>
+      <description>As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.
+There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.
+Date Class These are the `easy&amp;rsquo; ones to deal with and are stored internally as integers from 1970-01-01.
+as.Date(&amp;quot;2017-01-12&amp;quot;) as.Date(&amp;quot;2017-24-01&amp;quot;, format = &amp;quot;%Y-%d-%m&amp;quot;) # Alternative origin - i.</description>
+    </item>
+    
+    <item>
+      <title>Propensity Scores 101</title>
+      <link>https://t-student.github.io/post/propensity01/</link>
+      <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/propensity01/</guid>
+      <description>A propensity score is just the probability of receiving treatment - we have:
+$$ Propensity \ Score = \pi_i = Pr(trt = 1|X_i) $$
+So if we had a single (pre-treatment) covariate, say age, on which the propensity score was computed we may have that older people were more likely to receive the treatment.
+Now, it can be the case that two people with different covariate values have the same probability of treatment (i.</description>
+    </item>
+    
+    <item>
+      <title>That is Multinomial Regression?</title>
+      <link>https://t-student.github.io/post/multinomial0/</link>
+      <pubDate>Sun, 15 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/multinomial0/</guid>
+      <description>Ref: https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf
+Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species1. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies.</description>
+    </item>
     
     <item>
       <title>Inverse transform sampling</title>

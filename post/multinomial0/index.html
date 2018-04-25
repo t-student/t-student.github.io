@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="Ref: https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf
+Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species1. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&rsquo;t want to wake up next to. Let&rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/multinomial0/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/multinomial0/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/multinomial0/">
+  <meta property="og:title" content="That is Multinomial Regression? | t-student">
+  <meta property="og:description" content="Ref: https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf
+Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species1. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&rsquo;t want to wake up next to. Let&rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-04-15T00:00:00&#43;10:00">
+  
+  <meta property="article:modified_time" content="2018-04-15T00:00:00&#43;10:00">
+  
+
+  
+
+  <title>That is Multinomial Regression? | t-student</title>
+
+  
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">That is Multinomial Regression?</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-04-15 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      Apr 15, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=That%20is%20Multinomial%20Regression%3f&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fmultinomial0%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fmultinomial0%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fmultinomial0%2f&amp;title=That%20is%20Multinomial%20Regression%3f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fmultinomial0%2f&amp;title=That%20is%20Multinomial%20Regression%3f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=That%20is%20Multinomial%20Regression%3f&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fmultinomial0%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        <p>Ref: <a href="https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf" target="_blank">https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf</a></p>
+
+<p>Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&rsquo;t want to wake up next to. Let&rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?</p>
+
+<p>Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
+But we don&rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:</p>
+
+<p>$$
+log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = beta_0 + beta<em>1 bioscore</em>{i} = Z_{mi}
+$$</p>
+
+<p>To compute the probabilities you need to do:</p>
+
+<p>$$
+Pr(Y<em>i = m) = \frac{exp(Z</em>{mi})}{1 + \sum<em>2^M exp(Z</em>{hi}) }
+$$</p>
+
+<p>and for the reference category you just replace the numerator with a 1.</p>
+
+<p>After fitting the multinomial model you get a table showing the parameter estimates from each model. We are predicting the logit - this is the odds of membership in a given category of the outcome variable. The coefficients below give the change in the logit for each one unit change in the predictor.</p>
+
+<pre><code>--------------------------------------------------------------------------------
+pathology0no~4 |      Coef.   Std. Err.      z    P&gt;|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+Benign         |  (base outcome)
+---------------+----------------------------------------------------------------
+Squamous       |
+    Hscore_ngf |   .0991562   .0110688     8.96   0.000     .0774617    .1208507
+         _cons |  -7.980021   .8811443    -9.06   0.000    -9.707032   -6.253009
+---------------+----------------------------------------------------------------
+Adenocarcinoma |
+    Hscore_ngf |   .0682796   .0102071     6.69   0.000      .048274    .0882852
+         _cons |  -5.596755   .7660139    -7.31   0.000    -7.098115   -4.095395
+---------------+----------------------------------------------------------------
+Small_Cell     |
+    Hscore_ngf |   .0018791    .021452     0.09   0.930    -.0401661    .0439243
+         _cons |  -2.827464   1.324856    -2.13   0.033    -5.424135    -.230793
+--------------------------------------------------------------------------------
+
+</code></pre>
+
+<pre><code>--------------------------------------------------------------------------------
+pathology0no~4 |        RRR   Std. Err.      z    P&gt;|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+Benign         |  (base outcome)
+---------------+----------------------------------------------------------------
+Squamous       |
+    Hscore_ngf |   1.104239   .0122226     8.96   0.000     1.080541    1.128456
+         _cons |   .0003422   .0003016    -9.06   0.000     .0000609    .0019247
+---------------+----------------------------------------------------------------
+Adenocarcinoma |
+    Hscore_ngf |   1.070665   .0109284     6.69   0.000     1.049458      1.0923
+         _cons |   .0037099   .0028418    -7.31   0.000     .0008267    .0166492
+---------------+----------------------------------------------------------------
+Small_Cell     |
+    Hscore_ngf |   1.001881   .0214924     0.09   0.930     .9606299    1.044903
+         _cons |   .0591627   .0783821    -2.13   0.033     .0044089    .7939038
+--------------------------------------------------------------------------------
+</code></pre>
+
+<p>Thus, the relative probability of being squamous rather than benign increases by about 10 percent for every unit increase in the hscore. (Relative probabilities are also called relative odds.)</p>
+
+<p>A common mistake is to interpret the coefficient as meaning that the probability of squamous is higher for higher hscores. It is only the relative probability of squamous over benign that is higher. To obtain a fuller picture we need to consider the second equation as well. The coefficient of black in the home equation is 0.813. Exponentiating, we obtain</p>
+
+<p>Detouring just slightly let&rsquo;s note first that within the context of a <em>polytomous response</em> we might be considering an <em>ordinal</em> response or we could be dealing with and unordered or <em>nomianal</em> response. Ordinal data implicitly contains more information than nominal data and by using this information we can usually construct simpler models.</p>
+
+<p>Below I construct some dummy zombie data by assuming a</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">get.data <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(n.per.grp <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>, 
+                     p.ctl <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>,
+                     or <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(or.i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.1</span>, 
+                            or.ii <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.3</span>, 
+                            or.111 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.6</span>)) {
+  
+  <span style="color:#75715e"># Baseline odds:</span>
+  b0 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">log</span>(p.ctl <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> p.ctl))
+  bgrp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">log</span>(or)
+  beta <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">matrix</span>(<span style="color:#66d9ef">c</span>(b0, bgrp), ncol <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
+  
+  grp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">as.factor</span>(<span style="color:#66d9ef">rep</span>(<span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>), each <span style="color:#f92672">=</span> n.per.grp))
+  dd <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(grp <span style="color:#f92672">=</span> grp)
+  mm <span style="color:#f92672">&lt;-</span> model.matrix(<span style="color:#f92672">~</span> grp, dd)
+  
+  <span style="color:#75715e"># Linear predictor for the simple group comparison</span>
+  logit.y <span style="color:#f92672">&lt;-</span> mm <span style="color:#f92672">%*%</span> <span style="color:#66d9ef">beta</span>
+
+  p.y <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">exp</span>(logit.y)<span style="color:#f92672">/</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">exp</span>(logit.y)) 
+  y <span style="color:#f92672">&lt;-</span> rbinom(n<span style="color:#f92672">=</span><span style="color:#66d9ef">nrow</span>(mm), <span style="color:#ae81ff">1</span>, prob <span style="color:#f92672">=</span> p.y)
+  
+  <span style="color:#75715e"># Our pseudo sample.</span>
+  df.dat <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">nrow</span>(mm), 
+                       z <span style="color:#f92672">=</span> grp,
+                       z1 <span style="color:#f92672">=</span> mm[,<span style="color:#ae81ff">2</span>],
+                       z2 <span style="color:#f92672">=</span> mm[,<span style="color:#ae81ff">3</span>],
+                       z3 <span style="color:#f92672">=</span> mm[,<span style="color:#ae81ff">4</span>],
+                       p.y <span style="color:#f92672">=</span> p.y,
+                       y <span style="color:#f92672">=</span> y)
+  
+  <span style="color:#66d9ef">return</span>(df.dat)
+}
+
+<span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">23452</span>)
+df.1 <span style="color:#f92672">&lt;-</span> get.data()
+
+df.2 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">droplevels</span>(df.1[df.1<span style="color:#f92672">$</span>z <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> df.1<span style="color:#f92672">$</span>z <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>,])
+<span style="color:#66d9ef">summary</span>(lm1 <span style="color:#f92672">&lt;-</span> glm(y <span style="color:#f92672">~</span> z, data <span style="color:#f92672">=</span> df.2, family <span style="color:#f92672">=</span> binomial))
+predict(lm1, type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;response&#34;</span>,
+  newdata <span style="color:#f92672">=</span> <span style="color:#66d9ef">data.frame</span>(z <span style="color:#f92672">=</span> <span style="color:#66d9ef">unique</span>(df.2<span style="color:#f92672">$</span>z)))</code></pre></div>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">I think it is fair to generalise Darwin to the undead.
+ <a class="footnote-return" href="#fnref:1"><sup>^</sup></a></li>
+</ol>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/multinomial">multinomial</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/inversecdfrand/">Inverse transform sampling</a></li>
+    
+    <li><a href="/post/shiny01-dyndash/">Shiny Stage 4 - Dynamic Dashboards</a></li>
+    
+    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
+    
+    <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
+    
+    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

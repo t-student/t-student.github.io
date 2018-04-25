@@ -17,11 +17,13 @@
       
     
   
-  <meta name="description" content="Dashboards extend the functionality of shiny. Shiny uses Bootstrap for layout whereas Shinydashboard uses AdminLTE, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.
-library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader(), dashboardSidebar(), dashboardBody() ) server &lt;- function(input, output){ } shinyApp(ui, server)  Before we go any further, I should note, the docs are here.">
+  <meta name="description" content="As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.
+There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.
+Date Class These are the `easy&rsquo; ones to deal with and are stored internally as integers from 1970-01-01.
+as.Date(&quot;2017-01-12&quot;) as.Date(&quot;2017-24-01&quot;, format = &quot;%Y-%d-%m&quot;) # Alternative origin - i.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/shiny01-dyndash/">
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/dates01/">
 
   
 
@@ -83,25 +85,27 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
   <link rel="icon" type="image/png" href="/img/icon.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://t-student.github.io/post/shiny01-dyndash/">
+  <link rel="canonical" href="https://t-student.github.io/post/dates01/">
 
   <meta property="twitter:card" content="summary_large_image">
   
   <meta property="og:site_name" content="t-student">
-  <meta property="og:url" content="https://t-student.github.io/post/shiny01-dyndash/">
-  <meta property="og:title" content="Shiny Stage 4 - Dynamic Dashboards | t-student">
-  <meta property="og:description" content="Dashboards extend the functionality of shiny. Shiny uses Bootstrap for layout whereas Shinydashboard uses AdminLTE, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.
-library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader(), dashboardSidebar(), dashboardBody() ) server &lt;- function(input, output){ } shinyApp(ui, server)  Before we go any further, I should note, the docs are here.">
+  <meta property="og:url" content="https://t-student.github.io/post/dates01/">
+  <meta property="og:title" content="Date Anomolies | t-student">
+  <meta property="og:description" content="As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.
+There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.
+Date Class These are the `easy&rsquo; ones to deal with and are stored internally as integers from 1970-01-01.
+as.Date(&quot;2017-01-12&quot;) as.Date(&quot;2017-24-01&quot;, format = &quot;%Y-%d-%m&quot;) # Alternative origin - i.">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2018-04-10T00:00:00&#43;10:00">
+  <meta property="article:published_time" content="2018-04-25T00:00:00&#43;10:00">
   
-  <meta property="article:modified_time" content="2018-04-10T00:00:00&#43;10:00">
-  
-
+  <meta property="article:modified_time" content="2018-04-25T00:00:00&#43;10:00">
   
 
-  <title>Shiny Stage 4 - Dynamic Dashboards | t-student</title>
+  
+
+  <title>Date Anomolies | t-student</title>
 
   
 </head>
@@ -224,7 +228,7 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
 
   <div class="article-container">
     <div class="article-inner">
-      <h1 itemprop="name">Shiny Stage 4 - Dynamic Dashboards</h1>
+      <h1 itemprop="name">Date Anomolies</h1>
 
       
 
@@ -232,8 +236,8 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
 
   <span class="article-date">
     
-    <time datetime="2018-04-10 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
-      Apr 10, 2018
+    <time datetime="2018-04-25 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      Apr 25, 2018
     </time>
   </span>
   <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
@@ -243,7 +247,7 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    2 min read
+    3 min read
   </span>
   
 
@@ -258,35 +262,35 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
   <ul class="share">
     <li>
       <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=Shiny%20Stage%204%20-%20Dynamic%20Dashboards&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-dyndash%2f"
+         href="https://twitter.com/intent/tweet?text=Date%20Anomolies&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fdates01%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-twitter"></i>
       </a>
     </li>
     <li>
       <a class="facebook"
-         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-dyndash%2f"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2fdates01%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-facebook"></i>
       </a>
     </li>
     <li>
       <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-dyndash%2f&amp;title=Shiny%20Stage%204%20-%20Dynamic%20Dashboards"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2fdates01%2f&amp;title=Date%20Anomolies"
          target="_blank" rel="noopener">
         <i class="fa fa-linkedin"></i>
       </a>
     </li>
     <li>
       <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-dyndash%2f&amp;title=Shiny%20Stage%204%20-%20Dynamic%20Dashboards"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2fdates01%2f&amp;title=Date%20Anomolies"
          target="_blank" rel="noopener">
         <i class="fa fa-weibo"></i>
       </a>
     </li>
     <li>
       <a class="email"
-         href="mailto:?subject=Shiny%20Stage%204%20-%20Dynamic%20Dashboards&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fshiny01-dyndash%2f">
+         href="mailto:?subject=Date%20Anomolies&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2fdates01%2f">
         <i class="fa fa-envelope"></i>
       </a>
     </li>
@@ -302,106 +306,164 @@ library(shiny) library(shinydashboard) ui &lt;- dashboardPage( dashboardHeader()
       <div class="article-style" itemprop="articleBody">
         
 
-<p>Dashboards extend the functionality of shiny. Shiny uses <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> for layout whereas Shinydashboard uses <a href="https://adminlte.io/themes/AdminLTE/index2.html" target="_blank">AdminLTE</a>, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.</p>
+<p>As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.</p>
 
-<pre><code>library(shiny)
-library(shinydashboard)
+<p>There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.</p>
 
-ui &lt;- dashboardPage(
-  dashboardHeader(),
-  dashboardSidebar(),
-  dashboardBody()
-)
+<h2 id="date-class">Date Class</h2>
 
-server &lt;- function(input, output){
+<p>These are the `easy&rsquo; ones to deal with and are stored internally as integers from 1970-01-01.</p>
 
-}
-shinyApp(ui, server)
+<pre><code>as.Date(&quot;2017-01-12&quot;)
+as.Date(&quot;2017-24-01&quot;, format = &quot;%Y-%d-%m&quot;)
+# Alternative origin - i.e. Excel
+as.Date(400, origin = &quot;1900-01-01&quot;)
+difftime(as.Date(&quot;2018-01-01&quot;), as.Date(&quot;2017-01-01&quot;), units = &quot;days&quot;)
+</code></pre>
+
+<h2 id="posixt-datetime-variants">POSIXt - datetime variants</h2>
+
+<p>Portable Operating System Interface (POSIX) is an interoperability standard (that not many people seem to have much faith in). In R there is POSIXlt and POSIXct for local and for calendar time respecitively. The former is a list, the latter is a number (seconds since origin):</p>
+
+<pre><code>&gt; unclass(as.POSIXlt(Sys.time()))
+$sec
+[1] 30.34591
+
+$min
+[1] 35
+
+$hour
+[1] 12
+
+$mday
+[1] 25
+
+$mon
+[1] 3
+
+$year
+[1] 118
+
+$wday
+[1] 3
+
+$yday
+[1] 114
+
+$isdst
+[1] 0
+
+$zone
+[1] &quot;AEST&quot;
+
+$gmtoff
+[1] 36000
+
+attr(,&quot;tzone&quot;)
+[1] &quot;&quot;     &quot;AEST&quot; &quot;AEDT&quot;
+
+
+
+# POSIXct
+unclass(Sys.time())
+[1] 1524623797
+</code></pre>
+
+<p>You can display (or store) dates in different formats by using the format command or option:</p>
+
+<pre><code>as.POSIXct(&quot;101221 10:22&quot;, format = &quot;%y%m%d %H:%M&quot;)
+[1] &quot;2010-12-21 10:22:00 AEDT&quot;
+
+as.character(as.POSIXct(&quot;101221 10:22&quot;, 
+             format = &quot;%y%m%d %H:%M&quot;), format = &quot;%m-%d-%y %H:%M&quot;)
+[1] &quot;12-21-10 10:22&quot;
 
 </code></pre>
 
-<p>Before we go any further, I should note, the docs are <a href="http://rstudio.github.io/shinydashboard/" target="_blank">here</a>.</p>
+<p>Data frames do weird things to dates. Specifically, when you store a <code>POSIXlt</code> variable in a <code>data.frame</code> it is converted to a POSIXct. However, if you assign a POSIXlt to a data.frame field using <code>$</code> then the lt class is retained!</p>
 
-<p>OK, so Shinydashboard has analogous layout controls to shiny, for example <code>fluidRow</code> and it uses <code>box</code> as the main container for elements. Let&rsquo;s add in some of the functionality from the Shiny 101 post.</p>
+<pre><code>hotdate &lt;- &quot;20081101 01:20:00&quot;
+ct &lt;- as.POSIXct(hotdate, format = &quot;%Y%m%d %H:%M:%S&quot;)
+lt &lt;- as.POSIXlt(hotdate, format = &quot;%Y%m%d %H:%M:%S&quot;)
 
-<pre><code>library(shiny)
-library(shinydashboard)
-ui &lt;- dashboardPage(
-  dashboardHeader(),
-  dashboardSidebar(),
-  dashboardBody(
-    fluidRow(
-      box(width = 8, plotOutput(&quot;plot1&quot;, height = 250)),
-      box(width = 4,
-          title = &quot;Control&quot;,
-          sliderInput(&quot;slider&quot;, &quot;Observations&quot;, 
-                      min = 1, max = 100, value = 50)
-        
-      )
-    )
-  )
-)
+df &lt;- data.frame(orig = hotdate, 
+                 ct = ct, 
+                 lt = lt)
 
-server &lt;- function(input, output){
-  output$plot1 &lt;- renderPlot({
-    n &lt;- input$slider
-    hist(rnorm(n))
-  })
-}
-shinyApp(ui, server)
+# POSIXlt converted to ct
+&gt; str(df)
+'data.frame': 1 obs. of  3 variables:
+ $ orig: Factor w/ 1 level &quot;20081101 01:20:00&quot;: 1
+ $ ct  : POSIXct, format: &quot;2008-11-01 01:20:00&quot;
+ $ lt  : POSIXct, format: &quot;2008-11-01 01:20:00&quot;
+
+# POSIXlt NOT converted to ct!!!!
+df$lt2 &lt;- as.POSIXlt(hotdate, format = &quot;%Y%m%d %H:%M:%S&quot;)
+str(df)
+'data.frame': 1 obs. of  4 variables:
+ $ orig: Factor w/ 1 level &quot;20081101 01:20:00&quot;: 1
+ $ ct  : POSIXct, format: &quot;2008-11-01 01:20:00&quot;
+ $ lt  : POSIXct, format: &quot;2008-11-01 01:20:00&quot;
+ $ lt2 : POSIXlt, format: &quot;2008-11-01 01:20:00&quot;
+
+
+# Rounding
+# NOPE
+df[, &quot;ct&quot;] &lt;- round(df[, &quot;ct&quot;], units = &quot;hours&quot;)
+
+# FORCE
+df[, &quot;ct&quot;] &lt;- as.POSIXct(round(ct, units = &quot;hours&quot;))
+
+# NAH
+df[, &quot;lt&quot;] &lt;- round(lt, units = &quot;hours&quot;)
+Warning message:
+  In `[&lt;-.data.frame`(`*tmp*`, , &quot;lt&quot;, 
+                      value = list(sec = 0, min = 0L,  :
+                      provided 11 variables to replace 1 variables
+
+# MAGIC via $  !
+df$lt &lt;- round(lt, units = &quot;hours&quot;)                     
 </code></pre>
 
-<p>In addition to <code>box</code> there is <code>infoBox</code> and <code>valueBox</code> for presenting particular forms of data to the user.</p>
+<h2 id="lubridate">Lubridate</h2>
 
-<h2 id="sidebar-header">Sidebar &amp; Header</h2>
+<p>Makes life a bit easier (sometimes) and represents time via different objects. Important concepts are:</p>
 
-<p>We can place a menu in the sidebar using the <code>sidebarMenu</code> function in the UI. Within <code>sidebar</code> we define <code>menuItems</code> each of which corresponds to a tabItem in the dash board body. Note that the icons are obtained from <em>Font Awesome</em>, which ships with Shiny.</p>
+<ul>
+<li>instants</li>
+<li>intervals</li>
+<li>durations</li>
+<li>periods</li>
+</ul>
 
-<pre><code>library(shiny)
-library(shinydashboard)
-ui &lt;- dashboardPage(
-  dashboardHeader(),
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem(&quot;First&quot;, tabName = &quot;first&quot;, icon = icon(&quot;dashboard&quot;)),
-      menuItem(&quot;Second&quot;, tabName = &quot;second&quot;, icon = icon(&quot;th&quot;))
-    )
-  ),
-  dashboardBody(
-    tabItems(
-      tabItem(tabName = &quot;first&quot;, tags$h2(&quot;First content&quot;)),
-      tabItem(tabName = &quot;second&quot;, tags$h2(&quot;Second content&quot;))
-    )
-  )
-)
+<pre><code>ymd_hms(&quot;2012-12-31 23:59:59&quot;)
+## [1] &quot;2012-12-31 23:59:59 UTC&quot;
 
-server &lt;- function(input, output){
-  output$plot1 &lt;- renderPlot({
-    n &lt;- input$slider
-    hist(rnorm(n))
-  })
-}
-shinyApp(ui, server)
+month(ldate) &lt;- 8
+
+# An _instant_ in time:
+lubridate::now()
+
+# Last day of the current month
+lubridate::ceiling_date(now(), unit = &quot;month&quot;) - lubridate::days(1)
+
+# The time between two instants is an _interval_ 
+
+# Interval constructed using _duration_ i.e. dyears
+# dyears record the exact number of seconds in a time span and deals with
+# leap years, daylight savings etc so you need to be careful in its use.
+lubridate::ymd_hms(hotdate) - lubridate::dyears(1)
+
+# versus
+# Interval constructed using _period_ i.e. years
+lubridate::ymd_hms(hotdate) - lubridate::years(1)
+
+
+# Nice
+now() %within% interval(ymd(&quot;2012-07-01&quot;), ymd(&quot;2019-06-30&quot;))
 </code></pre>
 
-<p>We will talk about Headers later.</p>
-
-<h2 id="leaflet">Leaflet</h2>
-
-<p>This enables you to work with maps a little more easily. Leafletjs is a javascript library for working with interactive maps and you can interface that library using the CRAN leaflet package. You use it like this:</p>
-
-<pre><code>library(leaflet)
-leaflet() %&gt;%
-  addTiles() %&gt;%
-  setView(-93.65, 42.0285, zoom = 17) %&gt;%
-  addPopups(-93.65, 42.0285, 'Stats Dept')
-</code></pre>
-
-<p>You can use the leaflet output within a Shiny app by calling <code>leafletOutput(&quot;map&quot;)</code> from the UI code and then using <code>renderLeaflet()</code> passing it the code that is shown above.</p>
-
-<p>27 mins</p>
-
-<p><a href="https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/" target="_blank">https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/</a></p>
+<p>Painless?</p>
 
       </div>
 
@@ -410,11 +472,9 @@ leaflet() %&gt;%
 
 <div class="article-tags">
   
-  <a class="btn btn-primary btn-outline" href="/tags/shiny">shiny</a>
+  <a class="btn btn-primary btn-outline" href="/tags/dates">dates</a>
   
   <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
-  
-  <a class="btn btn-primary btn-outline" href="/tags/visualisation">visualisation</a>
   
 </div>
 
@@ -432,15 +492,15 @@ leaflet() %&gt;%
   <h3>Related</h3>
   <ul>
     
+    <li><a href="/post/propensity01/">Propensity Scores 101</a></li>
+    
+    <li><a href="/post/multinomial0/">That is Multinomial Regression?</a></li>
+    
+    <li><a href="/post/inversecdfrand/">Inverse transform sampling</a></li>
+    
+    <li><a href="/post/shiny01-dyndash/">Shiny Stage 4 - Dynamic Dashboards</a></li>
+    
     <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
-    
-    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
-    
-    <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
-    
-    <li><a href="/post/basicbayesian/">Bayesian Zombies 101</a></li>
-    
-    <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
     
   </ul>
 </div>

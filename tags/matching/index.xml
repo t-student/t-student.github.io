@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Matching on t-student</title>
+    <link>https://t-student.github.io/tags/matching/</link>
+    <description>Recent content in Matching on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Thu, 19 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/matching/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Propensity Scores 101</title>
+      <link>https://t-student.github.io/post/propensity01/</link>
+      <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/propensity01/</guid>
+      <description>A propensity score is just the probability of receiving treatment - we have:
+$$ Propensity \ Score = \pi_i = Pr(trt = 1|X_i) $$
+So if we had a single (pre-treatment) covariate, say age, on which the propensity score was computed we may have that older people were more likely to receive the treatment.
+Now, it can be the case that two people with different covariate values have the same probability of treatment (i.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -24,7 +24,7 @@
     <item>
       <title>Bayesian</title>
       <link>https://t-student.github.io/tags/bayesian/</link>
-      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/bayesian/</guid>
       <description></description>
@@ -33,9 +33,18 @@
     <item>
       <title>Bayesian</title>
       <link>https://t-student.github.io/tags/bayesian/</link>
-      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
+      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
       
       <guid>https://t-student.github.io/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dates</title>
+      <link>https://t-student.github.io/tags/dates/</link>
+      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/dates/</guid>
       <description></description>
     </item>
     
@@ -76,11 +85,47 @@
     </item>
     
     <item>
+      <title>Matching</title>
+      <link>https://t-student.github.io/tags/matching/</link>
+      <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/matching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multinomial</title>
+      <link>https://t-student.github.io/tags/multinomial/</link>
+      <pubDate>Sun, 15 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/multinomial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Observational</title>
+      <link>https://t-student.github.io/tags/observational/</link>
+      <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/observational/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Power</title>
       <link>https://t-student.github.io/tags/power/</link>
       <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
       
       <guid>https://t-student.github.io/tags/power/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Propensity</title>
+      <link>https://t-student.github.io/tags/propensity/</link>
+      <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/propensity/</guid>
       <description></description>
     </item>
     
@@ -96,7 +141,7 @@
     <item>
       <title>R</title>
       <link>https://t-student.github.io/tags/r/</link>
-      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
+      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/r/</guid>
       <description></description>

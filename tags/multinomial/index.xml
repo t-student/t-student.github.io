@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Multinomial on t-student</title>
+    <link>https://t-student.github.io/tags/multinomial/</link>
+    <description>Recent content in Multinomial on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 15 Apr 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/multinomial/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>That is Multinomial Regression?</title>
+      <link>https://t-student.github.io/post/multinomial0/</link>
+      <pubDate>Sun, 15 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/multinomial0/</guid>
+      <description>Ref: https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf
+Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species1. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies.</description>
+    </item>
+    
+  </channel>
+</rss>
