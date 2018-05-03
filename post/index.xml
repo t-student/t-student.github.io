@@ -13,6 +13,25 @@
     
     
     <item>
+      <title>Rationalising Odds Ratios Results</title>
+      <link>https://t-student.github.io/post/logistic01-ors/</link>
+      <pubDate>Thu, 03 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-ors/</guid>
+      <description>You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.</description>
+    </item>
+    
+    <item>
+      <title>Citation Tools - Zotero</title>
+      <link>https://t-student.github.io/post/emmeansr01-md/</link>
+      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
+      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct (not destruct) post on how to use emmeans.
+https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages</description>
+    </item>
+    
+    <item>
       <title>Citation Tools - Zotero</title>
       <link>https://t-student.github.io/post/zotero01/</link>
       <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>

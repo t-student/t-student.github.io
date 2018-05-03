@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/logistic01-ors/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/logistic01-ors/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/logistic01-ors/">
+  <meta property="og:title" content="Rationalising Odds Ratios Results | t-student">
+  <meta property="og:description" content="You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-05-03T00:00:00&#43;10:00">
+  
+  <meta property="article:modified_time" content="2018-05-03T00:00:00&#43;10:00">
+  
+
+  
+
+  <title>Rationalising Odds Ratios Results | t-student</title>
+
+  
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Rationalising Odds Ratios Results</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-05-03 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      May 3, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    5 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Rationalising%20Odds%20Ratios%20Results&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-ors%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-ors%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-ors%2f&amp;title=Rationalising%20Odds%20Ratios%20Results"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-ors%2f&amp;title=Rationalising%20Odds%20Ratios%20Results"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Rationalising%20Odds%20Ratios%20Results&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-ors%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>You have just fitted a logistic regression model in R using <code>glm</code>. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book in for frontal labotomy on Wednesday. OK, I know what you are asking<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> - what, in this dark winter night, is logistic regression and what is an odds ratio?</p>
+
+<h2 id="logistic-regression-all-you-need-to-know-but-forgot-to-ask">Logistic regression - all you need to know but forgot to ask</h2>
+
+<p>In a very casual sense, logistic regression is just a way to do regression where the response is the probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>. The downside is that we need to introduce the concept of <em>odds</em>. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to apply some visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:</p>
+
+<p>$$
+logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose
+$$</p>
+
+<p>If we donote the response as $Y$ (we either get through the week or we don&rsquo;t) and $p = Pr(Y)$ then:</p>
+
+<p>$$
+p = Pr(Y) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 \times dose)}}
+$$</p>
+
+<p>So for the logit we have an unbounded linear function (top figure below) and the probability (lower figure) is non-linear that is bounded by zero and one.</p>
+
+<p><img src="/media/logisORBig01.png" alt="" /></p>
+
+<p>Here endith this part.</p>
+
+<h2 id="odds-ratios-sometimes-lead-us-astray">Odds Ratios sometimes lead us astray&hellip;</h2>
+
+<p>Going back to the treatment groups scenario (active versus placebo) let&rsquo;s say our results show the following:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">Coefficients<span style="color:#f92672">:</span>
+            Estimate Std. Error z value Pr(<span style="color:#f92672">&gt;|</span>z<span style="color:#f92672">|</span>)    
+(Intercept)  <span style="color:#ae81ff">-4.6648</span>     <span style="color:#ae81ff">0.3797</span> <span style="color:#ae81ff">-12.284</span>   <span style="color:#f92672">&lt;</span><span style="color:#ae81ff">2e-16</span> <span style="color:#f92672">***</span>
+grp           <span style="color:#ae81ff">1.2975</span>     <span style="color:#ae81ff">0.4308</span>   <span style="color:#ae81ff">3.012</span>   <span style="color:#ae81ff">0.0026</span> <span style="color:#f92672">**</span> </code></pre></div>
+
+<p>Exponentiating the parameter estimates gives us the <em>odds ratios</em>. An odds ratio (OR) just tells us how odd things get relative to a reference level. So, say the probability of getting through the week without treatment is about 0.1, i.e. we have about a 10% chance of getting through the week unscathed (literally and financial) by our eager brain surgeon. This corresponds to a baseline odds of $\frac{1}{0.9} = 1.11$. If the OR turned out to be 2 then all this means is that the odds of getting through the week if you had the anti-psychotic is 2 times the odds of the other group, i.e. roughly 2.22. In probability terms this equals $\frac{2.22}{3.22} = 0.67$ i.e. there is a higher proability of getting through the week.</p>
+
+<p>Now, in the model results shown above, the odds ratio for group membership is actually $exp(1.2975) = 3.66$. Following the ideas above, the interpretation is that, on average, the active treatment increases the odds of getting through the week without having to schedule a frontal labotomy by about 3.7 times than the people that have the placebo. The 95% confidence interval for the OR is 1.66 to 9.22. <a href="https://www.youtube.com/watch?v=8ruJBKFrRCk" target="_blank"><strong>OMG, I LITERALLY CAN&rsquo;T EVEN!!!!</strong>&amp;!!**</a> - let&rsquo;s go write up our paper and get this genius published!</p>
+
+<p>Hang-on, cool your boots poodle - let&rsquo;s take a step back and imagine another scenario where we get the following results:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">Coefficients<span style="color:#f92672">:</span>
+            Estimate Std. Error z value Pr(<span style="color:#f92672">&gt;|</span>z<span style="color:#f92672">|</span>)    
+(Intercept) <span style="color:#ae81ff">-0.35020</span>    <span style="color:#ae81ff">0.07415</span>  <span style="color:#ae81ff">-4.723</span> <span style="color:#ae81ff">2.33e-06</span> <span style="color:#f92672">***</span>
+grp          <span style="color:#ae81ff">1.16595</span>    <span style="color:#ae81ff">0.10849</span>  <span style="color:#ae81ff">10.747</span>  <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2e-16</span> <span style="color:#f92672">***</span> </code></pre></div>
+
+<p>This time the OR = exp(1.166) = 3.21 and that&rsquo;s still roughly equal to what we got previously but the intercept term is quite different. What&rsquo;s going on here?</p>
+
+<p>The turgid spoiler is that your baseline odds are very different. In the first model the baseline odds are 0.01 and in the second model they are 0.7. So, what does this mean in practical terms? Firstly what it means is that you should <strong>NEVER</strong> take an OR at face value. A useful exercise is to gain more insight is to use the model parameter estimates to predict the probability of getting through the week without a labotomy using the equation shown earlier. For the first model we have:</p>
+
+<p>$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-4.6648)}} = 0.009 \\<br />
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-4.6648 + 1.2975)}} = 0.033
+$$</p>
+
+<p>and for the second we have:</p>
+
+<p>$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-0.35020)}} = 0.41 \\<br />
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-0.35020 + 1.16595)}} = 0.69
+$$</p>
+
+<p>So under the first set of results there is next to no chance of getting through the week without first having a frontal labotomy regardless of the treatment. In the second case we are a little under the chance of getting heads or tails from a coin flip without the anti-psychotic and have a substantially better chance of getting through the week if we do!!!!</p>
+
+<p>Fin.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">Apart from why am I reading this?.
+ <a class="footnote-return" href="#fnref:1"><sup>^</sup></a></li>
+<li id="fn:2">There are other ways to tackle this propblem.
+ <a class="footnote-return" href="#fnref:2"><sup>^</sup></a></li>
+</ol>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/logistic">logistic</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/glm">glm</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
+    
+    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
+    
+    <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
+    
+    <li><a href="/post/zotero01/">Citation Tools - Zotero</a></li>
+    
+    <li><a href="/post/emmeansr01-md/">Citation Tools - Zotero</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

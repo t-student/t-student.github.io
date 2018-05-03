@@ -11,6 +11,101 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Rationalising Odds Ratios Results</title>
+      <link>https://t-student.github.io/post/logistic01-ors/</link>
+      <pubDate>Thu, 03 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-ors/</guid>
+      <description>
+
+&lt;p&gt;You have just fitted a logistic regression model in R using &lt;code&gt;glm&lt;/code&gt;. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book in for frontal labotomy on Wednesday. OK, I know what you are asking&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; - what, in this dark winter night, is logistic regression and what is an odds ratio?&lt;/p&gt;
+
+&lt;h2 id=&#34;logistic-regression-all-you-need-to-know-but-forgot-to-ask&#34;&gt;Logistic regression - all you need to know but forgot to ask&lt;/h2&gt;
+
+&lt;p&gt;In a very casual sense, logistic regression is just a way to do regression where the response is the probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The downside is that we need to introduce the concept of &lt;em&gt;odds&lt;/em&gt;. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to apply some visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose
+$$&lt;/p&gt;
+
+&lt;p&gt;If we donote the response as $Y$ (we either get through the week or we don&amp;rsquo;t) and $p = Pr(Y)$ then:&lt;/p&gt;
+
+&lt;p&gt;$$
+p = Pr(Y) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 \times dose)}}
+$$&lt;/p&gt;
+
+&lt;p&gt;So for the logit we have an unbounded linear function (top figure below) and the probability (lower figure) is non-linear that is bounded by zero and one.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/logisORBig01.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here endith this part.&lt;/p&gt;
+
+&lt;h2 id=&#34;odds-ratios-sometimes-lead-us-astray&#34;&gt;Odds Ratios sometimes lead us astray&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Going back to the treatment groups scenario (active versus placebo) let&amp;rsquo;s say our results show the following:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;Coefficients&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+            Estimate Std. Error z value Pr(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;|&lt;/span&gt;z&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;)    
+(Intercept)  &lt;span style=&#34;color:#ae81ff&#34;&gt;-4.6648&lt;/span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3797&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-12.284&lt;/span&gt;   &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2e-16&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt;
+grp           &lt;span style=&#34;color:#ae81ff&#34;&gt;1.2975&lt;/span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4308&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;3.012&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0026&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Exponentiating the parameter estimates gives us the &lt;em&gt;odds ratios&lt;/em&gt;. An odds ratio (OR) just tells us how odd things get relative to a reference level. So, say the probability of getting through the week without treatment is about 0.1, i.e. we have about a 10% chance of getting through the week unscathed (literally and financial) by our eager brain surgeon. This corresponds to a baseline odds of $\frac{1}{0.9} = 1.11$. If the OR turned out to be 2 then all this means is that the odds of getting through the week if you had the anti-psychotic is 2 times the odds of the other group, i.e. roughly 2.22. In probability terms this equals $\frac{2.22}{3.22} = 0.67$ i.e. there is a higher proability of getting through the week.&lt;/p&gt;
+
+&lt;p&gt;Now, in the model results shown above, the odds ratio for group membership is actually $exp(1.2975) = 3.66$. Following the ideas above, the interpretation is that, on average, the active treatment increases the odds of getting through the week without having to schedule a frontal labotomy by about 3.7 times than the people that have the placebo. The 95% confidence interval for the OR is 1.66 to 9.22. &lt;a href=&#34;https://www.youtube.com/watch?v=8ruJBKFrRCk&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;OMG, I LITERALLY CAN&amp;rsquo;T EVEN!!!!&lt;/strong&gt;&amp;amp;!!**&lt;/a&gt; - let&amp;rsquo;s go write up our paper and get this genius published!&lt;/p&gt;
+
+&lt;p&gt;Hang-on, cool your boots poodle - let&amp;rsquo;s take a step back and imagine another scenario where we get the following results:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;Coefficients&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+            Estimate Std. Error z value Pr(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;|&lt;/span&gt;z&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;)    
+(Intercept) &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.35020&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.07415&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;-4.723&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2.33e-06&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt;
+grp          &lt;span style=&#34;color:#ae81ff&#34;&gt;1.16595&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.10849&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;10.747&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2e-16&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This time the OR = exp(1.166) = 3.21 and that&amp;rsquo;s still roughly equal to what we got previously but the intercept term is quite different. What&amp;rsquo;s going on here?&lt;/p&gt;
+
+&lt;p&gt;The turgid spoiler is that your baseline odds are very different. In the first model the baseline odds are 0.01 and in the second model they are 0.7. So, what does this mean in practical terms? Firstly what it means is that you should &lt;strong&gt;NEVER&lt;/strong&gt; take an OR at face value. A useful exercise is to gain more insight is to use the model parameter estimates to predict the probability of getting through the week without a labotomy using the equation shown earlier. For the first model we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-4.6648)}} = 0.009 \\&lt;br /&gt;
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-4.6648 + 1.2975)}} = 0.033
+$$&lt;/p&gt;
+
+&lt;p&gt;and for the second we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-0.35020)}} = 0.41 \\&lt;br /&gt;
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-0.35020 + 1.16595)}} = 0.69
+$$&lt;/p&gt;
+
+&lt;p&gt;So under the first set of results there is next to no chance of getting through the week without first having a frontal labotomy regardless of the treatment. In the second case we are a little under the chance of getting heads or tails from a coin flip without the anti-psychotic and have a substantially better chance of getting through the week if we do!!!!&lt;/p&gt;
+
+&lt;p&gt;Fin.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;Apart from why am I reading this?.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;There are other ways to tackle this propblem.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Citation Tools - Zotero</title>
+      <link>https://t-student.github.io/post/emmeansr01-md/</link>
+      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
+      <description>&lt;p&gt;The &lt;code&gt;emmeans&lt;/code&gt; package in R is a replacement for &lt;code&gt;lsmeans&lt;/code&gt;. This is the start of a self-instruct (not destruct) post on how to use &lt;code&gt;emmeans&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages&#34; target=&#34;_blank&#34;&gt;https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Citation Tools - Zotero</title>
       <link>https://t-student.github.io/post/zotero01/</link>
       <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
@@ -1871,212 +1966,6 @@ df.out2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;spa
 &lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
 
 &lt;p&gt;By introducing a patient characteristic that was related to the response we were able to increase power without adjusting the sample size assumptions.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
-      <link>https://t-student.github.io/post/logistic01-interaction/</link>
-      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/logistic01-interaction/</guid>
-      <description>&lt;p&gt;The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.&lt;/p&gt;
-
-&lt;p&gt;The logistic regression model that we consider is:&lt;/p&gt;
-
-&lt;p&gt;$$
-log Pr(Y = 1) = \beta_0 + \beta_1 grp + \beta_2 time + \beta_3 grp \times time
-$$&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;250&lt;/span&gt;)
-&lt;span style=&#34;color:#75715e&#34;&gt;# Define the parameters&lt;/span&gt;
-b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4&lt;/span&gt;
-b1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.1&lt;/span&gt;
-b2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;
-b3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.3&lt;/span&gt;
-
-n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1200&lt;/span&gt;
-grp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-time &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# Model for the means&lt;/span&gt;
-p &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; b0 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b1 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b2 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b3 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time
-
-df.fig &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp, time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p)
-df.fig&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, p)
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# The probability of death&lt;/span&gt;
-ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_point()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_line()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Timepoint&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Proportion Death&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# Proportion of deaths observed in the simulated data&lt;/span&gt;
-df.tmp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; df.fig &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
-  dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;group_by(grp, time) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt;
-  dplyr&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;summarise(p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;n())
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# The Simulated data&lt;/span&gt;
-ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_jitter(height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_point(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.tmp, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp)))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_line(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.tmp, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp)))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Timepoint&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Died&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, 
-                     sec.axis &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sec_axis(&lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;, 
-                                         name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Proportion Death&amp;#34;&lt;/span&gt;,
-                                         breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The probabilities and simulated data are shown below:&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Means (p parameter)&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Simulated data&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/logit01-interactionfig1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/logit01-interactionfig2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Now we fit a logistic regression model to the simulated data using the following commands:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.fig, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; binomial()))
-&lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(coef(lm1))
-
-predict(lm1, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;response&amp;#34;&lt;/span&gt;, newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), 
-                                                     time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
-
-&lt;p&gt;which gives us parameter estimates and predicted values as follows:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Coefficients:
-            Estimate Std. Error z value Pr(&amp;gt;|z|)    
-(Intercept)  -0.4331     0.1333  -3.248  0.00116 ** 
-grp          -0.2935     0.1949  -1.506  0.13210    
-time          0.9363     0.1144   8.188 2.65e-16 ***
-grp:time     -1.6395     0.1757  -9.333  &amp;lt; 2e-16 ***
-
-exp(coef(lm1))
-(Intercept)         grp        time    grp:time 
-  0.6485035   0.7456175   2.5506104   0.1940778 
-
-predict(lm1, type = &amp;quot;response&amp;quot;, newdata = data.frame(grp = c(0, 0, 0, 1, 1, 1), time = c(0, 1, 2, 0, 1, 2)))
-        1         2         3         4         5         6 
-0.3933892 0.6232216 0.8083892 0.3259346 0.1931308 0.1059346 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The exponentiated intercept term represents the baseline odds of death. Similarly, the exponentiated group and time main effects are odds-ratios. However, the exponentiated interaction term is a ratio of odds-ratios.&lt;/p&gt;
-
-&lt;p&gt;The baseline odds are $exp(-0.4331) = 0.6485$. I have a terrible time thinking in odds (mainly because they are unbounded to the right) so I always convert to probabilities. The baseline odds of death equate to $odds/(1+odds) = 0.393$. This aligns with the &lt;code&gt;b0&lt;/code&gt; parameter in the linear predictor so things look good.&lt;/p&gt;
-
-&lt;p&gt;While the main effect for suggests that the treatment group have lower odds of death at baseline, the effect is not significant at the 0.05 level. Nevertheless we know that the probability of death diverges over time and the interaction term is clearly significant so the main effect is usually retained in the model. The result suggests that the odds of death at baseline are a factor of $exp(-0.2935) = 0.746$ lower in the treatment group compared to the control group, i.e. 0.6485 \times 0.746 = 0.484$. In probabilities this implies that the probability of death at baseline in the treatment group is 0.326.&lt;/p&gt;
-
-&lt;p&gt;In the control group we expect an increase in the odds of death by a factor of $exp(0.94) = 2.55$ for every unit increase in time. For example, at the first timepoint we expect the odds of death in the control group to be the baseline odds multiplied by 2.55, which is 1.654. This equates to a probability of death equal to 0.62, which aligns approximately with our pre-specified probability of 0.6 (and the predicted values from the code above). Similarly, at the second time point we expect that the odds of death in the control group is a whopping $exp(-0.43 + 2 \times 0.936) = 4.22, again correctly equating to the pre-specified probability of death of 0.808.&lt;/p&gt;
-
-&lt;p&gt;The interpretation of the interaction term becomes clear when considering the expected probability of death over time. First we note that in the first timepoint, the odds of death in the treatment group are $exp(-0.43-0.29+0.94-1.64) = 0.24$ equating to a probability of 0.1931. As we saw before, the odds ratio for time in the control group is $exp(0.936) = 2.55$. Similarly the OR for time in the treatment group is $exp(0.9363 + -1.6395) = 0.495$. The ratio of these two values is $0.495 / 2.55 = 0.194$ which equates to the exponentiated interaction term.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Interpreting Interaction Terms in a GLM (Poisson family, log link)</title>
-      <link>https://t-student.github.io/post/poisson01-interaction/</link>
-      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
-      <description>&lt;p&gt;The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;250&lt;/span&gt;)
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# Define the parameters&lt;/span&gt;
-b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-b1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-b2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.5&lt;/span&gt;
-b3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-
-n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;800&lt;/span&gt;
-grp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-time &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;), &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-&lt;span style=&#34;color:#75715e&#34;&gt;# Model for the means&lt;/span&gt;
-lambda &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; b0 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b1 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b2 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b3 &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time
-
-df.fig &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp, time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, lambda &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lambda)
-&lt;span style=&#34;color:#75715e&#34;&gt;# Generate poisson counts based on our means&lt;/span&gt;
-df.fig&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rpois(n, lambda)
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# The means&lt;/span&gt;
-ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lambda, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_jitter(height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;)
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# The observed data&lt;/span&gt;
-ggplot(df.fig, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y, colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;factor&lt;/span&gt;(grp))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  geom_jitter(height &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The means and simulated data are below:&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Means (lambda parameter)&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Simulated data&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/poisson01-interactionfig1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/poisson01-interactionfig2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Now we fit a poisson regression model to the simulated data using the following commands:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.fig, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; poisson()))
-&lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(coef(lm1))
-
-predict(lm1, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;response&amp;#34;&lt;/span&gt;, newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), 
-                                                     time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
-
-&lt;p&gt;which gives us parameter estimates and predicted values as follows:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Coefficients:
-            Estimate Std. Error z value Pr(&amp;gt;|z|)    
-(Intercept)  0.67039    0.05057  13.256  &amp;lt; 2e-16 ***
-grp          0.94404    0.05960  15.839  &amp;lt; 2e-16 ***
-time         0.56071    0.06338   8.846  &amp;lt; 2e-16 ***
-grp:time     0.38325    0.07348   5.216 1.83e-07 ***
-
-exp(coef(lm1))
-(Intercept)         grp        time    grp:time 
-   1.955000    2.570332    1.751918    1.467049 
-
-predict(lm1, type = &amp;quot;response&amp;quot;, newdata = data.frame(grp = c(0, 0, 1, 1), time = c(0, 1, 0, 1)))
-     1      2      3      4 
- 1.955  3.425  5.025 12.915 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The exponentiated intercept, group and time parameters align with what we expect based on the model we specified. However, the interaction term is 1.50 which clearly does not equal 6. What is going on? The answer, in a word, is that the exponentiated parameter estimates are interpreted multiplicatively. We can find the correct interpretation through some simple calculations.&lt;/p&gt;
-
-&lt;p&gt;At baseline the model indicates that we expect to see $exp(0.67) = 1.96$ events in the control cohort whereas we expect to see $exp(0.67)exp(0.94) = 5.0$ events in the treatment cohort. Both these values are close to the means we specified, namely 2 and 5.&lt;/p&gt;
-
-&lt;p&gt;Similarly, at follow up the fitted value for the control group is $exp(0.67)exp(0.56) = 3.4$. Now, if the treatment were no different from the control intervention then we would expect to see something like $exp(0.67)exp(0.94)exp(0.56) = 8.80$ events at follow up. But this isn&amp;rsquo;t the case &amp;ndash; the model says we expect to see $8.76 \times exp(0.38) = 12.92$ events. Thus, the exponentiated &lt;code&gt;grp:time&lt;/code&gt; parameter suggests that we expect to see a $exp(0.38) = 1.47$ (or approx. 150%) increase &lt;em&gt;ABOVE&lt;/em&gt; the change observed in the control group at follow up. Additionally, it is also worth to note that the interpretation is in terms of what we think the means look like there is no direct link back to our pre-specified parameters. If you do want to sanity check and recover estimates of the original parameters then you can specify the identity link as follows:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; time, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.fig, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; poisson(link &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;identity&amp;#34;&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Coefficients:
-            Estimate Std. Error z value Pr(&amp;gt;|z|)    
-(Intercept)  1.95500    0.09887  19.774   &amp;lt;2e-16 ***
-grp          3.07000    0.18682  16.433   &amp;lt;2e-16 ***
-time         1.47000    0.16401   8.963   &amp;lt;2e-16 ***
-grp:time     6.42000    0.34147  18.801   &amp;lt;2e-16 ***
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

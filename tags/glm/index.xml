@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Fri, 16 Feb 2018 00:00:00 +1100</lastBuildDate>
+    <lastBuildDate>Thu, 03 May 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/glm/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rationalising Odds Ratios Results</title>
+      <link>https://t-student.github.io/post/logistic01-ors/</link>
+      <pubDate>Thu, 03 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/logistic01-ors/</guid>
+      <description>You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.</description>
+    </item>
     
     <item>
       <title>Logistic Regression - Power Analysis</title>
