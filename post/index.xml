@@ -8,9 +8,251 @@
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +1100</lastBuildDate>
+    <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
-	<atom:link href="https://t-student.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Statistical Rethinking - Introduction and Sampling</title>
+      <link>https://t-student.github.io/post/rethinking01/</link>
+      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/rethinking01/</guid>
+      <description>
+
+&lt;p&gt;Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.&lt;/p&gt;
+
+&lt;p&gt;I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem. In order to estimate this proportion we could take the globe throw it up in the air, catch it and record whether our index finger is on water or on land. If we do this enough times, we should be able to produce a reasonable estimate the proportion of water. Here is data story is:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;The true proportion of water is $p$.&lt;/li&gt;
+&lt;li&gt;A single toss has probability $p$ of our finger being on water and $1-p$ of being on land.&lt;/li&gt;
+&lt;li&gt;We toss the globe the same way each time and all our tosses are independent of the others.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;And assume we tossed the globe 9 times and for 6 of those tosses our finger lands on water. Now, Bayesian modelling takes a prior knowledge and updates our understanding based on observed data. The appropriate lingua franca is that your &lt;em&gt;posterior&lt;/em&gt; is proportional to the product of the &lt;em&gt;likelihood&lt;/em&gt; and the &lt;em&gt;prior&lt;/em&gt;. A few definitions:&lt;/p&gt;
+
+&lt;h2 id=&#34;likelihood&#34;&gt;Likelihood&lt;/h2&gt;
+
+&lt;p&gt;This gives you about the probability of any possible observation. The likelihood can be derived from the data story, here mapping to the binomial distribution. Specifically, we have the count of water observations $w$ is distributed binomially with probability $p$ over $n$ tosses of the globe.&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(w|n, p) = \frac{n!}{w!(n-w)!}p^w (1-p)^{n-w}
+$$&lt;/p&gt;
+
+&lt;p&gt;If we used a value of $p$ equal to 0.3 and 0.9 then the probability of us counting $0, 1, 2, .., 9$ instances of water can be computed using &lt;code&gt;dbinom(0:9, size = 9, prob = 0.3)&lt;/code&gt; and are shown below. We can think of any of the bars representing the relative number of ways to get a specific number of $w$&amp;rsquo;s holding $n$ and $p$ constant. For example, the relative number of ways to get eight $w$&amp;rsquo;s is roughly zero when we assum $p = 0.3$ and about 40% when p = 0.9. In both cases the sum of the probabilities equals 1.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Proportion of water = 0.3, n = 9&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Proportion of water = 0.9, n = 9&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-bar01.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-bar02.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;parameters&#34;&gt;Parameters&lt;/h2&gt;
+
+&lt;p&gt;In this case $p$ is our parameter of interest.&lt;/p&gt;
+
+&lt;h2 id=&#34;prior&#34;&gt;Prior&lt;/h2&gt;
+
+&lt;p&gt;The prior represents our initial view of the world, it is the initial probability that we assign to each possible value of $p$, which in this case ranges from 0 to 1. Priors can be &lt;em&gt;uninformative&lt;/em&gt;, &lt;em&gt;regularising&lt;/em&gt; or &lt;em&gt;weakly informative&lt;/em&gt; and they help constrain parameters to plausible values, e.g. the proportion of water on the globe cannot be -10%. There will be more to say on this later.&lt;/p&gt;
+
+&lt;h2 id=&#34;posterior&#34;&gt;Posterior&lt;/h2&gt;
+
+&lt;p&gt;Once you have a likelihood, have identified the parameters you want to estimate together with a prior for each parameter we can obtain the &lt;em&gt;posterior&lt;/em&gt;. This is a distribution which tells us the probability of the parameters conditional on the data and the model. Mathematically the posterior is proportional to the product of the likelihood and the prior. In order for the posterior to be a valid pdf, it needs to be normalised by dividing the product of the likelihood and prior by the average likelihood as follows:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(p|w) = \frac{Pr(w|p) \times Pr(p)}{Pr(w)}
+$$&lt;/p&gt;
+
+&lt;p&gt;$Pr(w)$ is commonly called the probability of the data, $Pr(w) = E(Pr(w|p))= \int Pr(w|p)Pr(p)dp$. These integrals get tough for any non-trivial case and so we use numerical methods such as grid approximation, quadratic approximation or Markov chain Monte Carlo. The simplest approach for this example is to use the grid approximation.&lt;/p&gt;
+
+&lt;p&gt;A useful example for thinking about the normalising term is via the disease/test problem. The scenario states:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;there is a test that detects hiv 95% of the time ($Pr(+|hiv) = 0.95$)&lt;/li&gt;
+&lt;li&gt;the test gives false positives 1% of the time ($Pr(+|not \ hiv) = 0.01$), and&lt;/li&gt;
+&lt;li&gt;hiv is relatively rare, say 0.1% of the population ($Pr(hiv) = 0.001$)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So, if you test positive for hiv, what is the probability that you have hiv? In brief, we want $Pr(hiv|+result)$. However, this probability is a function of the probility of the disease in the community $Pr(hiv)$ and the probability that you get a +result conditional on having the disease. Using Bayes rule:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(hiv|+) = \frac{Pr(+|hiv) Pr(hiv)}{Pr(+)}
+$$&lt;/p&gt;
+
+&lt;p&gt;The denominator term is again the normalising constant and in this example can be computed by decomposition:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(+) = Pr(+|hiv)Pr(hiv) + Pr(+|not \ hiv)(1 - Pr(hiv))
+$$&lt;/p&gt;
+
+&lt;p&gt;Which works through to about an 8.7% probability of actually having hiv.&lt;/p&gt;
+
+&lt;h2 id=&#34;grid-approximation&#34;&gt;Grid Approximation&lt;/h2&gt;
+
+&lt;p&gt;Here is the process:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Define a grid covering the parameters values.&lt;/li&gt;
+&lt;li&gt;Compute the value of the prior at each value on the grid.&lt;/li&gt;
+&lt;li&gt;Compute the likelihood at each parameter value.&lt;/li&gt;
+&lt;li&gt;Compute the unstandardised posterior at each parameter value in the grid by multiplying the likelihood and prior.&lt;/li&gt;
+&lt;li&gt;Standardise the posterior by dividing each value by the sum of all unstandardised posterior.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If our data comprised 9 tosses from which water fell under our finger in 6 instances then here is how you use the grid approximation to compute and plot the posterior. The mode of the posterior suggests $p = 0.67$.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;n.grid &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+p.grid &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.grid)
+&lt;span style=&#34;color:#75715e&#34;&gt;# Uniform non-informative prior&lt;/span&gt;
+prior &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n.grid)
+w &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;
+likelihood &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; dbinom(w, size &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.grid)
+posterior &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; likelihood &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; prior
+posterior &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; posterior &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(posterior) 
+plot(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.grid, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; posterior, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;l&amp;#34;&lt;/span&gt;, 
+            xlab &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Probability of Water&amp;#34;&lt;/span&gt;, ylab &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Posterior Probability&amp;#34;&lt;/span&gt;)
+p.grid[posterior &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;max&lt;/span&gt;(posterior)]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-post01.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;quadratic-approximation&#34;&gt;Quadratic Approximation&lt;/h2&gt;
+
+&lt;p&gt;Quadratic approximation leverages the fact that the region near the peak of the posterior distribution will be normal-ish. So, this approach finds the posterior mode then computes the curvature near the peak which can be used to form the entire posterior distributions. The rethinking library has the map function to fit models using quadratic approximation.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;globe.qa &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rethinking&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;map(
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;alist&lt;/span&gt;(
+    w &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, p),  &lt;span style=&#34;color:#75715e&#34;&gt;# binomial like&lt;/span&gt;
+    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dunif(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)    &lt;span style=&#34;color:#75715e&#34;&gt;# uniform prior&lt;/span&gt;
+  ),
+  data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(w &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;)
+)
+&lt;span style=&#34;color:#75715e&#34;&gt;## Parameter estimates&lt;/span&gt;
+precis(globe.qa)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Which gives the following, i.e. making the assumption that the posterior is approximately gaussian, it is maximised at $p = 0.67$ and has a standard deviation of 0.16.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  Mean StdDev 5.5% 94.5%
+p 0.67   0.16 0.42  0.92
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The actual posterior here is a Beta distribution, but the approximation is reasonable in this case. Nevertheless, we need to note that the sample size is small here and that we need to be careful with small n.&lt;/p&gt;
+
+&lt;h2 id=&#34;sampling&#34;&gt;Sampling&lt;/h2&gt;
+
+&lt;p&gt;In practical terms the end result of Bayesian modelling exercise is a sample from the posterior distribution (unless you have a closed form solution). As such you need to work with the samples for conducting inference, but this isn&amp;rsquo;t such a bad thing. Earlier we obtained the posterior probability distribution from the water-globe problem and now the following should give you an idea of how to work with samples.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;4254&lt;/span&gt;)
+samples &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sample&lt;/span&gt;(p.grid, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; posterior, size &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;, replace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; T)
+plot(samples)
+rethinking&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;dens(samples)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Sample&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Density&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-sample01.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-sample02.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;What we are doing is sampling from the original grid and we are telling sample to weight the possible values of the parameter based on the posterior probability. It is obvious that the density on the right is very similar to the distribution we got earlier simply by normalising the product of the likelihood and prior. However, we can now investigate our posterior distribution simply by referencing the sample. For example, we could:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;look at the probability that the parameter is less than 0.5,&lt;/li&gt;
+&lt;li&gt;figure out what the parameter value of the lower 80% of the posterior&lt;/li&gt;
+&lt;li&gt;form a credible interval or find the mode&lt;/li&gt;
+&lt;li&gt;find the 60% highest posterior density interval for a skewed distribution (the narrowest interval that contains 60% of the distribution)&lt;/li&gt;
+&lt;li&gt;compute point estimates&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(samples &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;
+quantile(samples, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.8&lt;/span&gt;)
+rethinking&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;PI(samples, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.95&lt;/span&gt;)
+rethinking&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;HPDI(samples, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.95&lt;/span&gt;)
+median(samples)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&#34;loss-functions&#34;&gt;Loss Functions&lt;/h2&gt;
+
+&lt;p&gt;A principled way to choose a point estimate is to make use of a loss function, which tells you the cost associated with using a particular point estimate. In the water/globe problem, say there is a real life proportion of water covering the globe. Now, I tell you a point estimate from the posterior and will $100 if I am right but will lose money proportional to the distance I have from the true value. Under this loss function I will minimise my losses by using the median. There will be more on loss functions later.&lt;/p&gt;
+
+&lt;h2 id=&#34;sampling-to-simulate&#34;&gt;Sampling to Simulate&lt;/h2&gt;
+
+&lt;p&gt;Bayesian models are generative. We obtained the posterior probability of our parameter (proportion of water on the globe) and we can use that distribution to simulate data via the binomial distribution we saw earlier:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(w|n, p) = \frac{n!}{w!(n-w)!}p^w (1-p)^{n-w}
+$$&lt;/p&gt;
+
+&lt;p&gt;For example, frmo the samples, the median estimate for $p$ is $p = 0.646$ so we can generate a large number of simulated observations by using our $n = 9$ and $p = 0.646$.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3411&lt;/span&gt;)
+sim1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;, size &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.646&lt;/span&gt;)
+df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(sim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim1)
+ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_bar(width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt; )&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Simulated w&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Pr(w|n, p)&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Simulation based on single $p$&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Posterior Predictive builds in uncertainty in $p$&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-sim01.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/rethink01-sim02.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;However, what we really would like to know is what the simulated data look like if we build in our uncertainty of the parameter estimate. When we do this we obtain a &lt;em&gt;posterior predictive distribution&lt;/em&gt;. The way to do this is to use the samples as weights when simulating the data and this only necessitates a small tweak on the above code. The result is shown on the right hand side plot above. You can see how there is a much broader spread in $w$ reflecting our uncertainty about $p$. The simulation is effectively produced&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3411&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# Note that the number of simulated w&amp;#39;s equals the &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# number of samples but that isn&amp;#39;t actually necessary.&lt;/span&gt;
+sim1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;, size &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; samples)
+df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(sim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim1)
+ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  geom_bar(width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt; )&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_x_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Simulated w&amp;#34;&lt;/span&gt;, breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Pr(w|n, p)&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In this case the posterior predictive distribution is quite consistent with the data we observed in that the distribution is centred around 6. We could assess the model in other ways for example assessing the longest run or the number of switches from water to land.&lt;/p&gt;
+</description>
+    </item>
     
+    <item>
+      <title>The emmeans package</title>
+      <link>https://t-student.github.io/post/emmeansr01-md/</link>
+      <pubDate>Wed, 09 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
+      <description>&lt;p&gt;The &lt;code&gt;emmeans&lt;/code&gt; package in R is a replacement for &lt;code&gt;lsmeans&lt;/code&gt;. This is the start of a self-instruct/destruct bare bones essentials line on how to use &lt;code&gt;emmeans&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages&#34; target=&#34;_blank&#34;&gt;https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Rationalising Odds Ratios Results</title>
@@ -18,17 +260,81 @@
       <pubDate>Thu, 03 May 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/logistic01-ors/</guid>
-      <description>You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.</description>
-    </item>
-    
-    <item>
-      <title>Citation Tools - Zotero</title>
-      <link>https://t-student.github.io/post/emmeansr01-md/</link>
-      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
-      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct (not destruct) post on how to use emmeans.
-https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages</description>
+      <description>
+
+&lt;p&gt;You have just fitted a logistic regression model in R using &lt;code&gt;glm&lt;/code&gt;. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; - what, in this dark winter night, is logistic regression and what is an odds ratio?&lt;/p&gt;
+
+&lt;h2 id=&#34;logistic-regression-all-you-need-to-know-but-forgot-to-ask&#34;&gt;Logistic regression - all you need to know but forgot to ask&lt;/h2&gt;
+
+&lt;p&gt;In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; but normal regression does not. The downside is that we need to introduce the concept of &lt;em&gt;odds&lt;/em&gt;. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose
+$$&lt;/p&gt;
+
+&lt;p&gt;If we donote the response as $Y$ (we either get through the week or we don&amp;rsquo;t) and $p = Pr(Y)$ then:&lt;/p&gt;
+
+&lt;p&gt;$$
+p = Pr(Y) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 \times dose)}}
+$$&lt;/p&gt;
+
+&lt;p&gt;So for the logit we have an unbounded linear function (top figure below) and the probability (lower figure) is non-linear that is bounded by zero and one. Snazzy huh?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/logisORBig01.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here endith this part.&lt;/p&gt;
+
+&lt;h2 id=&#34;odds-ratios-sometimes-lead-us-astray&#34;&gt;Odds Ratios sometimes lead us astray&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Going back to the treatment groups scenario (active versus placebo) let&amp;rsquo;s say our results show the following:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;Coefficients&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+            Estimate Std. Error z value Pr(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;|&lt;/span&gt;z&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;)    
+(Intercept)  &lt;span style=&#34;color:#ae81ff&#34;&gt;-4.6648&lt;/span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3797&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-12.284&lt;/span&gt;   &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2e-16&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt;
+grp           &lt;span style=&#34;color:#ae81ff&#34;&gt;1.2975&lt;/span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4308&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;3.012&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0026&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Exponentiating the parameter estimates gives us the &lt;em&gt;odds ratios&lt;/em&gt;. An odds ratio (OR) just tells us how odd things get relative to a reference level. So, say the probability of getting through the week without treatment is about 0.1, i.e. we have about a 10% chance of getting through the week unscathed (literally and financially) by our eager-beaver brain surgeon &amp;ndash; let&amp;rsquo;s call him Zsolt. This corresponds to a baseline odds of $\frac{p}{1-p} = \frac{0.1}{0.9} = 0.111$. If the OR turned out to be 2 then all this means is that the odds of getting through the week if you had the anti-psychotic is 2 times the odds of the other group, i.e. roughly 0.222. In probability terms this equals $\frac{odds}{1 + odds} = \frac{0.22}{1 + 0.22} = 0.18$ i.e. there is a higher proability of getting through the week.&lt;/p&gt;
+
+&lt;p&gt;Now, in the model results shown above, the odds ratio for group membership is actually $exp(1.2975) = 3.66$. Following the ideas above, the interpretation is that, on average, the active treatment increases the odds of getting through the week without having to schedule a frontal labotomy by about 3.7 times than the people that get the placebo. The 95% confidence interval for the OR is 1.66 to 9.22. &lt;a href=&#34;https://www.youtube.com/watch?v=8ruJBKFrRCk&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;OMG, I LITERALLY CAN&amp;rsquo;T EVEN!!!!&lt;/strong&gt;&amp;amp;!!**&lt;/a&gt; - let&amp;rsquo;s go write up our paper and get this genius published!&lt;/p&gt;
+
+&lt;p&gt;Hang-on, cool your boots poodle - let&amp;rsquo;s take a step back and imagine another scenario where we get the following results:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;Coefficients&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+            Estimate Std. Error z value Pr(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;|&lt;/span&gt;z&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;)    
+(Intercept) &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.35020&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.07415&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;-4.723&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2.33e-06&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt;
+grp          &lt;span style=&#34;color:#ae81ff&#34;&gt;1.16595&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.10849&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;10.747&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2e-16&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;***&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This time the OR = exp(1.166) = 3.21 and that&amp;rsquo;s still roughly equal to what we got previously but the intercept term is quite different. What&amp;rsquo;s going on here?&lt;/p&gt;
+
+&lt;p&gt;The turgid spoiler is that your baseline odds are very different. In the first model the baseline odds are 0.01 and in the second model they are 0.7. So, what does this mean in practical terms? Firstly what it means is that you should &lt;strong&gt;NEVER&lt;/strong&gt; take an OR at face value. A useful exercise is to gain more insight is to use the model parameter estimates to predict the probability of getting through the week without a visit to Zsolt using the equation shown earlier. For the first model we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-4.6648)}} = 0.009 \\&lt;br /&gt;
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-4.6648 + 1.2975)}} = 0.033
+$$&lt;/p&gt;
+
+&lt;p&gt;and for the second we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-0.35020)}} = 0.41 \\&lt;br /&gt;
+Pr(Y|grp = active) = \frac{1}{1 + e^{-(-0.35020 + 1.16595)}} = 0.69
+$$&lt;/p&gt;
+
+&lt;p&gt;So under the first set of results there is next to no chance of getting through the week without first having a frontal labotomy regardless of the treatment. In the second case we are a little under the chance of getting heads or tails from a coin flip without the anti-psychotic and have a substantially better chance of getting through the week if we do!!!!&lt;/p&gt;
+
+&lt;p&gt;Fin.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;Apart from why am I reading this?.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;There are other ways to tackle this propblem.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -37,7 +343,58 @@ https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library
       <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/zotero01/</guid>
-      <description>Zotero looks like it might be a good replacement for Mendeley, which quite frankly is a complete waste of everyones time. Zotero is cross platform, seems reasonably well supported as suggested from the helpful information provided in the discussion forums and has extension options via plugins. This latter feature is of interest to me as I my setup involves retaining my collection meta data in one place and my pdf files on a dropbox account.</description>
+      <description>&lt;p&gt;&lt;a href=&#34;https://www.zotero.org/&#34; target=&#34;_blank&#34;&gt;Zotero&lt;/a&gt; looks like it might be a good replacement for &lt;a href=&#34;https://www.mendeley.com/&#34; target=&#34;_blank&#34;&gt;Mendeley&lt;/a&gt;, which quite frankly is a complete waste of everyones time. Zotero is cross platform, seems reasonably well supported as suggested from the helpful information provided in the discussion forums and has extension options via plugins. This latter feature is of interest to me as I my setup involves retaining my collection meta data in one place and my pdf files on a dropbox account. Zotero explicity advises against storing your metadata on a cloud account (as does endnote) but I have found that setting this up required a fair bit of trial and error.&lt;/p&gt;
+
+&lt;p&gt;I am assuming you are starting from a clean install with the following images characterising the full pre-requistes steps.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero01.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero02.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero03.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero04.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero05.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero06.JPG&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero07.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In Mendeley I selected all my entries then went to File -&amp;gt; Export -&amp;gt; and then save as a BibTex file. Next launch Zotero and go File -&amp;gt; Import and select the BibTex file. If your Mendeley library was large like mine then you would be well placed to go and get a cup of tea.&lt;/p&gt;
+
+&lt;p&gt;Some time later&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;If you expand and look at the citations in Zotero, you may see the following:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero07.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You see how the upper file is linked but the bottom one is an attachment. What has happened I do not know but I do know that if you right click on the upper entry and select &amp;lsquo;Show File&amp;rsquo; it will take you to the DropBox folder but if you do the same on the bottom one it will take you Zotero storage area. Clearly this sub-optimal, and I haven&amp;rsquo;t a clue why it happens although I thought it had something to do with the meta data not having an author, but that is not the case. Anyway, it can be fixed.&lt;/p&gt;
+
+&lt;p&gt;First do an advanced search (the magnifier glass) and select &amp;ldquo;Attachment file type&amp;rdquo; is &amp;ldquo;PDF&amp;rdquo;. This will show you all the files that have attached the files into the Zotero storage rather than the cloud storage. Save the search, e.g. attachedpdfs and you will see it appear in the sidebar. Now, click on that saved search and then select all the files enclosed, right click and select &amp;ldquo;Manage Attachments&amp;rdquo; -&amp;gt; &amp;ldquo;Rename Attachments&amp;rdquo; and wait.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero09.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once the renaming process is done you should be able to go to the storage directory and find NO pdfs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zotero10.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Fin (for now).&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -46,10 +403,167 @@ https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library
       <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/dates01/</guid>
-      <description>As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.
-There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.
-Date Class These are the `easy&amp;rsquo; ones to deal with and are stored internally as integers from 1970-01-01.
-as.Date(&amp;quot;2017-01-12&amp;quot;) as.Date(&amp;quot;2017-24-01&amp;quot;, format = &amp;quot;%Y-%d-%m&amp;quot;) # Alternative origin - i.</description>
+      <description>
+
+&lt;p&gt;As we all know, dates can be a harrowing/boarderline traumatic experience. Here I give a condensed and hopefully rapid overview of dates in R.&lt;/p&gt;
+
+&lt;p&gt;There are multiple date classes in R. The simplest is the Date class, but there are also POSIXt dates and a relatively recent Lubridate package.&lt;/p&gt;
+
+&lt;h2 id=&#34;date-class&#34;&gt;Date Class&lt;/h2&gt;
+
+&lt;p&gt;These are the `easy&amp;rsquo; ones to deal with and are stored internally as integers from 1970-01-01.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;as.Date(&amp;quot;2017-01-12&amp;quot;)
+as.Date(&amp;quot;2017-24-01&amp;quot;, format = &amp;quot;%Y-%d-%m&amp;quot;)
+# Alternative origin - i.e. Excel
+as.Date(400, origin = &amp;quot;1900-01-01&amp;quot;)
+difftime(as.Date(&amp;quot;2018-01-01&amp;quot;), as.Date(&amp;quot;2017-01-01&amp;quot;), units = &amp;quot;days&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;posixt-datetime-variants&#34;&gt;POSIXt - datetime variants&lt;/h2&gt;
+
+&lt;p&gt;Portable Operating System Interface (POSIX) is an interoperability standard (that not many people seem to have much faith in). In R there is POSIXlt and POSIXct for local and for calendar time respecitively. The former is a list, the latter is a number (seconds since origin):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; unclass(as.POSIXlt(Sys.time()))
+$sec
+[1] 30.34591
+
+$min
+[1] 35
+
+$hour
+[1] 12
+
+$mday
+[1] 25
+
+$mon
+[1] 3
+
+$year
+[1] 118
+
+$wday
+[1] 3
+
+$yday
+[1] 114
+
+$isdst
+[1] 0
+
+$zone
+[1] &amp;quot;AEST&amp;quot;
+
+$gmtoff
+[1] 36000
+
+attr(,&amp;quot;tzone&amp;quot;)
+[1] &amp;quot;&amp;quot;     &amp;quot;AEST&amp;quot; &amp;quot;AEDT&amp;quot;
+
+
+
+# POSIXct
+unclass(Sys.time())
+[1] 1524623797
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can display (or store) dates in different formats by using the format command or option:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;as.POSIXct(&amp;quot;101221 10:22&amp;quot;, format = &amp;quot;%y%m%d %H:%M&amp;quot;)
+[1] &amp;quot;2010-12-21 10:22:00 AEDT&amp;quot;
+
+as.character(as.POSIXct(&amp;quot;101221 10:22&amp;quot;, 
+             format = &amp;quot;%y%m%d %H:%M&amp;quot;), format = &amp;quot;%m-%d-%y %H:%M&amp;quot;)
+[1] &amp;quot;12-21-10 10:22&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Data frames do weird things to dates. Specifically, when you store a &lt;code&gt;POSIXlt&lt;/code&gt; variable in a &lt;code&gt;data.frame&lt;/code&gt; it is converted to a POSIXct. However, if you assign a POSIXlt to a data.frame field using &lt;code&gt;$&lt;/code&gt; then the lt class is retained!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;hotdate &amp;lt;- &amp;quot;20081101 01:20:00&amp;quot;
+ct &amp;lt;- as.POSIXct(hotdate, format = &amp;quot;%Y%m%d %H:%M:%S&amp;quot;)
+lt &amp;lt;- as.POSIXlt(hotdate, format = &amp;quot;%Y%m%d %H:%M:%S&amp;quot;)
+
+df &amp;lt;- data.frame(orig = hotdate, 
+                 ct = ct, 
+                 lt = lt)
+
+# POSIXlt converted to ct
+&amp;gt; str(df)
+&#39;data.frame&#39;: 1 obs. of  3 variables:
+ $ orig: Factor w/ 1 level &amp;quot;20081101 01:20:00&amp;quot;: 1
+ $ ct  : POSIXct, format: &amp;quot;2008-11-01 01:20:00&amp;quot;
+ $ lt  : POSIXct, format: &amp;quot;2008-11-01 01:20:00&amp;quot;
+
+# POSIXlt NOT converted to ct!!!!
+df$lt2 &amp;lt;- as.POSIXlt(hotdate, format = &amp;quot;%Y%m%d %H:%M:%S&amp;quot;)
+str(df)
+&#39;data.frame&#39;: 1 obs. of  4 variables:
+ $ orig: Factor w/ 1 level &amp;quot;20081101 01:20:00&amp;quot;: 1
+ $ ct  : POSIXct, format: &amp;quot;2008-11-01 01:20:00&amp;quot;
+ $ lt  : POSIXct, format: &amp;quot;2008-11-01 01:20:00&amp;quot;
+ $ lt2 : POSIXlt, format: &amp;quot;2008-11-01 01:20:00&amp;quot;
+
+
+# Rounding
+# NOPE
+df[, &amp;quot;ct&amp;quot;] &amp;lt;- round(df[, &amp;quot;ct&amp;quot;], units = &amp;quot;hours&amp;quot;)
+
+# FORCE
+df[, &amp;quot;ct&amp;quot;] &amp;lt;- as.POSIXct(round(ct, units = &amp;quot;hours&amp;quot;))
+
+# NAH
+df[, &amp;quot;lt&amp;quot;] &amp;lt;- round(lt, units = &amp;quot;hours&amp;quot;)
+Warning message:
+  In `[&amp;lt;-.data.frame`(`*tmp*`, , &amp;quot;lt&amp;quot;, 
+                      value = list(sec = 0, min = 0L,  :
+                      provided 11 variables to replace 1 variables
+
+# MAGIC via $  !
+df$lt &amp;lt;- round(lt, units = &amp;quot;hours&amp;quot;)                     
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;lubridate&#34;&gt;Lubridate&lt;/h2&gt;
+
+&lt;p&gt;Makes life a bit easier (sometimes) and represents time via different objects. Important concepts are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;instants&lt;/li&gt;
+&lt;li&gt;intervals&lt;/li&gt;
+&lt;li&gt;durations&lt;/li&gt;
+&lt;li&gt;periods&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;ymd_hms(&amp;quot;2012-12-31 23:59:59&amp;quot;)
+## [1] &amp;quot;2012-12-31 23:59:59 UTC&amp;quot;
+
+month(ldate) &amp;lt;- 8
+
+# An _instant_ in time:
+lubridate::now()
+
+# Last day of the current month
+lubridate::ceiling_date(now(), unit = &amp;quot;month&amp;quot;) - lubridate::days(1)
+
+# The time between two instants is an _interval_ 
+
+# Interval constructed using _duration_ i.e. dyears
+# dyears record the exact number of seconds in a time span and deals with
+# leap years, daylight savings etc so you need to be careful in its use.
+lubridate::ymd_hms(hotdate) - lubridate::dyears(1)
+
+# versus
+# Interval constructed using _period_ i.e. years
+lubridate::ymd_hms(hotdate) - lubridate::years(1)
+
+
+# Nice
+now() %within% interval(ymd(&amp;quot;2012-07-01&amp;quot;), ymd(&amp;quot;2019-06-30&amp;quot;))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Painless?&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -58,10 +572,40 @@ as.Date(&amp;quot;2017-01-12&amp;quot;) as.Date(&amp;quot;2017-24-01&amp;quot;, 
       <pubDate>Thu, 19 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/propensity01/</guid>
-      <description>A propensity score is just the probability of receiving treatment - we have:
-$$ Propensity \ Score = \pi_i = Pr(trt = 1|X_i) $$
-So if we had a single (pre-treatment) covariate, say age, on which the propensity score was computed we may have that older people were more likely to receive the treatment.
-Now, it can be the case that two people with different covariate values have the same probability of treatment (i.</description>
+      <description>
+
+&lt;p&gt;A propensity score is just the probability of receiving treatment - we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+Propensity \ Score = \pi_i = Pr(trt = 1|X_i)
+$$&lt;/p&gt;
+
+&lt;p&gt;So if we had a single (pre-treatment) covariate, say age, on which the propensity score was computed we may have that older people were more likely to receive the treatment.&lt;/p&gt;
+
+&lt;p&gt;Now, it can be the case that two people with different covariate values have the same probability of treatment (i.e. the same propensity score). This means that those two people are just as likely to be in the treatment group.&lt;/p&gt;
+
+&lt;p&gt;Conveniently, it also means that if you restrict your sample to those individuals with the same propensity score you will get balance. In other words, conditional on propensity score, the distribution of the $X$&amp;rsquo;s will be balanced and hence the propensity score is a way to achieve &lt;strong&gt;balance&lt;/strong&gt; between groups. BTW, we are assuming ignorability - treatment is randomised given $X$.&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(X=x|\pi_i(X)=p, trt = 1) = Pr(X=x|\pi_i(X)=p, trt = 0)
+$$&lt;/p&gt;
+
+&lt;h2 id=&#34;estimating-the-propensity-score&#34;&gt;Estimating the Propensity Score&lt;/h2&gt;
+
+&lt;p&gt;In an RCT the $Pr(trt = 1| X) = Pr(trt = 0| X) = 0.5$ but in an observational study we do not know what $Pr(trt = 1| X)$ is. However, we observe both $trt$ and we observe $X$ so theoretically we should be able to estimate the propensity score?&lt;/p&gt;
+
+&lt;p&gt;We start by treating the $trt$ as the response and we identify a suitable method for estimating the probability of $trt$. Typically/commonly logistic regression is used but you can choose any method that gives us a probability of $trt$ for each subject.&lt;/p&gt;
+
+&lt;p&gt;In order to achieve a good outcome in terms of balance we need to have &lt;strong&gt;overlap&lt;/strong&gt; in the propensity scores and we should also see a difference in where the peaks of the probability distribution are, like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/propensity01.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you do not see something like the above but rather you see very little overlap then it is likely that the &lt;em&gt;positivity&lt;/em&gt; assumption is violated. Additionally, if you have people that effectively had no chance of getting the treatment then we cannot hope to learn about the treatment effect by considering these people. An option here is to simply remove the people in the sample that do not overlap.&lt;/p&gt;
+
+&lt;p&gt;After we have got sufficient overlap we match on propensity score using nearest neighbour or optimal matching. However, prior to this it is common to take the &lt;em&gt;logit&lt;/em&gt; of the propensity score (in order to spread out the score) which makes it a bit easier to match. Additionally, we can construct a maximum distance between propensity scores that we are will to tolerate. One method is to take the standard deviation of the logit transformed propensity score and set a threshold of 0.2 times the sd.&lt;/p&gt;
+
+&lt;p&gt;Once all this is done we can proceed with a standard analysis.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -70,8 +614,124 @@ Now, it can be the case that two people with different covariate values have the
       <pubDate>Sun, 15 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/multinomial0/</guid>
-      <description>Ref: https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf
-Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species1. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies.</description>
+      <description>&lt;p&gt;Ref: &lt;a href=&#34;https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf&#34; target=&#34;_blank&#34;&gt;https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?&lt;/p&gt;
+
+&lt;p&gt;Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
+But we don&amp;rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:&lt;/p&gt;
+
+&lt;p&gt;$$
+log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = beta_0 + beta&lt;em&gt;1 bioscore&lt;/em&gt;{i} = Z_{mi}
+$$&lt;/p&gt;
+
+&lt;p&gt;To compute the probabilities you need to do:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(Y&lt;em&gt;i = m) = \frac{exp(Z&lt;/em&gt;{mi})}{1 + \sum&lt;em&gt;2^M exp(Z&lt;/em&gt;{hi}) }
+$$&lt;/p&gt;
+
+&lt;p&gt;and for the reference category you just replace the numerator with a 1.&lt;/p&gt;
+
+&lt;p&gt;After fitting the multinomial model you get a table showing the parameter estimates from each model. We are predicting the logit - this is the odds of membership in a given category of the outcome variable. The coefficients below give the change in the logit for each one unit change in the predictor.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;--------------------------------------------------------------------------------
+pathology0no~4 |      Coef.   Std. Err.      z    P&amp;gt;|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+Benign         |  (base outcome)
+---------------+----------------------------------------------------------------
+Squamous       |
+    Hscore_ngf |   .0991562   .0110688     8.96   0.000     .0774617    .1208507
+         _cons |  -7.980021   .8811443    -9.06   0.000    -9.707032   -6.253009
+---------------+----------------------------------------------------------------
+Adenocarcinoma |
+    Hscore_ngf |   .0682796   .0102071     6.69   0.000      .048274    .0882852
+         _cons |  -5.596755   .7660139    -7.31   0.000    -7.098115   -4.095395
+---------------+----------------------------------------------------------------
+Small_Cell     |
+    Hscore_ngf |   .0018791    .021452     0.09   0.930    -.0401661    .0439243
+         _cons |  -2.827464   1.324856    -2.13   0.033    -5.424135    -.230793
+--------------------------------------------------------------------------------
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;--------------------------------------------------------------------------------
+pathology0no~4 |        RRR   Std. Err.      z    P&amp;gt;|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+Benign         |  (base outcome)
+---------------+----------------------------------------------------------------
+Squamous       |
+    Hscore_ngf |   1.104239   .0122226     8.96   0.000     1.080541    1.128456
+         _cons |   .0003422   .0003016    -9.06   0.000     .0000609    .0019247
+---------------+----------------------------------------------------------------
+Adenocarcinoma |
+    Hscore_ngf |   1.070665   .0109284     6.69   0.000     1.049458      1.0923
+         _cons |   .0037099   .0028418    -7.31   0.000     .0008267    .0166492
+---------------+----------------------------------------------------------------
+Small_Cell     |
+    Hscore_ngf |   1.001881   .0214924     0.09   0.930     .9606299    1.044903
+         _cons |   .0591627   .0783821    -2.13   0.033     .0044089    .7939038
+--------------------------------------------------------------------------------
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Thus, the relative probability of being squamous rather than benign increases by about 10 percent for every unit increase in the hscore. (Relative probabilities are also called relative odds.)&lt;/p&gt;
+
+&lt;p&gt;A common mistake is to interpret the coefficient as meaning that the probability of squamous is higher for higher hscores. It is only the relative probability of squamous over benign that is higher. To obtain a fuller picture we need to consider the second equation as well. The coefficient of black in the home equation is 0.813. Exponentiating, we obtain&lt;/p&gt;
+
+&lt;p&gt;Detouring just slightly let&amp;rsquo;s note first that within the context of a &lt;em&gt;polytomous response&lt;/em&gt; we might be considering an &lt;em&gt;ordinal&lt;/em&gt; response or we could be dealing with and unordered or &lt;em&gt;nomianal&lt;/em&gt; response. Ordinal data implicitly contains more information than nominal data and by using this information we can usually construct simpler models.&lt;/p&gt;
+
+&lt;p&gt;Below I construct some dummy zombie data by assuming a&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;get.data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(n.per.grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;, 
+                     p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3&lt;/span&gt;,
+                     or &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(or.i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.1&lt;/span&gt;, 
+                            or.ii &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.3&lt;/span&gt;, 
+                            or.111 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.6&lt;/span&gt;)) {
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Baseline odds:&lt;/span&gt;
+  b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; p.ctl))
+  bgrp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(or)
+  beta &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;matrix&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(b0, bgrp), ncol &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+  
+  grp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as.factor&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;), each &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.per.grp))
+  dd &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp)
+  mm &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; model.matrix(&lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp, dd)
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Linear predictor for the simple group comparison&lt;/span&gt;
+  logit.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; mm &lt;span style=&#34;color:#f92672&#34;&gt;%*%&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;beta&lt;/span&gt;
+
+  p.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y)) 
+  y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(mm), &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.y)
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Our pseudo sample.&lt;/span&gt;
+  df.dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(id &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(mm), 
+                       z &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp,
+                       z1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mm[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
+                       z2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mm[,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;],
+                       z3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mm[,&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;],
+                       p.y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.y,
+                       y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y)
+  
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;(df.dat)
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;23452&lt;/span&gt;)
+df.1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; get.data()
+
+df.2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;droplevels&lt;/span&gt;(df.1[df.1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;z &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; df.1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;z &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,])
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; z, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df.2, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; binomial))
+predict(lm1, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;response&amp;#34;&lt;/span&gt;,
+  newdata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(z &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;unique&lt;/span&gt;(df.2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;z)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;I think it is fair to generalise Darwin to the undead.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -80,9 +740,69 @@ Think about a sample of zombies (I know, sorry) that fall into mutually exclusiv
       <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/inversecdfrand/</guid>
-      <description>Imagine you are in the perilous and life threatening situation of being asked to generate random numbers. Compounding the peril is that we have also been asked to ensure that the probability of choosing a given number is linearly proportional to its magnitude.
-OK, let&amp;rsquo;s start by imagining what the probability density function will look like - probably something list this:
-The area under the pdf must integrate to 1 so if the pdf is a linearly increasing function with support (arbitrarily say) 0 to 3.</description>
+      <description>&lt;p&gt;Imagine you are in the perilous and life threatening situation of being asked to generate random numbers. Compounding the peril is that we have also been asked to ensure that the probability of choosing a given number is linearly proportional to its magnitude.&lt;/p&gt;
+
+&lt;p&gt;OK, let&amp;rsquo;s start by imagining what the probability density function will look like - probably something list this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/wedgepdf.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The area under the pdf must integrate to 1 so if the pdf is a linearly increasing function with support (arbitrarily say) 0 to 3.2 then the maximum density of the above must be equal to 0.625. This comes from the formula for the area of a triangle $\frac{1}{2}base \times height$.&lt;/p&gt;
+
+&lt;p&gt;$$
+\frac{3.2 \times h}{2} = 1 \\&lt;br /&gt;
+=&amp;gt; h = 0.625
+$$&lt;/p&gt;
+
+&lt;p&gt;And so the gradient of our wedge equals $m = 0.625 / 3.2 \approx 0.195$ and can define the pdf as:&lt;/p&gt;
+
+&lt;!-- Note the idiosyncratic type setting for latex stuff  //--&gt;
+
+&lt;p&gt;$$f_x(x) = \left\{\begin{array}
+{ll}
+0.195 x  &amp;amp; 0 \le x \le 3.2  \\\
+0  &amp;amp; otherwise
+\end{array}\right.
+$$&lt;/p&gt;
+
+&lt;p&gt;You can check if you like but the above integrates to 1. We want to generate values that are distributed according to $f_x(x)$ and cumulative probability distribution $F_x(x)$. The trick to doing this is to note that if $y = F_x(x)$ has a uniform distribution on $[0, 1]$ then $F_x^{-1}(y)$ has the same distribution as $x$.&lt;/p&gt;
+
+&lt;p&gt;The integral of $f_x$ is (obviously) just $\frac{0.195x^2}{2}$ and the inverse of this function is:&lt;/p&gt;
+
+&lt;p&gt;$$
+F_x^{-1}(x) = \sqrt{\frac{2x}{0.195}}
+$$&lt;/p&gt;
+
+&lt;p&gt;because&lt;/p&gt;
+
+&lt;p&gt;$$
+F_x^{-1}(F(x)) = \sqrt{\frac{2 \times \frac{0.195x^2}{2}}{0.195}} = x
+$$&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Aside - the way you work out the inverse function is to put $z = \frac{0.195x^2}{2}$ then replace the $z$ with $x$ and $x$ with $z$ and then solve for $z$.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;OK, all we have to do now is generate $u$ from a standard uniform distribution, compute x such that $F_x(x) = u$ and then take x to be the random number from our wedgy distribution. The code for this is as follows:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Work out maximum density&lt;/span&gt;
+h &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# m is the slope of the pdf&lt;/span&gt;
+m &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; h &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# so the following is the pdf for 0 to 3.2&lt;/span&gt;
+x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;, by &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)
+fx &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; m &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; x
+plot(x, fx, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;l&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Now apply the inverse cdf method:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# generate standard uniform&lt;/span&gt;
+u &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; runif(&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# throw the u random variable into the inverse cdf&lt;/span&gt;
+x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sqrt&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; u &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; m)
+&lt;span style=&#34;color:#75715e&#34;&gt;# x should be distribution as per fx&lt;/span&gt;
+hist(x)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Which gives the following histogram and that&amp;rsquo;s close enough to the target distribution for me!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/wedgehist.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -91,8 +811,237 @@ The area under the pdf must integrate to 1 so if the pdf is a linearly increasin
       <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/stata-regression/</guid>
-      <description>Simple Linear Regression OK, lets load the R mtcars data set, have a look at it and fit a simple linear regression model to a couple of the variables.
-// Change directory to the one where the mtcars.csv file lives. cd C:\Users\mjones\Dropbox\code-examples\stata\regression101 // Load csv insheet using &amp;quot;mtcars.csv&amp;quot;, clear // Add a record ID gen case_id = _n // Descriptive stats and conditional listings of data describe list in 1/5 list mpg cyl disp hp drat in 1/3 codebook mpg cyl summarize mpg summarize mpg, detail tabulate carb gear list car mpg if carb &amp;lt; 4 // Scatterplot matrix graph matrix mpg cyl disp hp, half // Basic regression regress mpg hp  The results suggest that there is an association between miles per gallon and horse power.</description>
+      <description>
+
+&lt;h2 id=&#34;simple-linear-regression&#34;&gt;Simple Linear Regression&lt;/h2&gt;
+
+&lt;p&gt;OK, lets load the R mtcars data set, have a look at it and fit a simple linear regression model to a couple of the variables.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Change directory to the one where the mtcars.csv file lives.
+cd C:\Users\mjones\Dropbox\code-examples\stata\regression101
+// Load csv
+insheet using &amp;quot;mtcars.csv&amp;quot;, clear
+// Add a record ID
+gen case_id = _n
+
+// Descriptive stats and conditional listings of data
+describe
+list in 1/5
+list  mpg cyl disp  hp drat  in 1/3
+codebook mpg cyl
+summarize mpg
+summarize mpg, detail
+tabulate carb gear
+list car mpg if carb &amp;lt; 4
+
+// Scatterplot matrix
+graph matrix mpg cyl disp hp, half
+
+// Basic regression
+regress mpg hp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The results suggest that there is an association between miles per gallon and horse power. Specifically, for every unit increase in hp the mpg reduces by about 0.07 mpg.&lt;/p&gt;
+
+&lt;p&gt;We can use the model to make predictions for mpg and then plot them. You can also plot the residuals.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Predict fitted values
+predict fv
+predict e, residual
+twoway (scatter mpg hp) (lfit mpg hp)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/stata-regressionfit.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Other items that can be generated from the model include:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Description&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Option for &lt;code&gt;predict&lt;/code&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;residuals&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;resid&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;standardized residuals&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;rstandard&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;studentized or jackknifed residuals&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;rstudent&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;leverage&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;lev or hat&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;standard error of the residual&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;stdr&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Cook&amp;rsquo;s D&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;cooksd&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;standard error of predicted individual y&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;stdf&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;standard error of predicted mean y&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;stdp&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;multiple-linear-regression&#34;&gt;Multiple Linear Regression&lt;/h2&gt;
+
+&lt;p&gt;Now we fit a multivariate model and see that both number of cylinders and car weight are associated with mpg. Specifically, for each additional cylinder we see a 1.5 mpg reduction in the miles per gallon (holding weight constant). Similarly, for each 1000 lb increase in weight, the miles per gallon goes down by about 3.2 (holding the number of cylinders in the car constant). If we want to get an idea of the relative strength of the covariates (i.e. figure out what is explaining the majority of the variance) then we can issue the &lt;code&gt;regress&lt;/code&gt; command with an added &lt;code&gt;beta&lt;/code&gt;. Finally, we can treat the cylinder covariate as a factor by writing it with a &lt;code&gt;i.&lt;/code&gt; prefix. This permits a non-linear relationship between the cylinders and mpg.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;regress mpg cyl wt
+regress mpg cyl wt, beta
+regress mpg i.cyl wt
+
+// Output from last command
+------------------------------------------------------------------------------
+         mpg |      Coef.   Std. Err.      t    P&amp;gt;|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |  -4.255582   1.386073    -3.07   0.005    -7.094824    -1.41634
+          8  |  -6.070859   1.652288    -3.67   0.001    -9.455418   -2.686301
+             |
+          wt |  -3.205614   .7538958    -4.25   0.000    -4.749899   -1.661328
+       _cons |   33.99079   1.887794    18.01   0.000     30.12382    37.85776
+------------------------------------------------------------------------------
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;diagnostics&#34;&gt;Diagnostics&lt;/h2&gt;
+
+&lt;p&gt;Inherent in using any statistical technique/model are simplifying assumptions and regression is no exception to this rule. The common diagnostic assessments include checking for:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;odd/influential data&lt;/li&gt;
+&lt;li&gt;normality of residuals&lt;/li&gt;
+&lt;li&gt;constant variance in the residuals&lt;/li&gt;
+&lt;li&gt;multicollinearity&lt;/li&gt;
+&lt;li&gt;linearity&lt;/li&gt;
+&lt;li&gt;model specification&lt;/li&gt;
+&lt;li&gt;independence of observations&lt;/li&gt;
+&lt;li&gt;predictors are measured without error&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;odd-looking-data&#34;&gt;Odd Looking Data&lt;/h3&gt;
+
+&lt;p&gt;Data can look odd in a few ways, namely outliers, leverage and influence.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Outliers&lt;/strong&gt; these are response values that are way out of the range of all the other response values. For example, maybe you have a persons height that has been entered as 180 metres instead of 1.8m. You can pick these up by reviewing the studentised resiudals.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Outliers
+predict r, rstudent
+sort r
+list sid state r in 1/10
+list sid state r in -10/l
+// Leverage
+predict lev, leverage
+stem lev
+lvr2plot
+// add , mlabel(var of interest) if you want to add a label to points
+
+// Influence
+predict d, cooksd
+// Leave one out assessment
+dfbeta
+scatter _dfbeta_1 _dfbeta_2 _dfbeta_3 case_id, yline(.28 -.28)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Leverage&lt;/strong&gt; relates to covariate values that are way beyond the rest of the covariate range. These kind of points can be highly influential on the parameter estimates.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/stata-regressionleverage.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Influential&lt;/strong&gt; These are any points for that, if removed, would result in a big change in the parameter estimates. Cooks distance is a useful measure for global influential points. The higher the cooksd, the more influential - you are looking for points that are way outside the crowd rather than an absolute value. Another useful tool is the &lt;code&gt;dfbeta&lt;/code&gt;. This indicates how much the parameter estimates change by leave-one-out analysis to assess the impact in terms of multiples of the parameter estimate standard errors.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;So, if an observation has a dfbeta for the weight predictor of 0.29 then removing this point results increases the coefficient for weight by $0.29 \times se wt$. Typically any dfbeta in excess of $2/sqrt(n)$ merits investigation.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Added variable/Partial regression plots&lt;/strong&gt; created with the &lt;code&gt;avplot&lt;/code&gt; help you assess influential points. For example, the avplot for weight shows mpg and weight after adjusting for all other predictors. &lt;code&gt;avplots&lt;/code&gt; produces these plots for all variables in one go.&lt;/p&gt;
+
+&lt;p&gt;If you identify potentially problematic points the thing to do first is assess the impact on the model parameters and prediction by fitting subsets of the data. In order to do this you can add a conditional statement at the end of the regress command.&lt;/p&gt;
+
+&lt;h3 id=&#34;normality&#34;&gt;Normality&lt;/h3&gt;
+
+&lt;p&gt;One of the assumptions for regression analysis is normality in the errors. The outcome (dependent) and predictor variables don&amp;rsquo;t need to be normally distributed. In fact, the residuals need to be normal only for the t-tests to be valid. So if you are interested in inference derived from the parameter t-tests then you need to concern yourself with normality.&lt;/p&gt;
+
+&lt;p&gt;Below is a kernel density estimate from the response and a qqplot of the residuals and a normal quantile plot graphs the quantiles of a variable against the quantiles of a normal (Gaussian) distribution.&lt;/p&gt;
+
+&lt;p&gt;We can also produce a normal probability plot since this kind of plot is sensitive to non-normality in the middle whereas qqnorm is more sensitive in the tails.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;kdensity mpg, normal 
+qnorm r
+pnorm r
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Distribution of mpg&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;QQplot&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/stataregresskernelden.jpg&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/stataregresqnorme.jpg&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The above plots look OK as we do not see major deviations from normality. If we did see problems we might want to consider variable transforms such as log or square root on the covariates and/or response variable. Two commands that help with this are &lt;code&gt;ladder&lt;/code&gt; and &lt;code&gt;gladder&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ladder enroll
+gladder enroll
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;non-constant-variance&#34;&gt;Non-constant Variance&lt;/h3&gt;
+
+&lt;p&gt;If you see non-constant variance in your residuals then your inference is likely to be incorrect. The easiest way to assess this is to simply look at the residuals against the fitted values. If you see a fan type pattern then you are in bother. There are various tests for non-constant variance, e.g. &lt;code&gt;estat imtest&lt;/code&gt; and &lt;code&gt;estat hettest&lt;/code&gt; but these are probably overkill.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rvfplot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;multicollinearity&#34;&gt;Multicollinearity&lt;/h3&gt;
+
+&lt;p&gt;If your covariates are correlated then it can lead to instability in the parameter estimates. A typical scenario where this comes up is when you have included both a term and squared version of the term in the same model. To assess use vif, ideally they should all be lower than 10. Centering variables can sometimes help if you seem to have a problem.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vif
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;linearity&#34;&gt;Linearity&lt;/h3&gt;
+
+&lt;p&gt;This is simply about ensuring you have a linear rather than curvilinear relationship between the response and the covariates.&lt;/p&gt;
+
+&lt;h3 id=&#34;model-specification&#34;&gt;Model Specification&lt;/h3&gt;
+
+&lt;p&gt;This occurs when you have missed out an important variable from your model. The &lt;code&gt;linktest&lt;/code&gt; is a good way to investigate this. linktest assumes that a regression is properly specified if one cannot find any additional independent variables that are significant except by chance. The &lt;code&gt;_hat&lt;/code&gt; variable should be significant but the &lt;code&gt;_hatsq&lt;/code&gt; should not be. &lt;code&gt;ovtest&lt;/code&gt; is another command that is worth investigating.&lt;/p&gt;
+
+&lt;h3 id=&#34;dependent-residuals&#34;&gt;Dependent Residuals&lt;/h3&gt;
+
+&lt;p&gt;If you have clustering or repeat measures and you haven&amp;rsquo;t accounted for it in your model then you may have issues with the indepence assumption. To address this we can issue the &lt;code&gt;cluster&lt;/code&gt; option in the &lt;code&gt;regress&lt;/code&gt; command. We can test for independence using the Durbin Watson statistics - &lt;code&gt;dwstat&lt;/code&gt;. Note that you have to issue &lt;code&gt;tsset case_id&lt;/code&gt; first.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -101,8 +1050,109 @@ The area under the pdf must integrate to 1 so if the pdf is a linearly increasin
       <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/shiny01-dyndash/</guid>
-      <description>Dashboards extend the functionality of shiny. Shiny uses Bootstrap for layout whereas Shinydashboard uses AdminLTE, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.
-library(shiny) library(shinydashboard) ui &amp;lt;- dashboardPage( dashboardHeader(), dashboardSidebar(), dashboardBody() ) server &amp;lt;- function(input, output){ } shinyApp(ui, server)  Before we go any further, I should note, the docs are here.</description>
+      <description>
+
+&lt;p&gt;Dashboards extend the functionality of shiny. Shiny uses &lt;a href=&#34;https://getbootstrap.com/&#34; target=&#34;_blank&#34;&gt;Bootstrap&lt;/a&gt; for layout whereas Shinydashboard uses &lt;a href=&#34;https://adminlte.io/themes/AdminLTE/index2.html&#34; target=&#34;_blank&#34;&gt;AdminLTE&lt;/a&gt;, which is a theme built on top of Bootstrap. Here is a basic template - every dashboard must have the header, sidebar and body. However, these can be hidden if necessary.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+library(shinydashboard)
+
+ui &amp;lt;- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody()
+)
+
+server &amp;lt;- function(input, output){
+
+}
+shinyApp(ui, server)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Before we go any further, I should note, the docs are &lt;a href=&#34;http://rstudio.github.io/shinydashboard/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;OK, so Shinydashboard has analogous layout controls to shiny, for example &lt;code&gt;fluidRow&lt;/code&gt; and it uses &lt;code&gt;box&lt;/code&gt; as the main container for elements. Let&amp;rsquo;s add in some of the functionality from the Shiny 101 post.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+library(shinydashboard)
+ui &amp;lt;- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody(
+    fluidRow(
+      box(width = 8, plotOutput(&amp;quot;plot1&amp;quot;, height = 250)),
+      box(width = 4,
+          title = &amp;quot;Control&amp;quot;,
+          sliderInput(&amp;quot;slider&amp;quot;, &amp;quot;Observations&amp;quot;, 
+                      min = 1, max = 100, value = 50)
+        
+      )
+    )
+  )
+)
+
+server &amp;lt;- function(input, output){
+  output$plot1 &amp;lt;- renderPlot({
+    n &amp;lt;- input$slider
+    hist(rnorm(n))
+  })
+}
+shinyApp(ui, server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In addition to &lt;code&gt;box&lt;/code&gt; there is &lt;code&gt;infoBox&lt;/code&gt; and &lt;code&gt;valueBox&lt;/code&gt; for presenting particular forms of data to the user.&lt;/p&gt;
+
+&lt;h2 id=&#34;sidebar-header&#34;&gt;Sidebar &amp;amp; Header&lt;/h2&gt;
+
+&lt;p&gt;We can place a menu in the sidebar using the &lt;code&gt;sidebarMenu&lt;/code&gt; function in the UI. Within &lt;code&gt;sidebar&lt;/code&gt; we define &lt;code&gt;menuItems&lt;/code&gt; each of which corresponds to a tabItem in the dash board body. Note that the icons are obtained from &lt;em&gt;Font Awesome&lt;/em&gt;, which ships with Shiny.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+library(shinydashboard)
+ui &amp;lt;- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem(&amp;quot;First&amp;quot;, tabName = &amp;quot;first&amp;quot;, icon = icon(&amp;quot;dashboard&amp;quot;)),
+      menuItem(&amp;quot;Second&amp;quot;, tabName = &amp;quot;second&amp;quot;, icon = icon(&amp;quot;th&amp;quot;))
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = &amp;quot;first&amp;quot;, tags$h2(&amp;quot;First content&amp;quot;)),
+      tabItem(tabName = &amp;quot;second&amp;quot;, tags$h2(&amp;quot;Second content&amp;quot;))
+    )
+  )
+)
+
+server &amp;lt;- function(input, output){
+  output$plot1 &amp;lt;- renderPlot({
+    n &amp;lt;- input$slider
+    hist(rnorm(n))
+  })
+}
+shinyApp(ui, server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We will talk about Headers later.&lt;/p&gt;
+
+&lt;h2 id=&#34;leaflet&#34;&gt;Leaflet&lt;/h2&gt;
+
+&lt;p&gt;This enables you to work with maps a little more easily. Leafletjs is a javascript library for working with interactive maps and you can interface that library using the CRAN leaflet package. You use it like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(leaflet)
+leaflet() %&amp;gt;%
+  addTiles() %&amp;gt;%
+  setView(-93.65, 42.0285, zoom = 17) %&amp;gt;%
+  addPopups(-93.65, 42.0285, &#39;Stats Dept&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can use the leaflet output within a Shiny app by calling &lt;code&gt;leafletOutput(&amp;quot;map&amp;quot;)&lt;/code&gt; from the UI code and then using &lt;code&gt;renderLeaflet()&lt;/code&gt; passing it the code that is shown above.&lt;/p&gt;
+
+&lt;p&gt;27 mins&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/&#34; target=&#34;_blank&#34;&gt;https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -111,9 +1161,80 @@ library(shiny) library(shinydashboard) ui &amp;lt;- dashboardPage( dashboardHead
       <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/shiny01-overview/</guid>
-      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
-Overview - Think inputs and outputs Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).
-Before we begin, your goto page for learning about this stuff is https://shiny.rstudio.com/articles/. Ok, let&amp;rsquo;s build an app - use this template:</description>
+      <description>
+
+&lt;p&gt;Shiny is a way to deploy your data analyses in an interactive format that is backed by R.&lt;/p&gt;
+
+&lt;h2 id=&#34;overview-think-inputs-and-outputs&#34;&gt;Overview - Think &lt;code&gt;inputs&lt;/code&gt; and &lt;code&gt;outputs&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Shiny applications comprise a user interface in the form of a web page (generated from R code), a backend server (that can be hosted on your local machine).&lt;/p&gt;
+
+&lt;p&gt;Before we begin, your goto page for learning about this stuff is &lt;a href=&#34;https://shiny.rstudio.com/articles/&#34; target=&#34;_blank&#34;&gt;https://shiny.rstudio.com/articles/&lt;/a&gt;. Ok, let&amp;rsquo;s build an app - use this template:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage()
+server &amp;lt;- function(input, output){}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add input and output functions into the &lt;code&gt;fluidPage&lt;/code&gt; function. We could add any of:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;buttons&lt;/li&gt;
+&lt;li&gt;checkboxes (single and grouped)&lt;/li&gt;
+&lt;li&gt;date input and range&lt;/li&gt;
+&lt;li&gt;file input&lt;/li&gt;
+&lt;li&gt;numeric input&lt;/li&gt;
+&lt;li&gt;passwords&lt;/li&gt;
+&lt;li&gt;radios&lt;/li&gt;
+&lt;li&gt;select&lt;/li&gt;
+&lt;li&gt;sliders&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;All these functions take similar parameters, the first being a unique id (&lt;code&gt;inputId&lt;/code&gt;) and the second being a label to display to the user. After that there are a bunch of input specific parameters.&lt;/p&gt;
+
+&lt;p&gt;Outputs are plots, tables, text, etc that embed various visualisation elements to the user interface. All these outputs contain one required parameter &lt;code&gt;outputId&lt;/code&gt; which is a unique id for the object. For example, lets add a slider and a placeholder for a histogram that we are going to produce.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  plotOutput(&amp;quot;hist&amp;quot;)
+ 
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+  	n &amp;lt;- input$num
+  	hist(rnorm(n))
+  	})
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We use the server function to provide the content for the user interface. For each element you need to save the output within the &lt;code&gt;output&lt;/code&gt; list object as a named member. The second thing you need to do is to wrap the object that you want to save in a render function. For example we can render:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;static and interactive tables&lt;/li&gt;
+&lt;li&gt;images&lt;/li&gt;
+&lt;li&gt;plots&lt;/li&gt;
+&lt;li&gt;code blocks&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;li&gt;shiny ui elements&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;In the above example we have rendered a histogram based on some dummy data. We can use as many lines of code as we want between the &lt;code&gt;{}&lt;/code&gt; in the render function. Note that you can have multiple reactive variables within a &lt;code&gt;render*()&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;p&gt;We can access the values that the user selects with the slider in the server function. These are called reactive elements and shiny takes care of the updates. Ok, run the app, you should see something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shiny101-01.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Final note - to deploy your application you need to save it with the filename &lt;code&gt;app.R&lt;/code&gt;. However, if you have massive UI and server elements you can split the application into two files, one called &lt;code&gt;ui.R&lt;/code&gt; and the other called &lt;code&gt;server.R&lt;/code&gt;. Then, you add all your media content to the folder. After that you can deploy to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt; but first you need to create an account. After you have created an account, all you need to do is press publish application in the RStudio.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -122,8 +1243,174 @@ Before we begin, your goto page for learning about this stuff is https://shiny.r
       <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/shiny01-stage2/</guid>
-      <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
-Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</description>
+      <description>
+
+&lt;p&gt;Shiny is a way to deploy your data analyses in an interactive format that is backed by R.&lt;/p&gt;
+
+&lt;h2 id=&#34;shiny-next-steps&#34;&gt;Shiny Next Steps&lt;/h2&gt;
+
+&lt;p&gt;In an earlier post we went over how to get a basic Shiny app together and deployed to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt;. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.&lt;/p&gt;
+
+&lt;h2 id=&#34;customising-reactions&#34;&gt;Customising Reactions&lt;/h2&gt;
+
+&lt;p&gt;So earlier we saw that we can update various outputs based on a users input. However, we can also reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button.&lt;/p&gt;
+
+&lt;p&gt;The first thing to understand about reactive elements is that they work together with reactive functions. For example, the &lt;code&gt;renderPlot&lt;/code&gt; function is a reactive function that expects to receive reactive variables such as &lt;code&gt;input$num&lt;/code&gt; discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds.&lt;/p&gt;
+
+&lt;p&gt;There are about 7 functions you need to know to work with reactivity a large proportion being the &lt;code&gt;render*()&lt;/code&gt; functions, but there are a few others we discuss here.&lt;/p&gt;
+
+&lt;h3 id=&#34;reactive&#34;&gt;&lt;code&gt;reactive&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;You can modularise code by using the function named &lt;code&gt;reactive&lt;/code&gt;. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within &lt;code&gt;reactive&lt;/code&gt;  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to &lt;code&gt;x&lt;/code&gt;. Whenever the input gets updated by the user the reactive method updates x. Now, within the &lt;code&gt;render&lt;/code&gt; functions what we need to do is call &lt;code&gt;x&lt;/code&gt; like we would call a function.&lt;/p&gt;
+
+&lt;p&gt;Note that &lt;code&gt;reactive&lt;/code&gt; caches its value &lt;em&gt;until it becomes invalid&lt;/em&gt; due to user input.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  textInput(inputId = &amp;quot;title&amp;quot;,
+            &amp;quot;Provide title&amp;quot;,
+            value = &amp;quot;Histogram of normal RV&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;),
+  verbatimTextOutput(&amp;quot;stats&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  
+  # New reactive part !!!
+  x &amp;lt;- reactive({rnorm(input$num)})
+  
+  output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- input$title
+    # Call x as you would a function !!!
+    hist(x(), main = mymain)
+  })
+  
+  output$stats &amp;lt;- renderPrint({
+    summary(x())
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;isolate&#34;&gt;&lt;code&gt;isolate&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;The &lt;code&gt;isolate&lt;/code&gt; function is the opposite of the &lt;code&gt;reactive&lt;/code&gt; function. This function makes user specified input inert. For example we could make the graph title not update until we change the slider by wrapping the title in an &lt;code&gt;isolate&lt;/code&gt; call as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Note that here we wrap the title and make it inert
+# until a user updates the slider.
+output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- isolate(input$title)
+    hist(x(), main = mymain)
+  })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;server-side-triggers&#34;&gt;Server-side Triggers&lt;/h2&gt;
+
+&lt;p&gt;Maybe we want to save a file to the system or do something that does not result in a UI update. In order to do this we implement a basic UI with a button for the user to click that we use to trigger the &lt;code&gt;observeEvent&lt;/code&gt; function. This function can wrap a whole bunch of R code (using reactive elements if we want it to do so) but it is only run if the button is pressed, i.e. it is inert to all other updates. However, if the user clicks the button then code encapsulated in &lt;code&gt;observeEvent&lt;/code&gt; will use all the latest reactive values. Here is an example that prints the number of clicks.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  actionButton(inputId = &amp;quot;clicks&amp;quot;,
+               label = &amp;quot;Click me&amp;quot;)
+)
+server &amp;lt;- function(input, output){
+  observeEvent(input$clicks, {
+    print(as.numeric(input$clicks))
+  }) 
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For more information, see the action buttons article on the shiny site.&lt;/p&gt;
+
+&lt;p&gt;There is a second server-side trigger called &lt;code&gt;observe&lt;/code&gt; but in practice &lt;code&gt;observeEvent&lt;/code&gt; is more useable.&lt;/p&gt;
+
+&lt;h2 id=&#34;delay-reactions-with-eventreactive&#34;&gt;Delay Reactions with &lt;code&gt;eventReactive&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;This enables us to do things like wait until a user has finished entering the title before we do an update. Here we add a button that will allow the user to control when the output updates.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage( 
+  sliderInput(inputId = &amp;quot;num&amp;quot;,
+              label = &amp;quot;Choose a number please&amp;quot;,
+              value = 25, min = 1, max = 100),
+  textInput(inputId = &amp;quot;title&amp;quot;,
+            &amp;quot;Provide title&amp;quot;,
+            value = &amp;quot;Histogram of normal RV&amp;quot;),
+  actionButton(inputId = &amp;quot;go&amp;quot;,
+               label = &amp;quot;Update&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){  
+  x &amp;lt;- eventReactive(input$go, {rnorm(input$num)})
+  
+  output$hist &amp;lt;- renderPlot({
+    mymain &amp;lt;- isolate(input$title)
+    hist(x(), main = mymain)
+  })
+  
+  output$stats &amp;lt;- renderPrint({
+    summary(x())
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;manage-state-with-reactivevalues&#34;&gt;Manage State with &lt;code&gt;reactiveValues&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;As a rule shiny does not permit you to update input values. However, sometimes this might be useful to do and so shiny provides a mechanism to construct your own reactive values. You might use this in a situation where you want to trigger a data update conditionally, like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shiny102-usingreactiveVal.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the above example the user is specifying whether they want to generate Normal or Uniform data. Here is an implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  actionButton(inputId = &amp;quot;norm&amp;quot;,label = &amp;quot;Normal&amp;quot;),
+  actionButton(inputId = &amp;quot;unif&amp;quot;,label = &amp;quot;Uniform&amp;quot;),
+  plotOutput(&amp;quot;hist&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  
+  rv &amp;lt;- reactiveValues(x = rnorm(100))
+  
+  observeEvent(input$norm, {rv$x &amp;lt;- rnorm(100)})
+  observeEvent(input$unif, {rv$x &amp;lt;- runif(100)})
+  
+  output$hist &amp;lt;- renderPlot({
+    hist(rv$x)
+  })
+  
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;reactiveValues&lt;/code&gt; are starting to move into a little more technical abstract ideas so, just to recap:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;reactiveValues&lt;/code&gt; create a list of reactive values&lt;/li&gt;
+&lt;li&gt;you can manipulate these values (usually with &lt;code&gt;observeEvent&lt;/code&gt;) and an action button&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Final food for thought:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;code outside the server function will be run once per R session whereas code inside the server function will be run once per end user. Take home - if you don&amp;rsquo;t need to run the code more than once per user then put it outside the server function.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Thanks for reading!&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -132,9 +1419,255 @@ Shiny Next Steps In an earlier post we went over how to get a basic Shiny app to
       <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/shiny01-stage3/</guid>
-      <description>OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.
-Working with the HTML The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of tags functions that will create HTML for you. Here is an example:
-library(shiny) ui &amp;lt;- fluidPage( # a tag is an anchor tags$h1(&amp;quot;Title 1&amp;quot;), tags$a(href = &amp;quot;www.</description>
+      <description>
+
+&lt;p&gt;OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.&lt;/p&gt;
+
+&lt;h2 id=&#34;working-with-the-html&#34;&gt;Working with the HTML&lt;/h2&gt;
+
+&lt;p&gt;The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of &lt;code&gt;tags&lt;/code&gt; functions that will create HTML for you. Here is an example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  # a tag is an anchor
+  tags$h1(&amp;quot;Title 1&amp;quot;),
+  tags$a(href = &amp;quot;www.rstudio.com&amp;quot;, &amp;quot;RStudio&amp;quot;),
+  tags$p(&amp;quot;This is my app para 1.&amp;quot;),
+  tags$p(&amp;quot;This is my app para &amp;quot;, tags$strong(&amp;quot;2!!&amp;quot;)),
+  tags$br(), # Page break
+  tags$p(style = &amp;quot;font-family:Impact&amp;quot;, &amp;quot;This is my app para 3 with a custom style!!!&amp;quot;),
+  tags$hr(), # Horizontal rule
+  tags$code(&amp;quot;This is my app&amp;quot;),
+  tags$br(), # Page break
+  # To use your own media create a www folder and chuck your
+  # media in there then reference as follows:
+  tags$img(height = 100, width = 250, src = &amp;quot;shinyzombie.jpg&amp;quot;),
+  tags$br(), # Page break
+  tags$br(), # Page break
+  
+  HTML(&amp;quot;&amp;lt;h2&amp;gt;Just for completeness we can write raw HTML if we want to!!!&amp;lt;/h2&amp;gt;&amp;quot;),
+  
+  actionButton(inputId = &amp;quot;clicks&amp;quot;,
+               label = &amp;quot;Click me&amp;quot;)
+  
+)
+server &amp;lt;- function(input, output){
+  observeEvent(input$clicks, {
+    print(as.numeric(input$clicks))
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;messing-with-the-layout&#34;&gt;Messing with the Layout&lt;/h2&gt;
+
+&lt;p&gt;We can place the UI elements wherever we want to. The main functions that we use to do this are &lt;code&gt;fluidRow()&lt;/code&gt; and &lt;code&gt;column&lt;/code&gt; which both insert &lt;code&gt;div&lt;/code&gt;s. &lt;code&gt;fluidRow()&lt;/code&gt; will divide you app into rows creating as many as you want. Next you can create (up to 12) columns within a row specifying both the width and offset of each column like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  fluidRow(column(3),  # Takes up 3 units of width
+           column(5)), # Takes up 5 units of width
+  fluidRow(
+           column(4, offset = 8) # Offset the start of the column
+           )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, if you actually want to see something you pass it to the row or column function like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  fluidRow(column(3, tags$p(&amp;quot;Hi!!! :)&amp;quot;)),  # Takes up 3 units of width
+           column(5, 
+                  sliderInput(inputId = &amp;quot;num&amp;quot;,
+                              label = &amp;quot;Choose a number please&amp;quot;,
+                              value = 25, min = 1, max = 100))), 
+  fluidRow(
+    column(6, offset = 1, 
+           plotOutput(&amp;quot;hist&amp;quot;)) 
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;stacking-layouts&#34;&gt;Stacking Layouts&lt;/h2&gt;
+
+&lt;p&gt;Panels are the basic UI aggregate element. To place a series of elements together into a panel we wrap them with the &lt;code&gt;wellPanel&lt;/code&gt; function. In total there are 12 types of panels supported by shiny:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Function&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;absolutePanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Rigid&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;conditionalPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Determines whether a panel is visible&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;fixedPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Does not scroll&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;headerPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Panel for title - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;inputPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A grouping panel&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;mainPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Displaying output - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;navlistPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stacking&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;sidebarPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Sidebar of inputs - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stackable&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabsetPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Multiple stacked&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;titlePanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Apps title&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;wellPanel()&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Panel with grey background&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;If you want to stack things on top of each other start with &lt;code&gt;tabPanel()&lt;/code&gt;. This is a small UI of its own and is a convenient way to break up the various elements of your app. These functions are designed to work in conjunction with &lt;code&gt;tabsetPanel()&lt;/code&gt;, &lt;code&gt;navlistPanel&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Here is a quick example.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  tabsetPanel(
+    tabPanel(&amp;quot;tab 1&amp;quot;, 
+             sliderInput(inputId = &amp;quot;num&amp;quot;,
+                                  label = &amp;quot;Choose a number please&amp;quot;,
+                                  value = 25, min = 1, max = 100)
+             ),
+    tabPanel(&amp;quot;tab 1&amp;quot;, 
+             plotOutput(&amp;quot;hist&amp;quot;)
+             )
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+
+
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shinytabpanel.png&#34; alt=&#34;Shiny `tabPanel` Output&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now &lt;code&gt;navlistPanel()&lt;/code&gt; is analogous to the &lt;code&gt;tabsetPanel()&lt;/code&gt; except it creates your navigation in a sidebar.&lt;/p&gt;
+
+&lt;h2 id=&#34;precanned-layouts&#34;&gt;Precanned Layouts&lt;/h2&gt;
+
+&lt;p&gt;We should have talked about this first&amp;hellip; Anyway, nevermind. These are convenience wrappers that let you put together a layout very quickly. The most common is &lt;code&gt;sidebarLayout()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;library(shiny)
+
+ui &amp;lt;- fluidPage(
+  
+  sidebarLayout(
+    sidebarPanel(sliderInput(inputId = &amp;quot;num&amp;quot;,
+                             label = &amp;quot;Choose a number please&amp;quot;,
+                             value = 25, min = 1, max = 100)),
+    mainPanel(plotOutput(&amp;quot;hist&amp;quot;))
+    
+  )
+)
+server &amp;lt;- function(input, output){
+  output$hist &amp;lt;- renderPlot({
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+  })
+}
+shinyApp(ui = ui, server = server)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Other options are &lt;code&gt;fixedPage&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Note when you use &lt;code&gt;navbarPage()&lt;/code&gt; you do so by replace the &lt;code&gt;fluidPage()&lt;/code&gt; call. You can use the &lt;code&gt;navbarPage()&lt;/code&gt; with &lt;code&gt;navbarMenu()&lt;/code&gt; to give you drop down lists in the tabs. We can go further, but there is a tutorial on more advanced dashboards &lt;a href=&#34;https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;css&#34;&gt;CSS&lt;/h2&gt;
+
+&lt;p&gt;Shiny enables us to stylise our site with our own branding. The way that we do this is to link with a CSS file, writing a global CSS header or write the CSS into a tags style attribute. We can then apply CSS to tags, or classes or ids. This forms a hierarchy that we can use to automatically deal with various aspects of the site overriding the bits that we want to have different.&lt;/p&gt;
+
+&lt;p&gt;Shiny makes use of the Bootstrap 3 CSS framework, see &lt;a href=&#34;https://getbootstrap.com/&#34; target=&#34;_blank&#34;&gt;https://getbootstrap.com/&lt;/a&gt;. To use this we can create a &lt;code&gt;fluidPage()&lt;/code&gt; function that contains &lt;code&gt;&amp;lt;div class=&amp;quot;container-fluid&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt;. Alternatively we could specify our own CSS file using the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ui &amp;lt;- fluidPage(
+  tags$head(
+    tags$link(
+        rel = &amp;quot;stylesheet&amp;quot;,
+        type = &amp;quot;text/css&amp;quot;
+        href = &amp;quot;myfile.css&amp;quot;
+      )
+    )
+  
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or you can even just call &lt;code&gt;includeCSS(&amp;quot;myfile.css&amp;quot;)&lt;/code&gt; which will copy a CSS into every page. To learn more about CSS there is a free tutorial at &lt;a href=&#34;https://www.codecademy.com/tracks/web&#34; target=&#34;_blank&#34;&gt;https://www.codecademy.com/tracks/web&lt;/a&gt; which covers both HTML and CSS in about 7 hours.&lt;/p&gt;
+
+&lt;h2 id=&#34;google-analytics-and-things-to-come&#34;&gt;Google Analytics and Things to Come..&lt;/h2&gt;
+
+&lt;p&gt;A final note, you can incorporate the google analytics into your application pretty easily if you want to have it, see &lt;a href=&#34;https://shiny.rstudio.com/articles/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Things in development:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;DT interactive tables that can accept user input.&lt;/li&gt;
+&lt;li&gt;leaflet - interaction with maps&lt;/li&gt;
+&lt;li&gt;working on interaction with graphics&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;what-now&#34;&gt;What Now?&lt;/h2&gt;
+
+&lt;p&gt;Build an app!&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -143,8 +1676,205 @@ library(shiny) ui &amp;lt;- fluidPage( # a tag is an anchor tags$h1(&amp;quot;Ti
       <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/basicbayesian/</guid>
-      <description>I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
-OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of.</description>
+      <description>
+
+&lt;p&gt;I find the &lt;a href=&#34;http://xcelab.net/rm/statistical-rethinking/&#34; target=&#34;_blank&#34;&gt;Statistical Rethinking&lt;/a&gt; text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.&lt;/p&gt;
+
+&lt;h2 id=&#34;ok-bayesian-analysis&#34;&gt;OK, Bayesian Analysis?&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of. Bayesian analysis is a fairly snappy way to go about this task.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/pirahna.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s get serious and work up to laying down some definitions and notation. First, the breed of inference we are interested in here is &lt;a href=&#34;https://en.wikipedia.org/wiki/Statistical_inference&#34; target=&#34;_blank&#34;&gt;statistical inference&lt;/a&gt;. Statistical inference involves using observations in a framework of presupposition and statistical models that aim at a logical conclusions. Generally we want to be able to make some statements about a scientific question relating to a population of interest.&lt;/p&gt;
+
+&lt;p&gt;Examples - we flip a coin obtained from the local mint 10 times and it produces 7 heads. Should we believe the coin is fair? What about the other coins produced by the mint? We measure the heights of 10 men that play for a professional basket ball team. What does this tell us about the height of all men? &lt;strong&gt;Bayesian analysis&lt;/strong&gt; gives us a formal method to combine what we already know with new evidence and characterises the remaining uncertainty in probability.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-standard-zombie-example-of-bayesian-inference&#34;&gt;The Standard (Zombie) Example of Bayesian Inference&lt;/h2&gt;
+
+&lt;p&gt;In a bayesian analysis we characterise uncertainty using a small bag of tools. Let&amp;rsquo;s introduce a few&amp;hellip;&lt;/p&gt;
+
+&lt;h3 id=&#34;a-prior&#34;&gt;A Prior&lt;/h3&gt;
+
+&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesprior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I generated that snappy curve from a &lt;a href=&#34;https://en.wikipedia.org/wiki/Beta_distribution&#34; target=&#34;_blank&#34;&gt;Beta distribution&lt;/a&gt; by using paramter values equal to 1 and 27. In a more mathy bent we say:&lt;/p&gt;
+
+&lt;p&gt;$$
+\theta \sim Beta(1, 27)
+$$&lt;/p&gt;
+
+&lt;p&gt;In words - theta is distributed as a random variable originated from a beta distribution with shape parameters 1 and 27 - you can see why we favour the mathy version.&lt;/p&gt;
+
+&lt;h3 id=&#34;likelihood&#34;&gt;Likelihood&lt;/h3&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s go to the mall and pick out 20 people at random under the assumption that all individuals have the same probability of being a zombie. However, not one of the people in the sample tries to even take a nimble at us and so we conclude (with perhaps undue certainty) that the sample we picked contained no zombies. We can, again, make this more formal by saying that the data generating process was a &lt;a href=&#34;https://en.wikipedia.org/wiki/Binomial_distribution&#34; target=&#34;_blank&#34;&gt;Binomial distribution&lt;/a&gt; where one of the parameters is our sample size and the other parameter represents the probability that a randomly selected individual is a zombie. Mathematically, we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+y|\theta \sim Bin(20, \theta)
+$$&lt;/p&gt;
+
+&lt;p&gt;and therefore conditional on $\theta$ any given sample of mall people stands a chance of containing a zombie.&lt;/p&gt;
+
+&lt;h3 id=&#34;posterior&#34;&gt;Posterior&lt;/h3&gt;
+
+&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
+
+&lt;p&gt;$$
+Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
+$$&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;average likelihood&lt;/em&gt; bit is computed over all the possible values of the parameter $\theta$ - the proportion of zombies which must be somewhere between zero to 1. Fortunately, we don&amp;rsquo;t have to know how to work out the above directly because the product of a Beta prior and a Binomial likelihood is well known. Specifically, it is another Beta distribution but with different parameters based on the the data we observed and the prior parameters. The first parameter of the posterior beta distribution is $a + y$ and the second is $b + n - y$. In our case, a = 1, y = 0, b = 27 and n = 20 so we have the posterior is:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(\theta|y) \sim Beta(1, 47)
+$$&lt;/p&gt;
+
+&lt;p&gt;If we were to draw another graph of the (new) relative strength of beliefs it would look something like the following (new beliefs in red):&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesposterior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So whereas initially we were 90% certain that less than 8.5% of the population are zombies, now we are 90% certain that less than 5% of the population are zombies. We have reduced our uncertainty by leveraging our existing beliefs and our sample observations.&lt;/p&gt;
+
+&lt;h2 id=&#34;grid-approximation&#34;&gt;Grid Approximation&lt;/h2&gt;
+
+&lt;p&gt;Unfortunately, the calculations are rarely this simple - we rarely have &lt;a href=&#34;https://en.wikipedia.org/wiki/Conjugate_prior&#34; target=&#34;_blank&#34;&gt;conjugate&lt;/a&gt; pairs of priors and likelihood like I contrived in the above example. However, we can get around this using sampling. In its simplest form we can use a &lt;em&gt;grid approximation&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;In R the following code shows how this might play out. We first set up a posterior distribution and then we sample with replacement to get an approximation of the posterior distribution.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# This is the range of parameter values and defines the precision
+# to which we can estimate the parameter of interest. 
+mygrid &amp;lt;- seq(0, 1, length.out = 1000)
+# Defines our prior beliefs
+prior &amp;lt;- dbeta(mygrid, 1, 27)
+# Defines the relative likelihood of the data (zero zombies out of 20) 
+# across all the possible parameter values
+likelihood &amp;lt;- dbinom(0, size = 20, prob = mygrid)
+# Compute the posterior and normalise it
+posterior &amp;lt;- likelihood * prior 
+posterior &amp;lt;- posterior / sum(posterior)
+
+# This is analytic posterior - generally we don&#39;t have the
+# luxury of knowing this.
+analyticpost &amp;lt;- dbeta(mygrid, 1, 47)
+
+# Sample from the posterior distribution
+myposteriorsample &amp;lt;- sample(mygrid, prob = posterior, size = 1e4, replace = T)
+
+# Plot the samples
+plot(myposteriorsample, type = &amp;quot;p&amp;quot;, 
+     xlab = &amp;quot;Sample index&amp;quot;,
+     ylab = &amp;quot;Proportion of zombies&amp;quot;)
+
+# Plot the analytical and the sampled posterior distribution 
+x.idx &amp;lt;- density(myposteriorsample)$x
+y.den &amp;lt;- density(myposteriorsample)$y
+
+plot(mygrid, analyticpost, type = &amp;quot;l&amp;quot;,
+     xlab = &amp;quot;Proportion of zombies&amp;quot;,
+     ylab = &amp;quot;Relative likelihood&amp;quot;, xlim = c(0, 0.3))
+lines(x.idx, y.den, col = &amp;quot;red&amp;quot;)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Samples from posterior&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Analytic and sampled posterior (red) probability density&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesamples.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesmcmc.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Clearly the relatively likelihood at approximately zero is underestimated by the sampling approach but this is to do with the available precision and could be improved by increasing the resolution of the grid.&lt;/p&gt;
+
+&lt;p&gt;The grid approximation is useful to get some understanding into the mechanics but does not scale well to more complex problems where we would more commonly use Markov Chain Monte Carlo &lt;a href=&#34;https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo&#34; target=&#34;_blank&#34;&gt;MCMC&lt;/a&gt; simulations.&lt;/p&gt;
+
+&lt;h2 id=&#34;posterior-summaries&#34;&gt;Posterior Summaries&lt;/h2&gt;
+
+&lt;p&gt;It is interesting to consider (moreso if you are a bit nerdy) how you might summarise our new state of knowledge inherent in the posterior distribution. There are a few options to condense what it is telling us into a 10 second soundbite for people without patience or interest.&lt;/p&gt;
+
+&lt;p&gt;First, we can compute a 95% credible interval as below, which tells us that there is a 95% probability that the proportion of zombies in the community is between zero and 7.5%. A similar interval is the Highest Posterior Density Interval, but this interval is the narrowest interval that contains the specified probability mass. For this example it turns out to be about the same as the credible interval but that won&amp;rsquo;t always be the case. We can obtain the point estimates of the mean, median and mode, which turn out to be 2.1%, 1.4% and 0.37%.&lt;/p&gt;
+
+&lt;p&gt;All of these approaches are effectively &lt;a href=&#34;https://en.wikipedia.org/wiki/Data_reduction&#34; target=&#34;_blank&#34;&gt;data reduction techniques&lt;/a&gt; - we have reduced the posterior probability distribution to a one or two numbers in order to make what it is telling us more digestable.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Credible interval
+quantile(myposteriorsample, c(0.025, 0.975))
+rethinking::PI(myposteriorsample, 0.95)
+
+# HPDI
+rethinking::HPDI(myposteriorsample, 0.975)
+
+# Measures of centrality
+mean(myposteriorsample)
+median(myposteriorsample)
+
+# Mode
+rethinking::chainmode(myposteriorsample)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another thing we can do is define a &lt;strong&gt;loss function&lt;/strong&gt; and characterise the cost of adopting a particular summary under given conditions. This mostly comes into play when we want to make a &lt;a href=&#34;https://en.wikipedia.org/wiki/Decision_theory&#34; target=&#34;_blank&#34;&gt;decision&lt;/a&gt; such as whether we should go to the shops or not. Different loss functions imply different point estimates and a common loss function is to assume that the loss is proportional to the absolute difference between your decision and the correct answer. We can compute the loss over the entire parameter range using the following code, which gives us an value of 1.4%, identical to the median computed previous. In reality the loss function would need more thought and we might make the cost function penalise being wrong more harshly as might be well advised since encountering a zombie has stark &lt;a href=&#34;https://en.wikipedia.org/wiki/Metaphysics&#34; target=&#34;_blank&#34;&gt;metaphyscial&lt;/a&gt; implications.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;loss &amp;lt;- sapply(mygrid, function(d) sum(analyticpost * abs(d - mygrid)))
+mygrid[which.min(loss)]loss &amp;lt;- sapply()
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;model-checking&#34;&gt;Model Checking&lt;/h2&gt;
+
+&lt;p&gt;I know I have been banging for a bit now, but this last bit is important so stick with it. Here is the thing - all Bayesian models are generative so once you have a posterior distribution of the parameter of interest you can simulate new data. Ideally the predictions we make should contain both uncertainty in the distribution associated with a parameter and the uncertainty about the parameter itself. For example, if we use $\theta = 0.05$ or $\theta = 0.1$ we get a distribution of zombies like the figures below. So if there is a 5% probability that an individual is a zombie we would expect to zero or one zombies most of the time. However, if there was a 10% probability that an individual is a zombie we would mostly expect to see 1 or 2 in a sample of 20. In a nutshell, when $\theta = 0.05$ we expect to see a zero count of zombies more often than we do if $\theta = 0.1$.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Proportion of zombies 5%&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;10%&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Now, the thing is, $\theta$ also has uncertainty as we have described by the posterior distribution and ideally we want to propagate this uncertainty into our predictions. To do this we average all of the prediction distributions together using the posterior of each value of $\theta$. This gives us a &lt;a href=&#34;https://en.wikipedia.org/wiki/Posterior_predictive_distribution&#34; target=&#34;_blank&#34;&gt;posterior predictive distribution&lt;/a&gt;, which is actually a lot easier to produce than to explain, the following gets us to where we want to be.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Distribution of observed zombies theta = 0.05
+z1 &amp;lt;- rbinom(1e4, size = 20, prob = 0.05)
+# Distribution of observed zombies averaged across the posterior distribution
+z2 &amp;lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim3.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case we can be quite conforted by the fact that the posterior predictive aligns fairly well with what we observed since it looks like we generally encounter small numbers (0 or 1) zombies in our daily trip to the shops.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;OK, maybe more than 100% if you live in Jesmond.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;If you are starting to think that everything is uncertain in a Bayesian world then you may be onto something.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;That I refuse to go into right now.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:3&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -153,67 +1883,44 @@ OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking
       <pubDate>Mon, 26 Mar 2018 00:00:00 +1100</pubDate>
       
       <guid>https://t-student.github.io/post/installpython3/</guid>
-      <description>I have decided to start doing more coding in Python, so I needed to install it. The title says it all but this is just to record what I did. In brief:
- install a package manager (equivalent to apt in linux) use python to install pip (a package manager for python) install an environment manager so that you can support different sets of dependencies with minimal hassle  I started with the instructions here.</description>
-    </item>
-    
-    <item>
-      <title>Logistic Regression - Power Analysis</title>
-      <link>https://t-student.github.io/post/logistic01-powersim/</link>
-      <pubDate>Fri, 16 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/logistic01-powersim/</guid>
-      <description>If you have multiple treatment options that lead to different outcomes, you will only be able to detect a difference in the average outcome under conditions where there is sufficient statistical power to do so. Statistical power is the probability that we detect an effect when there really is an effect to be detected. As statistical power increases the probability of making a Type II error (concluding there is no effect when, in fact, there is one) decreases.</description>
-    </item>
-    
-    <item>
-      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
-      <link>https://t-student.github.io/post/logistic01-interaction/</link>
-      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/logistic01-interaction/</guid>
-      <description>The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.</description>
-    </item>
-    
-    <item>
-      <title>Interpreting Interaction Terms in a GLM (Poisson family, log link)</title>
-      <link>https://t-student.github.io/post/poisson01-interaction/</link>
-      <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/poisson01-interaction/</guid>
-      <description>The following code constructs a hypothetical dataset describing the count of events observed in two groups (0 = control, 1 = treatment) at two times (0 = baseline, 1 = follow up) with means defined through a pre-specified model.
-set.seed(250)# Define the parameters b0 &amp;lt;- 2b1 &amp;lt;- 3b2 &amp;lt;- 1.5b3 &amp;lt;- 6n &amp;lt;- 800grp &amp;lt;- c(rep(0, n/2), rep(1, n/2))time &amp;lt;- c(rep(0, n/4), rep(1, n/4), rep(0, n/4), rep(1, n/4))# Model for the means lambda &amp;lt;- b0 + b1 * grp + b2 * time + b3 * grp * timedf.</description>
-    </item>
-    
-    <item>
-      <title>Simulating Lung Cancer Incidence data in R</title>
-      <link>https://t-student.github.io/post/data01-cancer/</link>
-      <pubDate>Sat, 10 Feb 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/data01-cancer/</guid>
-      <description>The world is now awash in data, but sometimes it is useful to roll your own. For example, you may to look at &amp;lsquo;what if&amp;rsquo; scenarios. Here I use publically available information on the age-class-distribution, rates of smoking and incidence of smoking to form a dataset that we will use in a later modelling exercise. In order to do this I use the simstudy and data.table R packages.
-Distribution of lung cancer incidence in Australia The Australian Institute of Health and Welfare publish incidence and mortality data.</description>
-    </item>
-    
-    <item>
-      <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</title>
-      <link>https://t-student.github.io/post/brms01/</link>
-      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/brms01/</guid>
-      <description>The title was stolen directly from the excellent 2016 paper by Tanner Sorensen and Shravan Vasishth. Here I recreate their analysis using brms R package, primarily as a self-teach exercise. I am going to very much assume that the basic ideas of Bayesian analysis are already understood. I will add some informtion on prior and posterior predictive checks because I think not doing so missing a large part of the point of a Bayesian analysis.</description>
-    </item>
-    
-    <item>
-      <title>Academic: the website designer for Hugo</title>
-      <link>https://t-student.github.io/post/getting-started/</link>
-      <pubDate>Wed, 20 Apr 2016 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/post/getting-started/</guid>
-      <description>Academic is a framework to help you create a beautiful website quickly. Perfect for personal sites, blogs, or business/project sites. Check out the latest demo of what you&amp;rsquo;ll get in less than 10 minutes. Then head on over to the Quick Start guide or take a look at the Release Notes.
+      <description>
 
-Key features:
- Easily manage various content including homepage, blog posts, publications, talks, and projects Extensible via color themes and widgets/plugins Write in Markdown for easy formatting and code highlighting, with LaTeX for mathematical expressions Social/academic network linking, Google Analytics, and Disqus comments Responsive and mobile friendly Simple and refreshing one page design Multilingual and easy to customize  Color Themes Academic is available in different color themes and font themes.</description>
+&lt;p&gt;I have decided to start doing more coding in Python, so I needed to install it. The title says it all but this is just to record what I did. In brief:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;install a package manager (equivalent to apt in linux)&lt;/li&gt;
+&lt;li&gt;use python to install pip (a package manager for python)&lt;/li&gt;
+&lt;li&gt;install an environment manager so that you can support different sets of dependencies with minimal hassle&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I started with the instructions &lt;a href=&#34;http://docs.python-guide.org/en/latest/starting/install3/win/#install3-windows&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;. They work fairly seemlessly. However, the following is what I did.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-package-manager&#34;&gt;Installing Package Manager&lt;/h2&gt;
+
+&lt;p&gt;You need to do this with administrator privaleges otherwise it won&amp;rsquo;t work. I used the instructions found &lt;a href=&#34;https://chocolatey.org/install#installing-behind-a-proxy&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; that are for installing where you are behind a proxy.&lt;/p&gt;
+
+&lt;p&gt;To launch a command prompt with admin privaleges do Start, then type cmd, right click on the command launcher and choose more, then run as an admin.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-python-3&#34;&gt;Installing Python 3&lt;/h2&gt;
+
+&lt;p&gt;Again use administrator privaleges to invoke &lt;code&gt;python -m pip install -U pip&lt;/code&gt; at the command line.&lt;/p&gt;
+
+&lt;h2 id=&#34;pipenv-and-virtualenv-environment-manager&#34;&gt;Pipenv and Virtualenv environment manager&lt;/h2&gt;
+
+&lt;p&gt;This was a bit fiddly but purely down to the fact that the default install relies only on user privaleges. You end up with an error &lt;code&gt;&#39;pipenv&#39; is not recognized as an internal or external command&lt;/code&gt; because the path is not updated.&lt;/p&gt;
+
+&lt;p&gt;Once complete, run &lt;code&gt;py -m site --user-site&lt;/code&gt; which reports a directory path. It will be something like &lt;code&gt;C:\Users\mjones\AppData\Roaming\Python\Python36\site-packages&lt;/code&gt;. What you need to do is to add a directory to the &lt;code&gt;PATH&lt;/code&gt; environment variable that is the same as this user path but ends with &lt;code&gt;Scripts&lt;/code&gt; rather than &lt;code&gt;site-packages&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Pipenv manages library dependencies on a per project basis. You use &lt;code&gt;pipenv&lt;/code&gt; instead of &lt;code&gt;pip&lt;/code&gt;. For example, to install the &lt;code&gt;requests&lt;/code&gt; package, change into your project’s directory (or just an empty directory for this tutorial) and run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd myproject
+pipenv install requests
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pipenv will install the requests library and create a Pipfile for you in your project’s directory. The Pipfile is used to track which dependencies your project needs in case you need to re-install them, such as when you share your project with others. For more info, see &lt;a href=&#34;http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;virtualenv&lt;/code&gt; is a tool to create isolated Python environments. &lt;code&gt;virtualenv&lt;/code&gt; creates a folder which contains all the necessary executables to use the packages that a Python project would need.&lt;/p&gt;
+</description>
     </item>
     
   </channel>

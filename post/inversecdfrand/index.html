@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="generator" content="Hugo 0.32.4" />
   <meta name="author" content="Mark Jones">
 
   
@@ -344,21 +344,21 @@ $$</p>
 
 <p>OK, all we have to do now is generate $u$ from a standard uniform distribution, compute x such that $F_x(x) = u$ and then take x to be the random number from our wedgy distribution. The code for this is as follows:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Work out maximum density</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Work out maximum density</span>
 h <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span>((<span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">3.2</span>)
-<span style="color:#75715e"># m is the slope of the pdf</span>
+<span style="color:#75715e"># m is the slope of the pdf</span>
 m <span style="color:#f92672">&lt;-</span> h <span style="color:#f92672">/</span> <span style="color:#ae81ff">3.2</span>
-<span style="color:#75715e"># so the following is the pdf for 0 to 3.2</span>
+<span style="color:#75715e"># so the following is the pdf for 0 to 3.2</span>
 x <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">seq</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3.2</span>, by <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>)
 fx <span style="color:#f92672">&lt;-</span> m <span style="color:#f92672">*</span> x
 plot(x, fx, type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;l&#34;</span>)
 
-<span style="color:#75715e"># Now apply the inverse cdf method:</span>
-<span style="color:#75715e"># generate standard uniform</span>
+<span style="color:#75715e"># Now apply the inverse cdf method:</span>
+<span style="color:#75715e"># generate standard uniform</span>
 u <span style="color:#f92672">&lt;-</span> runif(<span style="color:#ae81ff">1000</span>)
-<span style="color:#75715e"># throw the u random variable into the inverse cdf</span>
+<span style="color:#75715e"># throw the u random variable into the inverse cdf</span>
 x <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">sqrt</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> u <span style="color:#f92672">/</span> m)
-<span style="color:#75715e"># x should be distribution as per fx</span>
+<span style="color:#75715e"># x should be distribution as per fx</span>
 hist(x)</code></pre></div>
 
 <p>Which gives the following histogram and that&rsquo;s close enough to the target distribution for me!</p>
@@ -398,9 +398,9 @@ hist(x)</code></pre></div>
     
     <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
     
-    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
-    
     <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
+    
+    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
     
   </ul>
 </div>

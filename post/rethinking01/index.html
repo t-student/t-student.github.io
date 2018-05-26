@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.
+I like examples so let&rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/rethinking01/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/rethinking01/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/rethinking01/">
+  <meta property="og:title" content="Statistical Rethinking - Introduction and Sampling | t-student">
+  <meta property="og:description" content="Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.
+I like examples so let&rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-05-26T00:00:00&#43;10:00">
+  
+  <meta property="article:modified_time" content="2018-05-26T00:00:00&#43;10:00">
+  
+
+  
+
+  <title>Statistical Rethinking - Introduction and Sampling | t-student</title>
+
+  
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Statistical Rethinking - Introduction and Sampling</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-05-26 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      May 26, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    9 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Statistical%20Rethinking%20-%20Introduction%20and%20Sampling&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2frethinking01%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2frethinking01%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2frethinking01%2f&amp;title=Statistical%20Rethinking%20-%20Introduction%20and%20Sampling"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2frethinking01%2f&amp;title=Statistical%20Rethinking%20-%20Introduction%20and%20Sampling"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Statistical%20Rethinking%20-%20Introduction%20and%20Sampling&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2frethinking01%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.</p>
+
+<p>I like examples so let&rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem. In order to estimate this proportion we could take the globe throw it up in the air, catch it and record whether our index finger is on water or on land. If we do this enough times, we should be able to produce a reasonable estimate the proportion of water. Here is data story is:</p>
+
+<ol>
+<li>The true proportion of water is $p$.</li>
+<li>A single toss has probability $p$ of our finger being on water and $1-p$ of being on land.</li>
+<li>We toss the globe the same way each time and all our tosses are independent of the others.</li>
+</ol>
+
+<p>And assume we tossed the globe 9 times and for 6 of those tosses our finger lands on water. Now, Bayesian modelling takes a prior knowledge and updates our understanding based on observed data. The appropriate lingua franca is that your <em>posterior</em> is proportional to the product of the <em>likelihood</em> and the <em>prior</em>. A few definitions:</p>
+
+<h2 id="likelihood">Likelihood</h2>
+
+<p>This gives you about the probability of any possible observation. The likelihood can be derived from the data story, here mapping to the binomial distribution. Specifically, we have the count of water observations $w$ is distributed binomially with probability $p$ over $n$ tosses of the globe.</p>
+
+<p>$$
+Pr(w|n, p) = \frac{n!}{w!(n-w)!}p^w (1-p)^{n-w}
+$$</p>
+
+<p>If we used a value of $p$ equal to 0.3 and 0.9 then the probability of us counting $0, 1, 2, .., 9$ instances of water can be computed using <code>dbinom(0:9, size = 9, prob = 0.3)</code> and are shown below. We can think of any of the bars representing the relative number of ways to get a specific number of $w$&rsquo;s holding $n$ and $p$ constant. For example, the relative number of ways to get eight $w$&rsquo;s is roughly zero when we assum $p = 0.3$ and about 40% when p = 0.9. In both cases the sum of the probabilities equals 1.</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">Proportion of water = 0.3, n = 9</th>
+<th align="center">Proportion of water = 0.9, n = 9</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><img src="/media/rethink01-bar01.png" alt="" /></td>
+<td align="center"><img src="/media/rethink01-bar02.png" alt="" /></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="parameters">Parameters</h2>
+
+<p>In this case $p$ is our parameter of interest.</p>
+
+<h2 id="prior">Prior</h2>
+
+<p>The prior represents our initial view of the world, it is the initial probability that we assign to each possible value of $p$, which in this case ranges from 0 to 1. Priors can be <em>uninformative</em>, <em>regularising</em> or <em>weakly informative</em> and they help constrain parameters to plausible values, e.g. the proportion of water on the globe cannot be -10%. There will be more to say on this later.</p>
+
+<h2 id="posterior">Posterior</h2>
+
+<p>Once you have a likelihood, have identified the parameters you want to estimate together with a prior for each parameter we can obtain the <em>posterior</em>. This is a distribution which tells us the probability of the parameters conditional on the data and the model. Mathematically the posterior is proportional to the product of the likelihood and the prior. In order for the posterior to be a valid pdf, it needs to be normalised by dividing the product of the likelihood and prior by the average likelihood as follows:</p>
+
+<p>$$
+Pr(p|w) = \frac{Pr(w|p) \times Pr(p)}{Pr(w)}
+$$</p>
+
+<p>$Pr(w)$ is commonly called the probability of the data, $Pr(w) = E(Pr(w|p))= \int Pr(w|p)Pr(p)dp$. These integrals get tough for any non-trivial case and so we use numerical methods such as grid approximation, quadratic approximation or Markov chain Monte Carlo. The simplest approach for this example is to use the grid approximation.</p>
+
+<p>A useful example for thinking about the normalising term is via the disease/test problem. The scenario states:</p>
+
+<ol>
+<li>there is a test that detects hiv 95% of the time ($Pr(+|hiv) = 0.95$)</li>
+<li>the test gives false positives 1% of the time ($Pr(+|not \ hiv) = 0.01$), and</li>
+<li>hiv is relatively rare, say 0.1% of the population ($Pr(hiv) = 0.001$)</li>
+</ol>
+
+<p>So, if you test positive for hiv, what is the probability that you have hiv? In brief, we want $Pr(hiv|+result)$. However, this probability is a function of the probility of the disease in the community $Pr(hiv)$ and the probability that you get a +result conditional on having the disease. Using Bayes rule:</p>
+
+<p>$$
+Pr(hiv|+) = \frac{Pr(+|hiv) Pr(hiv)}{Pr(+)}
+$$</p>
+
+<p>The denominator term is again the normalising constant and in this example can be computed by decomposition:</p>
+
+<p>$$
+Pr(+) = Pr(+|hiv)Pr(hiv) + Pr(+|not \ hiv)(1 - Pr(hiv))
+$$</p>
+
+<p>Which works through to about an 8.7% probability of actually having hiv.</p>
+
+<h2 id="grid-approximation">Grid Approximation</h2>
+
+<p>Here is the process:</p>
+
+<ol>
+<li>Define a grid covering the parameters values.</li>
+<li>Compute the value of the prior at each value on the grid.</li>
+<li>Compute the likelihood at each parameter value.</li>
+<li>Compute the unstandardised posterior at each parameter value in the grid by multiplying the likelihood and prior.</li>
+<li>Standardise the posterior by dividing each value by the sum of all unstandardised posterior.</li>
+</ol>
+
+<p>If our data comprised 9 tosses from which water fell under our finger in 6 instances then here is how you use the grid approximation to compute and plot the posterior. The mode of the posterior suggests $p = 0.67$.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">n.grid <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">100</span>
+p.grid <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">seq</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, length.out <span style="color:#f92672">=</span> n.grid)
+<span style="color:#75715e"># Uniform non-informative prior</span>
+prior <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n.grid)
+w <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">6</span>
+n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">9</span>
+likelihood <span style="color:#f92672">&lt;-</span> dbinom(w, size <span style="color:#f92672">=</span> n, prob <span style="color:#f92672">=</span> p.grid)
+posterior <span style="color:#f92672">&lt;-</span> likelihood <span style="color:#f92672">*</span> prior
+posterior <span style="color:#f92672">&lt;-</span> posterior <span style="color:#f92672">/</span> <span style="color:#66d9ef">sum</span>(posterior) 
+plot(x <span style="color:#f92672">=</span> p.grid, y <span style="color:#f92672">=</span> posterior, type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;l&#34;</span>, 
+            xlab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Probability of Water&#34;</span>, ylab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Posterior Probability&#34;</span>)
+p.grid[posterior <span style="color:#f92672">==</span> <span style="color:#66d9ef">max</span>(posterior)]</code></pre></div>
+
+<p><img src="/media/rethink01-post01.png" alt="" /></p>
+
+<h2 id="quadratic-approximation">Quadratic Approximation</h2>
+
+<p>Quadratic approximation leverages the fact that the region near the peak of the posterior distribution will be normal-ish. So, this approach finds the posterior mode then computes the curvature near the peak which can be used to form the entire posterior distributions. The rethinking library has the map function to fit models using quadratic approximation.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">globe.qa <span style="color:#f92672">&lt;-</span> rethinking<span style="color:#f92672">::</span>map(
+  <span style="color:#66d9ef">alist</span>(
+    w <span style="color:#f92672">~</span> dbinom(<span style="color:#ae81ff">9</span>, p),  <span style="color:#75715e"># binomial like</span>
+    p <span style="color:#f92672">~</span> dunif(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)    <span style="color:#75715e"># uniform prior</span>
+  ),
+  data <span style="color:#f92672">=</span> <span style="color:#66d9ef">list</span>(w <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>)
+)
+<span style="color:#75715e">## Parameter estimates</span>
+precis(globe.qa)</code></pre></div>
+
+<p>Which gives the following, i.e. making the assumption that the posterior is approximately gaussian, it is maximised at $p = 0.67$ and has a standard deviation of 0.16.</p>
+
+<pre><code>  Mean StdDev 5.5% 94.5%
+p 0.67   0.16 0.42  0.92
+</code></pre>
+
+<p>The actual posterior here is a Beta distribution, but the approximation is reasonable in this case. Nevertheless, we need to note that the sample size is small here and that we need to be careful with small n.</p>
+
+<h2 id="sampling">Sampling</h2>
+
+<p>In practical terms the end result of Bayesian modelling exercise is a sample from the posterior distribution (unless you have a closed form solution). As such you need to work with the samples for conducting inference, but this isn&rsquo;t such a bad thing. Earlier we obtained the posterior probability distribution from the water-globe problem and now the following should give you an idea of how to work with samples.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">4254</span>)
+samples <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">sample</span>(p.grid, prob <span style="color:#f92672">=</span> posterior, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">1e4</span>, replace <span style="color:#f92672">=</span> T)
+plot(samples)
+rethinking<span style="color:#f92672">::</span>dens(samples)</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th align="center">Sample</th>
+<th align="center">Density</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><img src="/media/rethink01-sample01.png" alt="" /></td>
+<td align="center"><img src="/media/rethink01-sample02.png" alt="" /></td>
+</tr>
+</tbody>
+</table>
+
+<p>What we are doing is sampling from the original grid and we are telling sample to weight the possible values of the parameter based on the posterior probability. It is obvious that the density on the right is very similar to the distribution we got earlier simply by normalising the product of the likelihood and prior. However, we can now investigate our posterior distribution simply by referencing the sample. For example, we could:</p>
+
+<ul>
+<li>look at the probability that the parameter is less than 0.5,</li>
+<li>figure out what the parameter value of the lower 80% of the posterior</li>
+<li>form a credible interval or find the mode</li>
+<li>find the 60% highest posterior density interval for a skewed distribution (the narrowest interval that contains 60% of the distribution)</li>
+<li>compute point estimates</li>
+</ul>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">sum</span>(samples <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0.5</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1e4</span>
+quantile(samples, <span style="color:#ae81ff">0.8</span>)
+rethinking<span style="color:#f92672">::</span>PI(samples, prob <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.95</span>)
+rethinking<span style="color:#f92672">::</span>HPDI(samples, prob <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.95</span>)
+median(samples)</code></pre></div>
+
+<h2 id="loss-functions">Loss Functions</h2>
+
+<p>A principled way to choose a point estimate is to make use of a loss function, which tells you the cost associated with using a particular point estimate. In the water/globe problem, say there is a real life proportion of water covering the globe. Now, I tell you a point estimate from the posterior and will $100 if I am right but will lose money proportional to the distance I have from the true value. Under this loss function I will minimise my losses by using the median. There will be more on loss functions later.</p>
+
+<h2 id="sampling-to-simulate">Sampling to Simulate</h2>
+
+<p>Bayesian models are generative. We obtained the posterior probability of our parameter (proportion of water on the globe) and we can use that distribution to simulate data via the binomial distribution we saw earlier:</p>
+
+<p>$$
+Pr(w|n, p) = \frac{n!}{w!(n-w)!}p^w (1-p)^{n-w}
+$$</p>
+
+<p>For example, frmo the samples, the median estimate for $p$ is $p = 0.646$ so we can generate a large number of simulated observations by using our $n = 9$ and $p = 0.646$.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">3411</span>)
+sim1 <span style="color:#f92672">&lt;-</span> rbinom(<span style="color:#ae81ff">1e4</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span>, prob <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.646</span>)
+df <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(sim <span style="color:#f92672">=</span> sim1)
+ggplot(df, aes(x <span style="color:#f92672">=</span> sim))<span style="color:#f92672">+</span>
+  geom_bar(width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span> )<span style="color:#f92672">+</span>
+  scale_x_continuous(<span style="color:#e6db74">&#34;Simulated w&#34;</span>, breaks <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">9</span>)<span style="color:#f92672">+</span>
+  scale_y_continuous(<span style="color:#e6db74">&#34;Pr(w|n, p)&#34;</span>)</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th align="center">Simulation based on single $p$</th>
+<th align="center">Posterior Predictive builds in uncertainty in $p$</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><img src="/media/rethink01-sim01.png" alt="" /></td>
+<td align="center"><img src="/media/rethink01-sim02.png" alt="" /></td>
+</tr>
+</tbody>
+</table>
+
+<p>However, what we really would like to know is what the simulated data look like if we build in our uncertainty of the parameter estimate. When we do this we obtain a <em>posterior predictive distribution</em>. The way to do this is to use the samples as weights when simulating the data and this only necessitates a small tweak on the above code. The result is shown on the right hand side plot above. You can see how there is a much broader spread in $w$ reflecting our uncertainty about $p$. The simulation is effectively produced</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">3411</span>)
+<span style="color:#75715e"># Note that the number of simulated w&#39;s equals the </span>
+<span style="color:#75715e"># number of samples but that isn&#39;t actually necessary.</span>
+sim1 <span style="color:#f92672">&lt;-</span> rbinom(<span style="color:#ae81ff">1e4</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span>, prob <span style="color:#f92672">=</span> samples)
+df <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(sim <span style="color:#f92672">=</span> sim1)
+ggplot(df, aes(x <span style="color:#f92672">=</span> sim))<span style="color:#f92672">+</span>
+  geom_bar(width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span> )<span style="color:#f92672">+</span>
+  scale_x_continuous(<span style="color:#e6db74">&#34;Simulated w&#34;</span>, breaks <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">9</span>)<span style="color:#f92672">+</span>
+  scale_y_continuous(<span style="color:#e6db74">&#34;Pr(w|n, p)&#34;</span>)</code></pre></div>
+
+<p>In this case the posterior predictive distribution is quite consistent with the data we observed in that the distribution is centred around 6. We could assess the model in other ways for example assessing the longest run or the number of switches from water to land.</p>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/bayesian">bayesian</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/binomial">binomial</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/brms01/">A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</a></li>
+    
+    <li><a href="/post/emmeansr01-md/">The emmeans package</a></li>
+    
+    <li><a href="/post/logistic01-ors/">Rationalising Odds Ratios Results</a></li>
+    
+    <li><a href="/post/zotero01/">Citation Tools - Zotero</a></li>
+    
+    <li><a href="/post/dates01/">Date Anomolies</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

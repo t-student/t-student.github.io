@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="generator" content="Hugo 0.32.4" />
   <meta name="author" content="Mark Jones">
 
   
@@ -300,11 +300,11 @@
       <div class="article-style" itemprop="articleBody">
         
 
-<p>You have just fitted a logistic regression model in R using <code>glm</code>. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book in for frontal labotomy on Wednesday. OK, I know what you are asking<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> - what, in this dark winter night, is logistic regression and what is an odds ratio?</p>
+<p>You have just fitted a logistic regression model in R using <code>glm</code>. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup> - what, in this dark winter night, is logistic regression and what is an odds ratio?</p>
 
 <h2 id="logistic-regression-all-you-need-to-know-but-forgot-to-ask">Logistic regression - all you need to know but forgot to ask</h2>
 
-<p>In a very casual sense, logistic regression is just a way to do regression where the response is the probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>. The downside is that we need to introduce the concept of <em>odds</em>. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to apply some visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:</p>
+<p>In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim<sup class="footnote-ref" id="fnref:2"><a rel="footnote" href="#fn:2">2</a></sup> but normal regression does not. The downside is that we need to introduce the concept of <em>odds</em>. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:</p>
 
 <p>$$
 logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose
@@ -316,7 +316,7 @@ $$</p>
 p = Pr(Y) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 \times dose)}}
 $$</p>
 
-<p>So for the logit we have an unbounded linear function (top figure below) and the probability (lower figure) is non-linear that is bounded by zero and one.</p>
+<p>So for the logit we have an unbounded linear function (top figure below) and the probability (lower figure) is non-linear that is bounded by zero and one. Snazzy huh?</p>
 
 <p><img src="/media/logisORBig01.png" alt="" /></p>
 
@@ -331,9 +331,9 @@ $$</p>
 (Intercept)  <span style="color:#ae81ff">-4.6648</span>     <span style="color:#ae81ff">0.3797</span> <span style="color:#ae81ff">-12.284</span>   <span style="color:#f92672">&lt;</span><span style="color:#ae81ff">2e-16</span> <span style="color:#f92672">***</span>
 grp           <span style="color:#ae81ff">1.2975</span>     <span style="color:#ae81ff">0.4308</span>   <span style="color:#ae81ff">3.012</span>   <span style="color:#ae81ff">0.0026</span> <span style="color:#f92672">**</span> </code></pre></div>
 
-<p>Exponentiating the parameter estimates gives us the <em>odds ratios</em>. An odds ratio (OR) just tells us how odd things get relative to a reference level. So, say the probability of getting through the week without treatment is about 0.1, i.e. we have about a 10% chance of getting through the week unscathed (literally and financial) by our eager brain surgeon. This corresponds to a baseline odds of $\frac{1}{0.9} = 1.11$. If the OR turned out to be 2 then all this means is that the odds of getting through the week if you had the anti-psychotic is 2 times the odds of the other group, i.e. roughly 2.22. In probability terms this equals $\frac{2.22}{3.22} = 0.67$ i.e. there is a higher proability of getting through the week.</p>
+<p>Exponentiating the parameter estimates gives us the <em>odds ratios</em>. An odds ratio (OR) just tells us how odd things get relative to a reference level. So, say the probability of getting through the week without treatment is about 0.1, i.e. we have about a 10% chance of getting through the week unscathed (literally and financially) by our eager-beaver brain surgeon &ndash; let&rsquo;s call him Zsolt. This corresponds to a baseline odds of $\frac{p}{1-p} = \frac{0.1}{0.9} = 0.111$. If the OR turned out to be 2 then all this means is that the odds of getting through the week if you had the anti-psychotic is 2 times the odds of the other group, i.e. roughly 0.222. In probability terms this equals $\frac{odds}{1 + odds} = \frac{0.22}{1 + 0.22} = 0.18$ i.e. there is a higher proability of getting through the week.</p>
 
-<p>Now, in the model results shown above, the odds ratio for group membership is actually $exp(1.2975) = 3.66$. Following the ideas above, the interpretation is that, on average, the active treatment increases the odds of getting through the week without having to schedule a frontal labotomy by about 3.7 times than the people that have the placebo. The 95% confidence interval for the OR is 1.66 to 9.22. <a href="https://www.youtube.com/watch?v=8ruJBKFrRCk" target="_blank"><strong>OMG, I LITERALLY CAN&rsquo;T EVEN!!!!</strong>&amp;!!**</a> - let&rsquo;s go write up our paper and get this genius published!</p>
+<p>Now, in the model results shown above, the odds ratio for group membership is actually $exp(1.2975) = 3.66$. Following the ideas above, the interpretation is that, on average, the active treatment increases the odds of getting through the week without having to schedule a frontal labotomy by about 3.7 times than the people that get the placebo. The 95% confidence interval for the OR is 1.66 to 9.22. <a href="https://www.youtube.com/watch?v=8ruJBKFrRCk" target="_blank"><strong>OMG, I LITERALLY CAN&rsquo;T EVEN!!!!</strong>&amp;!!**</a> - let&rsquo;s go write up our paper and get this genius published!</p>
 
 <p>Hang-on, cool your boots poodle - let&rsquo;s take a step back and imagine another scenario where we get the following results:</p>
 
@@ -344,7 +344,7 @@ grp          <span style="color:#ae81ff">1.16595</span>    <span style="color:#a
 
 <p>This time the OR = exp(1.166) = 3.21 and that&rsquo;s still roughly equal to what we got previously but the intercept term is quite different. What&rsquo;s going on here?</p>
 
-<p>The turgid spoiler is that your baseline odds are very different. In the first model the baseline odds are 0.01 and in the second model they are 0.7. So, what does this mean in practical terms? Firstly what it means is that you should <strong>NEVER</strong> take an OR at face value. A useful exercise is to gain more insight is to use the model parameter estimates to predict the probability of getting through the week without a labotomy using the equation shown earlier. For the first model we have:</p>
+<p>The turgid spoiler is that your baseline odds are very different. In the first model the baseline odds are 0.01 and in the second model they are 0.7. So, what does this mean in practical terms? Firstly what it means is that you should <strong>NEVER</strong> take an OR at face value. A useful exercise is to gain more insight is to use the model parameter estimates to predict the probability of getting through the week without a visit to Zsolt using the equation shown earlier. For the first model we have:</p>
 
 <p>$$
 Pr(Y|grp = placebo) = \frac{1}{1 + e^{-(-4.6648)}} = 0.009 \\<br />
@@ -404,13 +404,13 @@ $$</p>
     
     <li><a href="/post/logistic01-powersim/">Logistic Regression - Power Analysis</a></li>
     
-    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
-    
     <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
     
-    <li><a href="/post/zotero01/">Citation Tools - Zotero</a></li>
+    <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
     
-    <li><a href="/post/emmeansr01-md/">Citation Tools - Zotero</a></li>
+    <li><a href="/post/dates01/">Date Anomolies</a></li>
+    
+    <li><a href="/post/zotero01/">Citation Tools - Zotero</a></li>
     
   </ul>
 </div>

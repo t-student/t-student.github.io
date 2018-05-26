@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="generator" content="Hugo 0.32.4" />
   <meta name="author" content="Mark Jones">
 
   
@@ -346,26 +346,26 @@
                      or.snp <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.5</span>, 
                      include.snp <span style="color:#f92672">=</span> F){
 
-  <span style="color:#75715e"># We create a linear predictor from which we generate data.</span>
-  <span style="color:#75715e"># y ~ b0 + b1 * grp</span>
-  <span style="color:#75715e"># or </span>
-  <span style="color:#75715e"># y ~ b0 + b1 * grp + b2 * snp</span>
-  <span style="color:#75715e"># The response of interest is asthma, denoted as 1/0 (yes/no).</span>
-  <span style="color:#75715e"># Assume proportion in the ctl group with asthma is 0.174.</span>
-  <span style="color:#75715e"># So, assuming the control group is the referant, </span>
-  <span style="color:#75715e"># the baseline odds are:</span>
-  <span style="color:#75715e"># p / (1-p) = 0.210653753</span>
-  <span style="color:#75715e"># Taking the log of this gives us the intercept term</span>
-  <span style="color:#75715e"># log(0.21) = -1.55754</span>
-  <span style="color:#75715e"># The OR for intervention is 0.5329:</span>
-  <span style="color:#75715e"># log(0.5329) = -0.6294215</span>
+  <span style="color:#75715e"># We create a linear predictor from which we generate data.</span>
+  <span style="color:#75715e"># y ~ b0 + b1 * grp</span>
+  <span style="color:#75715e"># or </span>
+  <span style="color:#75715e"># y ~ b0 + b1 * grp + b2 * snp</span>
+  <span style="color:#75715e"># The response of interest is asthma, denoted as 1/0 (yes/no).</span>
+  <span style="color:#75715e"># Assume proportion in the ctl group with asthma is 0.174.</span>
+  <span style="color:#75715e"># So, assuming the control group is the referant, </span>
+  <span style="color:#75715e"># the baseline odds are:</span>
+  <span style="color:#75715e"># p / (1-p) = 0.210653753</span>
+  <span style="color:#75715e"># Taking the log of this gives us the intercept term</span>
+  <span style="color:#75715e"># log(0.21) = -1.55754</span>
+  <span style="color:#75715e"># The OR for intervention is 0.5329:</span>
+  <span style="color:#75715e"># log(0.5329) = -0.6294215</span>
 
-  <span style="color:#75715e"># Baseline odds:</span>
+  <span style="color:#75715e"># Baseline odds:</span>
   b0 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">log</span>(p.ctl <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> p.ctl))
-  <span style="color:#75715e"># b1 is the coef for trt effect</span>
+  <span style="color:#75715e"># b1 is the coef for trt effect</span>
   b1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">log</span>(or.trt)
    
-  <span style="color:#75715e"># Group membership (0 = ctl, 1 = trt arm)</span>
+  <span style="color:#75715e"># Group membership (0 = ctl, 1 = trt arm)</span>
   grp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">0</span>, n.arm), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n.arm))
   
   snp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">NA</span>
@@ -373,24 +373,24 @@
   <span style="color:#66d9ef">if</span> (include.snp){
     b2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">log</span>(or.snp)
 
-    <span style="color:#75715e"># Genetic disposition to asthmatic kids in 86% of the population.</span>
-    <span style="color:#75715e"># The 86% is arbitrary and made up just for the example.</span>
+    <span style="color:#75715e"># Genetic disposition to asthmatic kids in 86% of the population.</span>
+    <span style="color:#75715e"># The 86% is arbitrary and made up just for the example.</span>
     snp <span style="color:#f92672">&lt;-</span> rbinom(n<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>n.arm, <span style="color:#ae81ff">1</span>, prob <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.86</span>)
 
-    <span style="color:#75715e"># Linear predictor a combination of group and genetic disposition</span>
-    <span style="color:#75715e"># for having an asthmatic kid</span>
+    <span style="color:#75715e"># Linear predictor a combination of group and genetic disposition</span>
+    <span style="color:#75715e"># for having an asthmatic kid</span>
     logit.y <span style="color:#f92672">&lt;-</span> b0 <span style="color:#f92672">+</span> b1 <span style="color:#f92672">*</span> grp <span style="color:#f92672">+</span> b2 <span style="color:#f92672">*</span> snp
   } <span style="color:#66d9ef">else</span> {
-    <span style="color:#75715e"># Linear predictor for the simple group comparison</span>
+    <span style="color:#75715e"># Linear predictor for the simple group comparison</span>
     logit.y <span style="color:#f92672">&lt;-</span> b0 <span style="color:#f92672">+</span> b1 <span style="color:#f92672">*</span> grp 
   }
 
-  <span style="color:#75715e"># Gives us a randomly generated sequence of asthmatic kids</span>
-  <span style="color:#75715e"># based on individual probability of event.</span>
+  <span style="color:#75715e"># Gives us a randomly generated sequence of asthmatic kids</span>
+  <span style="color:#75715e"># based on individual probability of event.</span>
   p.y <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">exp</span>(logit.y)<span style="color:#f92672">/</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">exp</span>(logit.y))
   y <span style="color:#f92672">&lt;-</span> rbinom(n<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>n.arm, <span style="color:#ae81ff">1</span>, prob <span style="color:#f92672">=</span> p.y)
   
-  <span style="color:#75715e"># Our pseudo sample.</span>
+  <span style="color:#75715e"># Our pseudo sample.</span>
   df.dat <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">length</span>(grp), 
                        grp <span style="color:#f92672">=</span> grp, 
                        snp <span style="color:#f92672">=</span> snp,
@@ -404,13 +404,13 @@
 
 <p>This function is used by the call to the <code>boot</code> function - more context can be found in the R help section for <code>boot</code>. Given a dataset and indices the function fits a GLM using a supplied formula/specification and returns estimates and predictions from the fitted model.</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Boot strapped logistic giving diff between proportions</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Boot strapped logistic giving diff between proportions</span>
 boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(df.b, 
                      indices, 
                      myformula <span style="color:#f92672">=</span> myformula,
                      df.new <span style="color:#f92672">=</span> df.new) {
   
-  <span style="color:#75715e"># GLM Logistic</span>
+  <span style="color:#75715e"># GLM Logistic</span>
   d <span style="color:#f92672">&lt;-</span> df.b[indices, ]
   m <span style="color:#f92672">&lt;-</span> glm(myformula, family<span style="color:#f92672">=</span>binomial, data <span style="color:#f92672">=</span> d)
   
@@ -420,8 +420,8 @@ boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
   p.diff <span style="color:#f92672">&lt;-</span> p.ctl <span style="color:#f92672">-</span> p.trt
   est.or <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">exp</span>(coef(m))[<span style="color:#ae81ff">2</span>]
 
-  <span style="color:#75715e"># s &lt;- summary(m)</span>
-  <span style="color:#75715e"># est.or.pval &lt;- s$coefficients[&#34;stageint.2&#34;, &#34;Pr(&gt;|z|)&#34;]</span>
+  <span style="color:#75715e"># s &lt;- summary(m)</span>
+  <span style="color:#75715e"># est.or.pval &lt;- s$coefficients[&#34;stageint.2&#34;, &#34;Pr(&gt;|z|)&#34;]</span>
 
   <span style="color:#66d9ef">as.numeric</span>(<span style="color:#66d9ef">c</span>(p.ctl <span style="color:#f92672">=</span> p.ctl,
                p.trt <span style="color:#f92672">=</span> p.trt,
@@ -449,7 +449,7 @@ boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
                      include.snp <span style="color:#f92672">=</span> include.snp)
 
 
-  <span style="color:#75715e"># Specify the required formula to fit</span>
+  <span style="color:#75715e"># Specify the required formula to fit</span>
   <span style="color:#66d9ef">if</span>(include.snp){
     myformula <span style="color:#f92672">=</span> y <span style="color:#f92672">~</span> grp <span style="color:#f92672">+</span> snp
     df.new <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(grp <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>), snp <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
@@ -458,7 +458,7 @@ boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
     df.new <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(grp <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))
   }
 
-  <span style="color:#75715e"># Bootstrap</span>
+  <span style="color:#75715e"># Bootstrap</span>
   bb <span style="color:#f92672">&lt;-</span> boot<span style="color:#f92672">::</span>boot(df.dat, 
                    statistic<span style="color:#f92672">=</span>boot.glm, 
                    R<span style="color:#f92672">=</span>boot.reps, 
@@ -466,20 +466,20 @@ boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
                    df.new <span style="color:#f92672">=</span> df.new)
   
 
-  <span style="color:#75715e"># First look at differences</span>
+  <span style="color:#75715e"># First look at differences</span>
   glm.prob.diff.est <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">mean</span>(bb<span style="color:#f92672">$</span><span style="color:#66d9ef">t</span>[,<span style="color:#ae81ff">3</span>])
   glm.prob.diff.lwr <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">as.numeric</span>(quantile(bb<span style="color:#f92672">$</span><span style="color:#66d9ef">t</span>[,<span style="color:#ae81ff">3</span>], probs <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.025</span>))
   glm.prob.diff.upr <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">as.numeric</span>(quantile(bb<span style="color:#f92672">$</span><span style="color:#66d9ef">t</span>[,<span style="color:#ae81ff">3</span>], probs <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.975</span>))
   glm.prob.sig.diff <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">ifelse</span>(glm.prob.diff.est <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;</span> glm.prob.diff.lwr <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>)
   
-  <span style="color:#75715e"># Now look at OR</span>
+  <span style="color:#75715e"># Now look at OR</span>
   glm.or.est <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">mean</span>(bb<span style="color:#f92672">$</span><span style="color:#66d9ef">t</span>[,<span style="color:#ae81ff">4</span>])
 
   
-  <span style="color:#75715e"># Note that for the snp tests, the probability of having an asthmatic kid</span>
-  <span style="color:#75715e"># is conditional on presence of snp.</span>
+  <span style="color:#75715e"># Note that for the snp tests, the probability of having an asthmatic kid</span>
+  <span style="color:#75715e"># is conditional on presence of snp.</span>
   <span style="color:#66d9ef">if</span>(include.snp){
-    <span style="color:#75715e"># names(df.dat)</span>
+    <span style="color:#75715e"># names(df.dat)</span>
     df.tmp <span style="color:#f92672">&lt;-</span> df.dat[df.dat<span style="color:#f92672">$</span>grp<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;</span> df.dat<span style="color:#f92672">$</span>snp<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>, ] 
     n.pre <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">nrow</span>(df.tmp)
     p.pre <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">sum</span>(df.tmp<span style="color:#f92672">$</span>y)<span style="color:#f92672">/</span><span style="color:#66d9ef">nrow</span>(df.tmp)
@@ -514,22 +514,22 @@ boot.glm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">fu
 
 <p>Here we incorporate the functions into a <a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank">monte carlo simulation</a>. We initialise variables and then start a loop using parallel processing (to reduce run time if multiple cores are available). The results from each simulation is stored in the <code>df.out2</code> <code>data.frame</code>. We can interogate <code>df.out2</code> to get insight into the distribution of various estimates of interest.</p>
 
-<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Initialise variables</span>
+<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># Initialise variables</span>
 <span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">354</span>)
 nsim <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">999</span>
-n.arm <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">650</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#75715e"># c(500, 550, 600, 650, 700)</span>
+n.arm <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">650</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#75715e"># c(500, 550, 600, 650, 700)</span>
 p.ctl <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.174</span>
 or.trt <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5329</span>
 or.snp <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.5</span>
 boot.reps <span style="color:#f92672">=</span> <span style="color:#ae81ff">299</span>
 include.snp <span style="color:#f92672">=</span> F
 
-<span style="color:#75715e"># Run the analysis in parallel across multiple CPU cores</span>
-<span style="color:#75715e"># Initiate cluster</span>
+<span style="color:#75715e"># Run the analysis in parallel across multiple CPU cores</span>
+<span style="color:#75715e"># Initiate cluster</span>
 no_cores <span style="color:#f92672">&lt;-</span> detectCores() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
 cl <span style="color:#f92672">&lt;-</span> makeCluster(no_cores)
 
-<span style="color:#75715e"># Specify all the functions that are required by the sim.</span>
+<span style="color:#75715e"># Specify all the functions that are required by the sim.</span>
 clusterExport(cl<span style="color:#f92672">=</span>cl, <span style="color:#66d9ef">list</span>(<span style="color:#e6db74">&#34;get.data&#34;</span>, <span style="color:#e6db74">&#34;boot.glm&#34;</span>))
 
 l.res2 <span style="color:#f92672">&lt;-</span> parLapply(cl, 
@@ -597,9 +597,9 @@ df.out2 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">as.
   <h3>Related</h3>
   <ul>
     
-    <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
-    
     <li><a href="/post/logistic01-interaction/">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</a></li>
+    
+    <li><a href="/post/poisson01-interaction/">Interpreting Interaction Terms in a GLM (Poisson family, log link)</a></li>
     
     <li><a href="/post/data01-cancer/">Simulating Lung Cancer Incidence data in R</a></li>
     
