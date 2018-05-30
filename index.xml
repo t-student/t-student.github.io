@@ -1326,9 +1326,25 @@ shinyApp(ui = ui, server = server)
 
 &lt;!-- {{.TableOfContents}} --&gt;
 
-&lt;h2 id=&#34;shiny-next-steps&#34;&gt;Shiny Next Steps&lt;/h2&gt;
-
 &lt;p&gt;In an earlier &lt;a href=&#34;https://t-student.github.io/post/shiny01-overview/&#34; target=&#34;_blank&#34;&gt;post&lt;/a&gt; we went over how to get a basic Shiny app together and deployed to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt;. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.&lt;/p&gt;
+
+&lt;h2&gt;Table of Contents&lt;/h2&gt;
+&lt;nav id=&#34;TableOfContents&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#customising-reactions&#34;&gt;Customising Reactions&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#reactive&#34;&gt;&lt;code&gt;reactive&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#isolate&#34;&gt;&lt;code&gt;isolate&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#server-side-triggers&#34;&gt;Server-side Triggers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#delay-reactions-with-eventreactive&#34;&gt;Delay Reactions with &lt;code&gt;eventReactive&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#manage-state-with-reactivevalues&#34;&gt;Manage State with &lt;code&gt;reactiveValues&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/nav&gt;
+
 
 &lt;h2 id=&#34;customising-reactions&#34;&gt;Customising Reactions&lt;/h2&gt;
 

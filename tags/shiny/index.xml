@@ -40,7 +40,8 @@ Before we begin, your goto page for learning about this stuff is https://shiny.r
       
       <guid>https://t-student.github.io/post/shiny01-stage2/</guid>
       <description>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
-Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</description>
+In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.
+Table of Contents   Customising Reactions  reactive isolate  Server-side Triggers Delay Reactions with eventReactive Manage State with reactiveValues   Customising Reactions So earlier we saw that we can update various outputs based on a users input.</description>
     </item>
     
     <item>

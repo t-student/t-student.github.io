@@ -18,7 +18,8 @@
     
   
   <meta name="description" content="Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
-Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.">
+In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.
+Table of Contents   Customising Reactions  reactive isolate  Server-side Triggers Delay Reactions with eventReactive Manage State with reactiveValues   Customising Reactions So earlier we saw that we can update various outputs based on a users input.">
 
   
   <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/shiny01-stage2/">
@@ -91,7 +92,8 @@ Shiny Next Steps In an earlier post we went over how to get a basic Shiny app to
   <meta property="og:url" content="https://t-student.github.io/post/shiny01-stage2/">
   <meta property="og:title" content="Shiny Stage 2 - Reactivity | t-student">
   <meta property="og:description" content="Shiny is a way to deploy your data analyses in an interactive format that is backed by R.
-Shiny Next Steps In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.">
+In an earlier post we went over how to get a basic Shiny app together and deployed to shinyapps.io. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.
+Table of Contents   Customising Reactions  reactive isolate  Server-side Triggers Delay Reactions with eventReactive Manage State with reactiveValues   Customising Reactions So earlier we saw that we can update various outputs based on a users input.">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2018-04-09T00:00:00&#43;10:00">
@@ -243,7 +245,7 @@ Shiny Next Steps In an earlier post we went over how to get a basic Shiny app to
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    5 min read
+    6 min read
   </span>
   
 
@@ -306,9 +308,25 @@ Shiny Next Steps In an earlier post we went over how to get a basic Shiny app to
 
 <!-- {{.TableOfContents}} -->
 
-<h2 id="shiny-next-steps">Shiny Next Steps</h2>
-
 <p>In an earlier <a href="https://t-student.github.io/post/shiny01-overview/" target="_blank">post</a> we went over how to get a basic Shiny app together and deployed to <a href="http://www.shinyapps.io/" target="_blank">shinyapps.io</a>. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</p>
+
+<h2>Table of Contents</h2>
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#customising-reactions">Customising Reactions</a>
+<ul>
+<li><a href="#reactive"><code>reactive</code></a></li>
+<li><a href="#isolate"><code>isolate</code></a></li>
+</ul></li>
+<li><a href="#server-side-triggers">Server-side Triggers</a></li>
+<li><a href="#delay-reactions-with-eventreactive">Delay Reactions with <code>eventReactive</code></a></li>
+<li><a href="#manage-state-with-reactivevalues">Manage State with <code>reactiveValues</code></a></li>
+</ul></li>
+</ul>
+</nav>
+
 
 <h2 id="customising-reactions">Customising Reactions</h2>
 
@@ -499,9 +517,9 @@ shinyApp(ui = ui, server = server)
   <h3>Related</h3>
   <ul>
     
-    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
-    
     <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
+    
+    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
     
     <li><a href="/post/basicbayesian/">Bayesian Zombies 101</a></li>
     
