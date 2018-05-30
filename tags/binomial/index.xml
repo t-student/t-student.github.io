@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Binomial on t-student</title>
+    <link>https://t-student.github.io/tags/binomial/</link>
+    <description>Recent content in Binomial on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sat, 26 May 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/binomial/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Statistical Rethinking - Introduction and Sampling</title>
+      <link>https://t-student.github.io/post/rethinking01/</link>
+      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/rethinking01/</guid>
+      <description>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.
+I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.</description>
+    </item>
+    
+  </channel>
+</rss>

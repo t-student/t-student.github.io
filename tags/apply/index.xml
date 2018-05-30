@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Apply on t-student</title>
+    <link>https://t-student.github.io/tags/apply/</link>
+    <description>Recent content in Apply on t-student</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Tue, 22 May 2018 00:00:00 +1000</lastBuildDate>
+    
+	<atom:link href="https://t-student.github.io/tags/apply/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Using apply functions in R</title>
+      <link>https://t-student.github.io/post/apply01/</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/apply01/</guid>
+      <description>Here is a simple for loop as might be used in a simulation. This is just the first layer and produces one instance of the data. We would run this function a large number of times in our simulation. The function takes some parameters and generates a series of values in each time period. All of data is accumulated in a data.frame which is returned at the end of the function.</description>
+    </item>
+    
+  </channel>
+</rss>

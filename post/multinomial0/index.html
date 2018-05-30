@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -302,7 +302,7 @@ Think about a sample of zombies (I know, sorry) that fall into mutually exclusiv
       <div class="article-style" itemprop="articleBody">
         <p>Ref: <a href="https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf" target="_blank">https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf</a></p>
 
-<p>Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup>. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&rsquo;t want to wake up next to. Let&rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?</p>
+<p>Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&rsquo;t want to wake up next to. Let&rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?</p>
 
 <p>Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
 But we don&rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:</p>
@@ -374,7 +374,7 @@ Small_Cell     |
                             or.ii <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.3</span>, 
                             or.111 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.6</span>)) {
   
-  <span style="color:#75715e"># Baseline odds:</span>
+  <span style="color:#75715e"># Baseline odds:</span>
   b0 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">log</span>(p.ctl <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> p.ctl))
   bgrp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">log</span>(or)
   beta <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">matrix</span>(<span style="color:#66d9ef">c</span>(b0, bgrp), ncol <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
@@ -383,13 +383,13 @@ Small_Cell     |
   dd <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(grp <span style="color:#f92672">=</span> grp)
   mm <span style="color:#f92672">&lt;-</span> model.matrix(<span style="color:#f92672">~</span> grp, dd)
   
-  <span style="color:#75715e"># Linear predictor for the simple group comparison</span>
+  <span style="color:#75715e"># Linear predictor for the simple group comparison</span>
   logit.y <span style="color:#f92672">&lt;-</span> mm <span style="color:#f92672">%*%</span> <span style="color:#66d9ef">beta</span>
 
   p.y <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">exp</span>(logit.y)<span style="color:#f92672">/</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">exp</span>(logit.y)) 
   y <span style="color:#f92672">&lt;-</span> rbinom(n<span style="color:#f92672">=</span><span style="color:#66d9ef">nrow</span>(mm), <span style="color:#ae81ff">1</span>, prob <span style="color:#f92672">=</span> p.y)
   
-  <span style="color:#75715e"># Our pseudo sample.</span>
+  <span style="color:#75715e"># Our pseudo sample.</span>
   df.dat <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#66d9ef">nrow</span>(mm), 
                        z <span style="color:#f92672">=</span> grp,
                        z1 <span style="color:#f92672">=</span> mm[,<span style="color:#ae81ff">2</span>],
@@ -449,9 +449,9 @@ predict(lm1, type <span style="color:#f92672">=</span> <span style="color:#e6db7
     
     <li><a href="/post/shiny01-dyndash/">Shiny Stage 4 - Dynamic Dashboards</a></li>
     
-    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
-    
     <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
+    
+    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
     
     <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
     

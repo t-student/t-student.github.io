@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -300,11 +300,11 @@
       <div class="article-style" itemprop="articleBody">
         
 
-<p>You have just fitted a logistic regression model in R using <code>glm</code>. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup> - what, in this dark winter night, is logistic regression and what is an odds ratio?</p>
+<p>You have just fitted a logistic regression model in R using <code>glm</code>. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> - what, in this dark winter night, is logistic regression and what is an odds ratio?</p>
 
 <h2 id="logistic-regression-all-you-need-to-know-but-forgot-to-ask">Logistic regression - all you need to know but forgot to ask</h2>
 
-<p>In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim<sup class="footnote-ref" id="fnref:2"><a rel="footnote" href="#fn:2">2</a></sup> but normal regression does not. The downside is that we need to introduce the concept of <em>odds</em>. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:</p>
+<p>In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup> but normal regression does not. The downside is that we need to introduce the concept of <em>odds</em>. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:</p>
 
 <p>$$
 logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose

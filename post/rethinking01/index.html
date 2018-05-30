@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -396,7 +396,7 @@ $$</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">n.grid <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">100</span>
 p.grid <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">seq</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, length.out <span style="color:#f92672">=</span> n.grid)
-<span style="color:#75715e"># Uniform non-informative prior</span>
+<span style="color:#75715e"># Uniform non-informative prior</span>
 prior <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n.grid)
 w <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">6</span>
 n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">9</span>
@@ -415,12 +415,12 @@ p.grid[posterior <span style="color:#f92672">==</span> <span style="color:#66d9e
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">globe.qa <span style="color:#f92672">&lt;-</span> rethinking<span style="color:#f92672">::</span>map(
   <span style="color:#66d9ef">alist</span>(
-    w <span style="color:#f92672">~</span> dbinom(<span style="color:#ae81ff">9</span>, p),  <span style="color:#75715e"># binomial like</span>
-    p <span style="color:#f92672">~</span> dunif(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)    <span style="color:#75715e"># uniform prior</span>
+    w <span style="color:#f92672">~</span> dbinom(<span style="color:#ae81ff">9</span>, p),  <span style="color:#75715e"># binomial like</span>
+    p <span style="color:#f92672">~</span> dunif(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)    <span style="color:#75715e"># uniform prior</span>
   ),
   data <span style="color:#f92672">=</span> <span style="color:#66d9ef">list</span>(w <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>)
 )
-<span style="color:#75715e">## Parameter estimates</span>
+<span style="color:#75715e">## Parameter estimates</span>
 precis(globe.qa)</code></pre></div>
 
 <p>Which gives the following, i.e. making the assumption that the posterior is approximately gaussian, it is maximised at $p = 0.67$ and has a standard deviation of 0.16.</p>
@@ -513,8 +513,8 @@ ggplot(df, aes(x <span style="color:#f92672">=</span> sim))<span style="color:#f
 <p>However, what we really would like to know is what the simulated data look like if we build in our uncertainty of the parameter estimate. When we do this we obtain a <em>posterior predictive distribution</em>. The way to do this is to use the samples as weights when simulating the data and this only necessitates a small tweak on the above code. The result is shown on the right hand side plot above. You can see how there is a much broader spread in $w$ reflecting our uncertainty about $p$. The simulation is effectively produced</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">3411</span>)
-<span style="color:#75715e"># Note that the number of simulated w&#39;s equals the </span>
-<span style="color:#75715e"># number of samples but that isn&#39;t actually necessary.</span>
+<span style="color:#75715e"># Note that the number of simulated w&#39;s equals the </span>
+<span style="color:#75715e"># number of samples but that isn&#39;t actually necessary.</span>
 sim1 <span style="color:#f92672">&lt;-</span> rbinom(<span style="color:#ae81ff">1e4</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span>, prob <span style="color:#f92672">=</span> samples)
 df <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(sim <span style="color:#f92672">=</span> sim1)
 ggplot(df, aes(x <span style="color:#f92672">=</span> sim))<span style="color:#f92672">+</span>
@@ -555,13 +555,13 @@ ggplot(df, aes(x <span style="color:#f92672">=</span> sim))<span style="color:#f
     
     <li><a href="/post/brms01/">A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</a></li>
     
+    <li><a href="/post/apply01/">Using apply functions in R</a></li>
+    
     <li><a href="/post/emmeansr01-md/">The emmeans package</a></li>
     
     <li><a href="/post/logistic01-ors/">Rationalising Odds Ratios Results</a></li>
     
     <li><a href="/post/zotero01/">Citation Tools - Zotero</a></li>
-    
-    <li><a href="/post/dates01/">Date Anomolies</a></li>
     
   </ul>
 </div>

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -304,21 +304,23 @@ Shiny Next Steps In an earlier post we went over how to get a basic Shiny app to
 
 <p>Shiny is a way to deploy your data analyses in an interactive format that is backed by R.</p>
 
+<!-- {{.TableOfContents}} -->
+
 <h2 id="shiny-next-steps">Shiny Next Steps</h2>
 
-<p>In an earlier post we went over how to get a basic Shiny app together and deployed to <a href="http://www.shinyapps.io/" target="_blank">shinyapps.io</a>. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</p>
+<p>In an earlier <a href="https://t-student.github.io/post/shiny01-overview/" target="_blank">post</a> we went over how to get a basic Shiny app together and deployed to <a href="http://www.shinyapps.io/" target="_blank">shinyapps.io</a>. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.</p>
 
 <h2 id="customising-reactions">Customising Reactions</h2>
 
-<p>So earlier we saw that we can update various outputs based on a users input. However, we can also reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button.</p>
+<p>So earlier we saw that we can update various outputs based on a users input. However, we can also use reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button. In short, <strong>reactivity</strong> is what makes your Shiny apps responsive. This <a href="https://shiny.rstudio.com/articles/understanding-reactivity.html" target="_blank">article</a> explains reactivity from the ground up.</p>
 
-<p>The first thing to understand about reactive elements is that they work together with reactive functions. For example, the <code>renderPlot</code> function is a reactive function that expects to receive reactive variables such as <code>input$num</code> discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds.</p>
+<p>The first thing to understand about reactive elements is that they work together with reactive functions. Loosely, a reactive element is just something that can change dynamically such as a slider on the user interface, that might be referenced in the server side with something like <code>input$myslider</code>. However, you cannot just access <code>input$myslider</code> willy-nilly, it needs to be enclosed in a reactive function. For example, the <code>renderPlot</code> function is a reactive function that expects to receive reactive variables such as <code>input$num</code> discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds which will lead to re-rendering the plot (or whatever). More information on reactivity can be found at the <a href="https://shiny.rstudio.com/articles/reactivity-overview.html" target="_blank">shiny site</a>.</p>
 
 <p>There are about 7 functions you need to know to work with reactivity a large proportion being the <code>render*()</code> functions, but there are a few others we discuss here.</p>
 
 <h3 id="reactive"><code>reactive</code></h3>
 
-<p>You can modularise code by using the function named <code>reactive</code>. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within <code>reactive</code>  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to <code>x</code>. Whenever the input gets updated by the user the reactive method updates x. Now, within the <code>render</code> functions what we need to do is call <code>x</code> like we would call a function.</p>
+<p>You can (and should) modularise code by using the function named <code>reactive</code>. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within <code>reactive</code>  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to <code>x</code>. Whenever the input gets updated by the user the reactive method updates x. Now, within the <code>render</code> functions what we need to do is call <code>x</code> like we would call a function.</p>
 
 <p>Note that <code>reactive</code> caches its value <em>until it becomes invalid</em> due to user input.</p>
 
@@ -497,9 +499,9 @@ shinyApp(ui = ui, server = server)
   <h3>Related</h3>
   <ul>
     
-    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
-    
     <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
+    
+    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
     
     <li><a href="/post/basicbayesian/">Bayesian Zombies 101</a></li>
     

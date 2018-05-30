@@ -112,7 +112,7 @@ $$&lt;/p&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;n.grid &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
 p.grid &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n.grid)
-&lt;span style=&#34;color:#75715e&#34;&gt;# Uniform non-informative prior&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Uniform non-informative prior&lt;/span&gt;
 prior &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, n.grid)
 w &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
 n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;
@@ -131,12 +131,12 @@ p.grid[posterior &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;s
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;globe.qa &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rethinking&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;map(
   &lt;span style=&#34;color:#66d9ef&#34;&gt;alist&lt;/span&gt;(
-    w &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, p),  &lt;span style=&#34;color:#75715e&#34;&gt;# binomial like&lt;/span&gt;
-    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dunif(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)    &lt;span style=&#34;color:#75715e&#34;&gt;# uniform prior&lt;/span&gt;
+    w &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, p),  &lt;span style=&#34;color:#75715e&#34;&gt;# binomial like&lt;/span&gt;
+    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dunif(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)    &lt;span style=&#34;color:#75715e&#34;&gt;# uniform prior&lt;/span&gt;
   ),
   data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;list&lt;/span&gt;(w &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;)
 )
-&lt;span style=&#34;color:#75715e&#34;&gt;## Parameter estimates&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;## Parameter estimates&lt;/span&gt;
 precis(globe.qa)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Which gives the following, i.e. making the assumption that the posterior is approximately gaussian, it is maximised at $p = 0.67$ and has a standard deviation of 0.16.&lt;/p&gt;
@@ -229,8 +229,8 @@ ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&
 &lt;p&gt;However, what we really would like to know is what the simulated data look like if we build in our uncertainty of the parameter estimate. When we do this we obtain a &lt;em&gt;posterior predictive distribution&lt;/em&gt;. The way to do this is to use the samples as weights when simulating the data and this only necessitates a small tweak on the above code. The result is shown on the right hand side plot above. You can see how there is a much broader spread in $w$ reflecting our uncertainty about $p$. The simulation is effectively produced&lt;/p&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3411&lt;/span&gt;)
-&lt;span style=&#34;color:#75715e&#34;&gt;# Note that the number of simulated w&amp;#39;s equals the &lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# number of samples but that isn&amp;#39;t actually necessary.&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Note that the number of simulated w&amp;#39;s equals the &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# number of samples but that isn&amp;#39;t actually necessary.&lt;/span&gt;
 sim1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(&lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;, size &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; samples)
 df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(sim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim1)
 ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
@@ -239,6 +239,83 @@ ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&
   scale_y_continuous(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Pr(w|n, p)&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;In this case the posterior predictive distribution is quite consistent with the data we observed in that the distribution is centred around 6. We could assess the model in other ways for example assessing the longest run or the number of switches from water to land.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Using apply functions in R</title>
+      <link>https://t-student.github.io/post/apply01/</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/apply01/</guid>
+      <description>&lt;p&gt;Here is a simple for loop as might be used in a simulation. This is just the first layer and produces one instance of the data. We would run this function a large number of times in our simulation. The function takes some parameters and generates a series of values in each time period. All of data is accumulated in a &lt;code&gt;data.frame&lt;/code&gt; which is returned at the end of the function.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Initialisation of parameters and constants&lt;/span&gt;
+n.sim &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
+n.periods &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; 
+pois.lambda &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;33.4&lt;/span&gt; 
+pois.se &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.8276&lt;/span&gt;
+gamma.shape  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4719746&lt;/span&gt;  
+gamma.shape.se  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.029900&lt;/span&gt; 
+gamma.rate  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0097803&lt;/span&gt; 
+gamma.rate.se  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.000983&lt;/span&gt; 
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3952&lt;/span&gt;)
+
+create.dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(n.periods,
+                pois.lambda, pois.se,
+                gamma.shape, gamma.shape.se,
+                gamma.rate, gamma.rate.se){
+  
+  
+  df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(period &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;integer&lt;/span&gt;(),
+                   y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;numeric&lt;/span&gt;())
+
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Create observations&lt;/span&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(i &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;n.periods){
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;# create n - number of obs in this time period&lt;/span&gt;
+    n.per &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rpois(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, lambda &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, pois.lambda, pois.se))
+    
+    
+    &lt;span style=&#34;color:#75715e&#34;&gt;# create y values of the obs this period&lt;/span&gt;
+    y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rgamma(n.per, 
+                shape &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, gamma.shape, gamma.shape.se),
+                rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, gamma.rate, gamma.rate.se))
+    
+    
+    &lt;span style=&#34;color:#75715e&#34;&gt;# store period number and x&lt;/span&gt;
+    df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;rbind&lt;/span&gt;(df, &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(period &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; i, x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; x))
+  }
+  
+  df
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;An alternative to this is to use &lt;code&gt;lapply&lt;/code&gt;. First we construct the function that generates the data for a single period. Then we&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;create.dat  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt;(x, pois.lambda, pois.se,
+                        gamma.shape, gamma.shape.se,
+                        gamma.rate, gamma.rate.se){
+  
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# create n - number of obs in this time period&lt;/span&gt;
+  n.per &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rpois(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, lambda &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, pois.lambda, pois.se))
+  
+  
+  &lt;span style=&#34;color:#75715e&#34;&gt;# create x values of the obs this period&lt;/span&gt;
+  y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rgamma(n.per, 
+              shape &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, gamma.shape, gamma.shape.se),
+              rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rnorm(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, gamma.rate, gamma.rate.se))
+  
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(period &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; y)
+}
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Now run the function of the number of periods.&lt;/span&gt;
+l1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;lapply&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;n.periods, create.dat, pois.lambda, pois.se,
+       gamma.shape, gamma.shape.se,
+       gamma.rate, gamma.rate.se)
+
+df &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;do.call&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;rbind&amp;#34;&lt;/span&gt;, l1)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -262,11 +339,11 @@ ggplot(df, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sim))&
       <guid>https://t-student.github.io/post/logistic01-ors/</guid>
       <description>
 
-&lt;p&gt;You have just fitted a logistic regression model in R using &lt;code&gt;glm&lt;/code&gt;. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; - what, in this dark winter night, is logistic regression and what is an odds ratio?&lt;/p&gt;
+&lt;p&gt;You have just fitted a logistic regression model in R using &lt;code&gt;glm&lt;/code&gt;. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees. We want to know whether this treatment enables people to get through the week without having to book a frontal labotomy for Wednesday. OK, I know what you are asking&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; - what, in this dark winter night, is logistic regression and what is an odds ratio?&lt;/p&gt;
 
 &lt;h2 id=&#34;logistic-regression-all-you-need-to-know-but-forgot-to-ask&#34;&gt;Logistic regression - all you need to know but forgot to ask&lt;/h2&gt;
 
-&lt;p&gt;In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; but normal regression does not. The downside is that we need to introduce the concept of &lt;em&gt;odds&lt;/em&gt;. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:&lt;/p&gt;
+&lt;p&gt;In a very casual (hands in your pockets) sense, logistic regression is just a way to do regression where you are thinking of the response as a probability of some event. You want your results to be bounded between 0 and 1 because it is hard work trying to interpret a probability of -666. Logistic regression achieves this aim&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; but normal regression does not. The downside is that we need to introduce the concept of &lt;em&gt;odds&lt;/em&gt;. Odds (not odd) are related to probability ($p$) via this equation: $odds = \frac{p}{1-p}$ and in a logistic regression model we relate the logarithm of the odds to a linear combination of covariates. In order to get some intuition via visualisation lets think of how our response might vary based on dosage of the treatment from zero to 10 grams. In this case we have $p = Pr(gets-through-a-week-without-labotomy)$ then for our experiment we have:&lt;/p&gt;
 
 &lt;p&gt;$$
 logit(p) = log(\frac{p}{1-p}) = \beta_0 + \beta_1 \times dose
@@ -616,7 +693,7 @@ $$&lt;/p&gt;
       <guid>https://t-student.github.io/post/multinomial0/</guid>
       <description>&lt;p&gt;Ref: &lt;a href=&#34;https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf&#34; target=&#34;_blank&#34;&gt;https://www3.nd.edu/~rwilliam/stats3/Mlogit1.pdf&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?&lt;/p&gt;
+&lt;p&gt;Think about a sample of zombies (I know, sorry) that fall into mutually exclusive species&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. You know, maybe we have violently hairy zombnies, zombies that seem to make disturbing small talk at formal functions and zombies that you just wouldn&amp;rsquo;t want to wake up next to. Let&amp;rsquo;s label these zombie types as type I, II and III and lets call non-zombies type 0. Now, we have data on a biomarker (mesured on a continuous scale from 0 to 300) obtained from the sample and we think that the level of this biomarker can be used to identify type 0, I, II and III (non)-zombies. How do we address this question statistically?&lt;/p&gt;
 
 &lt;p&gt;Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
 But we don&amp;rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:&lt;/p&gt;
@@ -688,7 +765,7 @@ Small_Cell     |
                             or.ii &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.3&lt;/span&gt;, 
                             or.111 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.6&lt;/span&gt;)) {
   
-  &lt;span style=&#34;color:#75715e&#34;&gt;# Baseline odds:&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Baseline odds:&lt;/span&gt;
   b0 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(p.ctl &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; p.ctl))
   bgrp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(or)
   beta &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;matrix&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(b0, bgrp), ncol &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
@@ -697,13 +774,13 @@ Small_Cell     |
   dd &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(grp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp)
   mm &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; model.matrix(&lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; grp, dd)
   
-  &lt;span style=&#34;color:#75715e&#34;&gt;# Linear predictor for the simple group comparison&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Linear predictor for the simple group comparison&lt;/span&gt;
   logit.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; mm &lt;span style=&#34;color:#f92672&#34;&gt;%*%&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;beta&lt;/span&gt;
 
   p.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;exp&lt;/span&gt;(logit.y)) 
   y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; rbinom(n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(mm), &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, prob &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p.y)
   
-  &lt;span style=&#34;color:#75715e&#34;&gt;# Our pseudo sample.&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;# Our pseudo sample.&lt;/span&gt;
   df.dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;data.frame&lt;/span&gt;(id &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nrow&lt;/span&gt;(mm), 
                        z &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; grp,
                        z1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mm[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
@@ -782,21 +859,21 @@ $$&lt;/p&gt;
 
 &lt;p&gt;OK, all we have to do now is generate $u$ from a standard uniform distribution, compute x such that $F_x(x) = u$ and then take x to be the random number from our wedgy distribution. The code for this is as follows:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Work out maximum density&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Work out maximum density&lt;/span&gt;
 h &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;)
-&lt;span style=&#34;color:#75715e&#34;&gt;# m is the slope of the pdf&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# m is the slope of the pdf&lt;/span&gt;
 m &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; h &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# so the following is the pdf for 0 to 3.2&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# so the following is the pdf for 0 to 3.2&lt;/span&gt;
 x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3.2&lt;/span&gt;, by &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;)
 fx &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; m &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; x
 plot(x, fx, type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;l&amp;#34;&lt;/span&gt;)
 
-&lt;span style=&#34;color:#75715e&#34;&gt;# Now apply the inverse cdf method:&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# generate standard uniform&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Now apply the inverse cdf method:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# generate standard uniform&lt;/span&gt;
 u &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; runif(&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;)
-&lt;span style=&#34;color:#75715e&#34;&gt;# throw the u random variable into the inverse cdf&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# throw the u random variable into the inverse cdf&lt;/span&gt;
 x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sqrt&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; u &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; m)
-&lt;span style=&#34;color:#75715e&#34;&gt;# x should be distribution as per fx&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# x should be distribution as per fx&lt;/span&gt;
 hist(x)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Which gives the following histogram and that&amp;rsquo;s close enough to the target distribution for me!&lt;/p&gt;
@@ -1209,9 +1286,9 @@ ui &amp;lt;- fluidPage(
 )
 server &amp;lt;- function(input, output){
   output$hist &amp;lt;- renderPlot({
-  	n &amp;lt;- input$num
-  	hist(rnorm(n))
-  	})
+    n &amp;lt;- input$num
+    hist(rnorm(n))
+    })
 }
 shinyApp(ui = ui, server = server)
 &lt;/code&gt;&lt;/pre&gt;
@@ -1247,21 +1324,23 @@ shinyApp(ui = ui, server = server)
 
 &lt;p&gt;Shiny is a way to deploy your data analyses in an interactive format that is backed by R.&lt;/p&gt;
 
+&lt;!-- {{.TableOfContents}} --&gt;
+
 &lt;h2 id=&#34;shiny-next-steps&#34;&gt;Shiny Next Steps&lt;/h2&gt;
 
-&lt;p&gt;In an earlier post we went over how to get a basic Shiny app together and deployed to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt;. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.&lt;/p&gt;
+&lt;p&gt;In an earlier &lt;a href=&#34;https://t-student.github.io/post/shiny01-overview/&#34; target=&#34;_blank&#34;&gt;post&lt;/a&gt; we went over how to get a basic Shiny app together and deployed to &lt;a href=&#34;http://www.shinyapps.io/&#34; target=&#34;_blank&#34;&gt;shinyapps.io&lt;/a&gt;. Now we will look more at reactivity and customise appearance using tech like html5 and css from within RStudio. Specifically, we put a bit more focus onto the server side.&lt;/p&gt;
 
 &lt;h2 id=&#34;customising-reactions&#34;&gt;Customising Reactions&lt;/h2&gt;
 
-&lt;p&gt;So earlier we saw that we can update various outputs based on a users input. However, we can also reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button.&lt;/p&gt;
+&lt;p&gt;So earlier we saw that we can update various outputs based on a users input. However, we can also use reactivity to trigger code on the server side or output after some chain of reactive updates or, we could postpone updates until a user explicity requests them through an update button. In short, &lt;strong&gt;reactivity&lt;/strong&gt; is what makes your Shiny apps responsive. This &lt;a href=&#34;https://shiny.rstudio.com/articles/understanding-reactivity.html&#34; target=&#34;_blank&#34;&gt;article&lt;/a&gt; explains reactivity from the ground up.&lt;/p&gt;
 
-&lt;p&gt;The first thing to understand about reactive elements is that they work together with reactive functions. For example, the &lt;code&gt;renderPlot&lt;/code&gt; function is a reactive function that expects to receive reactive variables such as &lt;code&gt;input$num&lt;/code&gt; discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds.&lt;/p&gt;
+&lt;p&gt;The first thing to understand about reactive elements is that they work together with reactive functions. Loosely, a reactive element is just something that can change dynamically such as a slider on the user interface, that might be referenced in the server side with something like &lt;code&gt;input$myslider&lt;/code&gt;. However, you cannot just access &lt;code&gt;input$myslider&lt;/code&gt; willy-nilly, it needs to be enclosed in a reactive function. For example, the &lt;code&gt;renderPlot&lt;/code&gt; function is a reactive function that expects to receive reactive variables such as &lt;code&gt;input$num&lt;/code&gt; discussed last time. The input reactive values notify the observer whenever there is a state change and the observer function responds which will lead to re-rendering the plot (or whatever). More information on reactivity can be found at the &lt;a href=&#34;https://shiny.rstudio.com/articles/reactivity-overview.html&#34; target=&#34;_blank&#34;&gt;shiny site&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;There are about 7 functions you need to know to work with reactivity a large proportion being the &lt;code&gt;render*()&lt;/code&gt; functions, but there are a few others we discuss here.&lt;/p&gt;
 
 &lt;h3 id=&#34;reactive&#34;&gt;&lt;code&gt;reactive&lt;/code&gt;&lt;/h3&gt;
 
-&lt;p&gt;You can modularise code by using the function named &lt;code&gt;reactive&lt;/code&gt;. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within &lt;code&gt;reactive&lt;/code&gt;  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to &lt;code&gt;x&lt;/code&gt;. Whenever the input gets updated by the user the reactive method updates x. Now, within the &lt;code&gt;render&lt;/code&gt; functions what we need to do is call &lt;code&gt;x&lt;/code&gt; like we would call a function.&lt;/p&gt;
+&lt;p&gt;You can (and should) modularise code by using the function named &lt;code&gt;reactive&lt;/code&gt;. With this you can, for example, share the same data across multiple reactive functions. However, in order to access the data stored within &lt;code&gt;reactive&lt;/code&gt;  you need to invoke the data name as if you were calling a function. Below is an example to make it clear. We define a reactive data set and assign it to &lt;code&gt;x&lt;/code&gt;. Whenever the input gets updated by the user the reactive method updates x. Now, within the &lt;code&gt;render&lt;/code&gt; functions what we need to do is call &lt;code&gt;x&lt;/code&gt; like we would call a function.&lt;/p&gt;
 
 &lt;p&gt;Note that &lt;code&gt;reactive&lt;/code&gt; caches its value &lt;em&gt;until it becomes invalid&lt;/em&gt; due to user input.&lt;/p&gt;
 
@@ -1696,7 +1775,7 @@ shinyApp(ui = ui, server = server)
 
 &lt;h3 id=&#34;a-prior&#34;&gt;A Prior&lt;/h3&gt;
 
-&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
+&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesprior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
@@ -1720,7 +1799,7 @@ $$&lt;/p&gt;
 
 &lt;h3 id=&#34;posterior&#34;&gt;Posterior&lt;/h3&gt;
 
-&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
+&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
 
 &lt;p&gt;$$
 Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
@@ -1874,52 +1953,6 @@ z2 &amp;lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:3&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Installing Python on Windows 10</title>
-      <link>https://t-student.github.io/post/installpython3/</link>
-      <pubDate>Mon, 26 Mar 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/installpython3/</guid>
-      <description>
-
-&lt;p&gt;I have decided to start doing more coding in Python, so I needed to install it. The title says it all but this is just to record what I did. In brief:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;install a package manager (equivalent to apt in linux)&lt;/li&gt;
-&lt;li&gt;use python to install pip (a package manager for python)&lt;/li&gt;
-&lt;li&gt;install an environment manager so that you can support different sets of dependencies with minimal hassle&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I started with the instructions &lt;a href=&#34;http://docs.python-guide.org/en/latest/starting/install3/win/#install3-windows&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;. They work fairly seemlessly. However, the following is what I did.&lt;/p&gt;
-
-&lt;h2 id=&#34;installing-package-manager&#34;&gt;Installing Package Manager&lt;/h2&gt;
-
-&lt;p&gt;You need to do this with administrator privaleges otherwise it won&amp;rsquo;t work. I used the instructions found &lt;a href=&#34;https://chocolatey.org/install#installing-behind-a-proxy&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; that are for installing where you are behind a proxy.&lt;/p&gt;
-
-&lt;p&gt;To launch a command prompt with admin privaleges do Start, then type cmd, right click on the command launcher and choose more, then run as an admin.&lt;/p&gt;
-
-&lt;h2 id=&#34;installing-python-3&#34;&gt;Installing Python 3&lt;/h2&gt;
-
-&lt;p&gt;Again use administrator privaleges to invoke &lt;code&gt;python -m pip install -U pip&lt;/code&gt; at the command line.&lt;/p&gt;
-
-&lt;h2 id=&#34;pipenv-and-virtualenv-environment-manager&#34;&gt;Pipenv and Virtualenv environment manager&lt;/h2&gt;
-
-&lt;p&gt;This was a bit fiddly but purely down to the fact that the default install relies only on user privaleges. You end up with an error &lt;code&gt;&#39;pipenv&#39; is not recognized as an internal or external command&lt;/code&gt; because the path is not updated.&lt;/p&gt;
-
-&lt;p&gt;Once complete, run &lt;code&gt;py -m site --user-site&lt;/code&gt; which reports a directory path. It will be something like &lt;code&gt;C:\Users\mjones\AppData\Roaming\Python\Python36\site-packages&lt;/code&gt;. What you need to do is to add a directory to the &lt;code&gt;PATH&lt;/code&gt; environment variable that is the same as this user path but ends with &lt;code&gt;Scripts&lt;/code&gt; rather than &lt;code&gt;site-packages&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Pipenv manages library dependencies on a per project basis. You use &lt;code&gt;pipenv&lt;/code&gt; instead of &lt;code&gt;pip&lt;/code&gt;. For example, to install the &lt;code&gt;requests&lt;/code&gt; package, change into your project’s directory (or just an empty directory for this tutorial) and run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cd myproject
-pipenv install requests
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Pipenv will install the requests library and create a Pipfile for you in your project’s directory. The Pipfile is used to track which dependencies your project needs in case you need to re-install them, such as when you share your project with others. For more info, see &lt;a href=&#34;http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;virtualenv&lt;/code&gt; is a tool to create isolated Python environments. &lt;code&gt;virtualenv&lt;/code&gt; creates a folder which contains all the necessary executables to use the packages that a Python project would need.&lt;/p&gt;
 </description>
     </item>
     

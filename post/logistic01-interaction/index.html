@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.4" />
+  <meta name="generator" content="Hugo 0.38.1" />
   <meta name="author" content="Mark Jones">
 
   
@@ -307,7 +307,7 @@ log Pr(Y = 1) = \beta_0 + \beta_1 grp + \beta_2 time + \beta_3 grp \times time
 $$</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">250</span>)
-<span style="color:#75715e"># Define the parameters</span>
+<span style="color:#75715e"># Define the parameters</span>
 b0 <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0.4</span>
 b1 <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">-0.1</span>
 b2 <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0.2</span>
@@ -317,25 +317,25 @@ n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1200</spa
 grp <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">0</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>))
 time <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">0</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">2</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">0</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">1</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>), <span style="color:#66d9ef">rep</span>(<span style="color:#ae81ff">2</span>, n<span style="color:#f92672">/</span><span style="color:#ae81ff">6</span>))
 
-<span style="color:#75715e"># Model for the means</span>
+<span style="color:#75715e"># Model for the means</span>
 p <span style="color:#f92672">&lt;-</span> b0 <span style="color:#f92672">+</span> b1 <span style="color:#f92672">*</span> grp <span style="color:#f92672">+</span> b2 <span style="color:#f92672">*</span> time <span style="color:#f92672">+</span> b3 <span style="color:#f92672">*</span> grp <span style="color:#f92672">*</span> time
 
 df.fig <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">data.frame</span>(grp <span style="color:#f92672">=</span> grp, time <span style="color:#f92672">=</span> time, p <span style="color:#f92672">=</span> p)
 df.fig<span style="color:#f92672">$</span>y <span style="color:#f92672">&lt;-</span> rbinom(n, <span style="color:#ae81ff">1</span>, p)
 
-<span style="color:#75715e"># The probability of death</span>
+<span style="color:#75715e"># The probability of death</span>
 ggplot(df.fig, aes(x <span style="color:#f92672">=</span> time, y <span style="color:#f92672">=</span> p, colour <span style="color:#f92672">=</span> <span style="color:#66d9ef">factor</span>(grp))) <span style="color:#f92672">+</span>
   geom_point()<span style="color:#f92672">+</span>
   geom_line()<span style="color:#f92672">+</span>
   scale_x_continuous(<span style="color:#e6db74">&#34;Timepoint&#34;</span>, breaks <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">2</span>)<span style="color:#f92672">+</span>
   scale_y_continuous(<span style="color:#e6db74">&#34;Proportion Death&#34;</span>, breaks <span style="color:#f92672">=</span> <span style="color:#66d9ef">seq</span>(from <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, to <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, length.out <span style="color:#f92672">=</span> <span style="color:#ae81ff">11</span>))
 
-<span style="color:#75715e"># Proportion of deaths observed in the simulated data</span>
+<span style="color:#75715e"># Proportion of deaths observed in the simulated data</span>
 df.tmp <span style="color:#f92672">&lt;-</span> df.fig <span style="color:#f92672">%&gt;%</span>
   dplyr<span style="color:#f92672">::</span>group_by(grp, time) <span style="color:#f92672">%&gt;%</span>
   dplyr<span style="color:#f92672">::</span>summarise(p <span style="color:#f92672">=</span> <span style="color:#66d9ef">sum</span>(y)<span style="color:#f92672">/</span>n())
 
-<span style="color:#75715e"># The Simulated data</span>
+<span style="color:#75715e"># The Simulated data</span>
 ggplot(df.fig, aes(x <span style="color:#f92672">=</span> time, y <span style="color:#f92672">=</span> y, colour <span style="color:#f92672">=</span> <span style="color:#66d9ef">factor</span>(grp))) <span style="color:#f92672">+</span>
   geom_jitter(height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>, width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>)<span style="color:#f92672">+</span>
   geom_point(data <span style="color:#f92672">=</span> df.tmp, aes(x <span style="color:#f92672">=</span> time, y <span style="color:#f92672">=</span> p, colour <span style="color:#f92672">=</span> <span style="color:#66d9ef">factor</span>(grp)))<span style="color:#f92672">+</span>

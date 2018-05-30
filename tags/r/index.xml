@@ -7,10 +7,39 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Thu, 03 May 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Sat, 26 May 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Statistical Rethinking - Introduction and Sampling</title>
+      <link>https://t-student.github.io/post/rethinking01/</link>
+      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/rethinking01/</guid>
+      <description>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.
+I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.</description>
+    </item>
+    
+    <item>
+      <title>Using apply functions in R</title>
+      <link>https://t-student.github.io/post/apply01/</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/apply01/</guid>
+      <description>Here is a simple for loop as might be used in a simulation. This is just the first layer and produces one instance of the data. We would run this function a large number of times in our simulation. The function takes some parameters and generates a series of values in each time period. All of data is accumulated in a data.frame which is returned at the end of the function.</description>
+    </item>
+    
+    <item>
+      <title>The emmeans package</title>
+      <link>https://t-student.github.io/post/emmeansr01-md/</link>
+      <pubDate>Wed, 09 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
+      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct/destruct bare bones essentials line on how to use emmeans.
+https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages</description>
+    </item>
     
     <item>
       <title>Rationalising Odds Ratios Results</title>
@@ -19,16 +48,6 @@
       
       <guid>https://t-student.github.io/post/logistic01-ors/</guid>
       <description>You have just fitted a logistic regression model in R using glm. Your results suggest that treatment group membership (active versus placebo) is strongly associated with the probability of being able to endure open-plan offices, micro-management and your fellow comrades 5 days a week. For the sake of realism, let&amp;rsquo;s assume the active treatment is a (very) powerful anti-psychotic and that it has been randomised to a simple random sample of employees.</description>
-    </item>
-    
-    <item>
-      <title>Citation Tools - Zotero</title>
-      <link>https://t-student.github.io/post/emmeansr01-md/</link>
-      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
-      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct (not destruct) post on how to use emmeans.
-https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages</description>
     </item>
     
     <item>

@@ -7,18 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 25 Apr 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Wed, 09 May 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/dates/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Citation Tools - Zotero</title>
+      <title>The emmeans package</title>
       <link>https://t-student.github.io/post/emmeansr01-md/</link>
-      <pubDate>Wed, 25 Apr 2018 00:00:00 +1000</pubDate>
+      <pubDate>Wed, 09 May 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/emmeansr01-md/</guid>
-      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct (not destruct) post on how to use emmeans.
+      <description>The emmeans package in R is a replacement for lsmeans. This is the start of a self-instruct/destruct bare bones essentials line on how to use emmeans.
 https://stackoverflow.com/questions/31707941/how-do-i-change-the-default-library-path-for-r-packages</description>
     </item>
     
