@@ -18,8 +18,8 @@
       <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/rethinking01/</guid>
-      <description>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is mainly intended as a quick-ish reference so I will be skimming over a lot of content.
-I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.</description>
+      <description>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is intended as a quick-ish reference so I will be skimming over a lot of content.
+Table of Contents Likelihood Parameters Prior Posterior Grid Approximation Quadratic Approximation Sampling Loss Functions Sampling to Simulate  I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.</description>
     </item>
     
   </channel>
