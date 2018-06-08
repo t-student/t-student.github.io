@@ -88,7 +88,7 @@
   
   <meta property="og:site_name" content="t-student">
   <meta property="og:url" content="https://t-student.github.io/post/logistic01-interaction/">
-  <meta property="og:title" content="Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression | t-student">
+  <meta property="og:title" content="Interpreting Interaction Terms in a GLM (Binomial family, logit link) - Logistic Regression | t-student">
   <meta property="og:description" content="The following code simulates events (deaths) from a known model for two groups over three time points. We adopt the view that the effects of time are linear. So, we have deaths acorss two groups (0 = control, 1 = treatment) at three time points (0 = baseline, 1 = 1 year in, 2 = 2 years in). We pre-specify a linear predictor relating group membership and timepoint to the probability of death and then generate bernouli trials based on these probabilities.">
   <meta property="og:locale" content="en-us">
   
@@ -99,7 +99,7 @@
 
   
 
-  <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression | t-student</title>
+  <title>Interpreting Interaction Terms in a GLM (Binomial family, logit link) - Logistic Regression | t-student</title>
 
   
 </head>
@@ -222,7 +222,7 @@
 
   <div class="article-container">
     <div class="article-inner">
-      <h1 itemprop="name">Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</h1>
+      <h1 itemprop="name">Interpreting Interaction Terms in a GLM (Binomial family, logit link) - Logistic Regression</h1>
 
       
 
@@ -256,7 +256,7 @@
   <ul class="share">
     <li>
       <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20log%20link%29%20-%20Logistic%20Regression&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f"
+         href="https://twitter.com/intent/tweet?text=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20logit%20link%29%20-%20Logistic%20Regression&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-twitter"></i>
       </a>
@@ -270,21 +270,21 @@
     </li>
     <li>
       <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f&amp;title=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20log%20link%29%20-%20Logistic%20Regression"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f&amp;title=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20logit%20link%29%20-%20Logistic%20Regression"
          target="_blank" rel="noopener">
         <i class="fa fa-linkedin"></i>
       </a>
     </li>
     <li>
       <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f&amp;title=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20log%20link%29%20-%20Logistic%20Regression"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f&amp;title=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20logit%20link%29%20-%20Logistic%20Regression"
          target="_blank" rel="noopener">
         <i class="fa fa-weibo"></i>
       </a>
     </li>
     <li>
       <a class="email"
-         href="mailto:?subject=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20log%20link%29%20-%20Logistic%20Regression&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f">
+         href="mailto:?subject=Interpreting%20Interaction%20Terms%20in%20a%20GLM%20%28Binomial%20family%2c%20logit%20link%29%20-%20Logistic%20Regression&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2flogistic01-interaction%2f">
         <i class="fa fa-envelope"></i>
       </a>
     </li>
@@ -390,7 +390,33 @@ predict(lm1, type = &quot;response&quot;, newdata = data.frame(grp = c(0, 0, 0, 
 0.3933892 0.6232216 0.8083892 0.3259346 0.1931308 0.1059346 
 </code></pre>
 
-<p>The exponentiated intercept term represents the baseline odds of death. Similarly, the exponentiated group and time main effects are odds-ratios. However, the exponentiated interaction term is a ratio of odds-ratios.</p>
+<p>The exponentiated intercept term represents the baseline odds of death. Similarly, the exponentiated group and time main effects are odds-ratios. However, the exponentiated interaction term is a ratio of odds-ratios, see Table below.</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Term</th>
+<th align="left">Exponetiated Coefficient</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">Intercept</td>
+<td align="left">Baseline Odds</td>
+</tr>
+
+<tr>
+<td align="left">Single coefficient</td>
+<td align="left">Odds Ratio</td>
+</tr>
+
+<tr>
+<td align="left">Interaction</td>
+<td align="left">Ratio of Odds Ratio</td>
+</tr>
+</tbody>
+</table>
 
 <p>The baseline odds are $exp(-0.4331) = 0.6485$. I have a terrible time thinking in odds (mainly because they are unbounded to the right) so I always convert to probabilities. The baseline odds of death equate to $odds/(1+odds) = 0.393$. This aligns with the <code>b0</code> parameter in the linear predictor so things look good.</p>
 

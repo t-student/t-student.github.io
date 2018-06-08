@@ -167,7 +167,7 @@ OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking
     </item>
     
     <item>
-      <title>Interpreting Interaction Terms in a GLM (Binomial family, log link) - Logistic Regression</title>
+      <title>Interpreting Interaction Terms in a GLM (Binomial family, logit link) - Logistic Regression</title>
       <link>https://t-student.github.io/post/logistic01-interaction/</link>
       <pubDate>Wed, 14 Feb 2018 00:00:00 +1100</pubDate>
       
