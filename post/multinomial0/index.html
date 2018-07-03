@@ -307,15 +307,19 @@ Think about a sample of zombies (I know, sorry) that fall into mutually exclusiv
 <p>Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
 But we don&rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:</p>
 
-<p>$$
-log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = beta_0 + beta<em>1 bioscore</em>{i} = Z_{mi}
-$$</p>
+<div>
+$$
+log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = \beta_{m,0} + \beta_{m,1} bioscore_i  = Z_{m,i}
+$$
+</div>
 
 <p>To compute the probabilities you need to do:</p>
 
-<p>$$
-Pr(Y<em>i = m) = \frac{exp(Z</em>{mi})}{1 + \sum<em>2^M exp(Z</em>{hi}) }
-$$</p>
+<div>
+$$
+Pr(Y_i = m) = \frac{exp(Z_{m,i})}{1 + \sum_{h=2}^M exp(Z_{h,i}) }
+$$
+</div>
 
 <p>and for the reference category you just replace the numerator with a 1.</p>
 
@@ -449,11 +453,11 @@ predict(lm1, type <span style="color:#f92672">=</span> <span style="color:#e6db7
     
     <li><a href="/post/shiny01-dyndash/">Shiny Stage 4 - Dynamic Dashboards</a></li>
     
-    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
+    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
     
     <li><a href="/post/shiny01-stage2/">Shiny Stage 2 - Reactivity</a></li>
     
-    <li><a href="/post/shiny01-overview/">Shiny 101</a></li>
+    <li><a href="/post/shiny01-stage3/">Shiny Stage 3 - UI customisation</a></li>
     
   </ul>
 </div>

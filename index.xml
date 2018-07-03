@@ -714,15 +714,19 @@ $$&lt;/p&gt;
 &lt;p&gt;Well, we could subset our data and just run three logistic regression models comparing 0 versus type I, 0 versus type II and 0 versus type III.
 But we don&amp;rsquo;t do this. Instead we use a multinomial logistic model. Our dependent variable is zombie type and we use non-zombie as the reference level. We compute the probability of membership in the other categories compared to the probability of membership in the reference category. To do this we need to fit $M - 1$ models where $M$ is the number of levels in the dependent variable (4 here). We model the log odds, like this:&lt;/p&gt;
 
-&lt;p&gt;$$
-log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = beta_0 + beta&lt;em&gt;1 bioscore&lt;/em&gt;{i} = Z_{mi}
-$$&lt;/p&gt;
+&lt;div&gt;
+$$
+log \frac{Pr(Y_i = m)}{Pr(Y_i = referant)} = \beta_{m,0} + \beta_{m,1} bioscore_i  = Z_{m,i}
+$$
+&lt;/div&gt;
 
 &lt;p&gt;To compute the probabilities you need to do:&lt;/p&gt;
 
-&lt;p&gt;$$
-Pr(Y&lt;em&gt;i = m) = \frac{exp(Z&lt;/em&gt;{mi})}{1 + \sum&lt;em&gt;2^M exp(Z&lt;/em&gt;{hi}) }
-$$&lt;/p&gt;
+&lt;div&gt;
+$$
+Pr(Y_i = m) = \frac{exp(Z_{m,i})}{1 + \sum_{h=2}^M exp(Z_{h,i}) }
+$$
+&lt;/div&gt;
 
 &lt;p&gt;and for the reference category you just replace the numerator with a 1.&lt;/p&gt;
 
