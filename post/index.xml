@@ -18,12 +18,13 @@
       <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/post/receiver_operator_char_curve/</guid>
-      <description>Context Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
-The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are died versus lived, with died as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials.</description>
+      <description>Let&amp;rsquo;s talk about classification.
+Table of Contents Context and Simulation Sensitivity and specificity ROC Curve  Context and Simulation Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
+The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide.</description>
     </item>
     
     <item>
-      <title>Competing Risks in R</title>
+      <title>WORK IN PROGRESS ALERT - Competing Risks in R</title>
       <link>https://t-student.github.io/post/competingrisk01/</link>
       <pubDate>Mon, 16 Jul 2018 00:00:00 +1000</pubDate>
       
@@ -43,7 +44,7 @@ Table of Contents Likelihood Parameters Prior Posterior Grid Approximation Quad
     </item>
     
     <item>
-      <title>Using apply functions in R</title>
+      <title>WORK IN PROGRESS ALERT - Using apply functions in R</title>
       <link>https://t-student.github.io/post/apply01/</link>
       <pubDate>Tue, 22 May 2018 00:00:00 +1000</pubDate>
       
@@ -52,7 +53,7 @@ Table of Contents Likelihood Parameters Prior Posterior Grid Approximation Quad
     </item>
     
     <item>
-      <title>The emmeans package</title>
+      <title>WORK IN PROGRESS ALERT - The emmeans package</title>
       <link>https://t-student.github.io/post/emmeansr01-md/</link>
       <pubDate>Wed, 09 May 2018 00:00:00 +1000</pubDate>
       

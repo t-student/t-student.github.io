@@ -7,28 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Sat, 26 May 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Sun, 08 Apr 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/bayesian/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Statistical Rethinking - Introduction and Sampling</title>
-      <link>https://t-student.github.io/post/rethinking01/</link>
-      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      <title>Bayesian Zombies 101</title>
+      <link>https://t-student.github.io/post/basicbayesian/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
       
-      <guid>https://t-student.github.io/post/rethinking01/</guid>
-      <description>Statistical Rethinking is a great book for learning about Bayesian Modelling. In this first post of quite a few I am going to summarise some key points from the first three chapters, but mostly chapter 2 and 3. It is intended as a quick-ish reference so I will be skimming over a lot of content.
-Table of Contents Likelihood Parameters Prior Posterior Grid Approximation Quadratic Approximation Sampling Loss Functions Sampling to Simulate  I like examples so let&amp;rsquo;s dive in with the proportion of water covering the globe problem, hereafter the water/globe problem.</description>
-    </item>
-    
-    <item>
-      <title>A brms implementation of the analysis presented in &#34;Bayesian linear mixed models using Stan: A tutorial for psychologists, linguists, and cognitive scientists&#34;</title>
-      <link>https://t-student.github.io/post/brms01/</link>
-      <pubDate>Fri, 19 Jan 2018 00:00:00 +1100</pubDate>
-      
-      <guid>https://t-student.github.io/post/brms01/</guid>
-      <description>The title was stolen directly from the excellent 2016 paper by Tanner Sorensen and Shravan Vasishth. Here I recreate their analysis using brms R package, primarily as a self-teach exercise. I am going to very much assume that the basic ideas of Bayesian analysis are already understood. I will add some informtion on prior and posterior predictive checks because I think not doing so missing a large part of the point of a Bayesian analysis.</description>
+      <guid>https://t-student.github.io/post/basicbayesian/</guid>
+      <description>I find the Statistical Rethinking text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.
+OK, Bayesian Analysis? Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of.</description>
     </item>
     
   </channel>
