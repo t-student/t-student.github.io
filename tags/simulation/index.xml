@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 11 Apr 2018 00:00:00 +1000</lastBuildDate>
+    <lastBuildDate>Tue, 24 Jul 2018 00:00:00 +1000</lastBuildDate>
     
 	<atom:link href="https://t-student.github.io/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Receiver Operator Characteristic Curves</title>
+      <link>https://t-student.github.io/post/receiver_operator_char_curve/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/receiver_operator_char_curve/</guid>
+      <description>Context Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
+The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are died versus lived, with died as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials.</description>
+    </item>
     
     <item>
       <title>Inverse transform sampling</title>

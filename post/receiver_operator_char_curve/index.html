@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.38.1" />
+  <meta name="author" content="Mark Jones">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="Context Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
+The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are died versus lived, with died as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://t-student.github.io/post/receiver_operator_char_curve/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-112871477-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  <link rel="feed" href="https://t-student.github.io/index.xml" type="application/rss+xml" title="t-student">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://t-student.github.io/post/receiver_operator_char_curve/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="t-student">
+  <meta property="og:url" content="https://t-student.github.io/post/receiver_operator_char_curve/">
+  <meta property="og:title" content="Receiver Operator Characteristic Curves | t-student">
+  <meta property="og:description" content="Context Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
+The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are died versus lived, with died as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials.">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-07-24T00:00:00&#43;10:00">
+  
+  <meta property="article:modified_time" content="2018-07-24T00:00:00&#43;10:00">
+  
+
+  
+
+  <title>Receiver Operator Characteristic Curves | t-student</title>
+
+  
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">t-student</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Receiver Operator Characteristic Curves</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-07-24 00:00:00 &#43;1000 AEST" itemprop="datePublished dateModified">
+      Jul 24, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mark Jones">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    5 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Receiver%20Operator%20Characteristic%20Curves&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2freceiver_operator_char_curve%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2ft-student.github.io%2fpost%2freceiver_operator_char_curve%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2ft-student.github.io%2fpost%2freceiver_operator_char_curve%2f&amp;title=Receiver%20Operator%20Characteristic%20Curves"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2ft-student.github.io%2fpost%2freceiver_operator_char_curve%2f&amp;title=Receiver%20Operator%20Characteristic%20Curves"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Receiver%20Operator%20Characteristic%20Curves&amp;body=https%3a%2f%2ft-student.github.io%2fpost%2freceiver_operator_char_curve%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<h2 id="context">Context</h2>
+
+<p>Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you  need to specify the threshold probability that demarcates outcomes.</p>
+
+<p>The <code>SMPracticals</code> <strong>R</strong> package contains <code>bliss</code>, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are <em>died</em> versus <em>lived</em>, with <em>died</em> as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials. So, let&rsquo;s fit a logistic regression model to the <code>bliss</code> data and then simulate bernoulli trials from the resulting model using <code>simstudy</code>. If nothing else, it is fun and somewhat educational.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pacman<span style="color:#f92672">::</span>p_load(SMPracticals, 
+               simstudy,
+               tidyverse)
+
+data(bliss)
+bliss<span style="color:#f92672">$</span>prop_dead <span style="color:#f92672">=</span> bliss<span style="color:#f92672">$</span>r <span style="color:#f92672">/</span> bliss<span style="color:#f92672">$</span>m
+
+<span style="color:#66d9ef">summary</span>(lm1 <span style="color:#f92672">&lt;-</span> glm(<span style="color:#66d9ef">cbind</span>(r, m<span style="color:#f92672">-</span>r) <span style="color:#f92672">~</span> dose, data <span style="color:#f92672">=</span> bliss, family <span style="color:#f92672">=</span> binomial))
+
+<span style="color:#75715e"># Simulate based on the above parameter estimates</span>
+n_obs <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">sum</span>(bliss<span style="color:#f92672">$</span>m)
+def <span style="color:#f92672">&lt;-</span> defData(varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dose&#34;</span>, dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;uniform&#34;</span>, formula <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;50;80&#34;</span>)
+def <span style="color:#f92672">&lt;-</span> defData(def, varname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;death&#34;</span>, dist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;binary&#34;</span>, formula <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;-14.8084 + 0.2492 * dose&#34;</span>, link <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;logit&#34;</span>)
+<span style="color:#66d9ef">set.seed</span>(<span style="color:#ae81ff">555</span>)
+dt_1 <span style="color:#f92672">&lt;-</span> genData(n_obs, def)
+dt_1
+
+<span style="color:#75715e"># Add a categorical treatment exposure</span>
+dt_1<span style="color:#f92672">$</span>discrete_dose <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">cut</span>(dt_1<span style="color:#f92672">$</span>dose, <span style="color:#ae81ff">8</span>)
+
+<span style="color:#75715e"># Aggregate by dosage and death</span>
+dt_2 <span style="color:#f92672">&lt;-</span> dt_1[, <span style="color:#ae81ff">.</span>(<span style="color:#ae81ff">.</span>N, <span style="color:#66d9ef">mean</span>(dose)), keyby <span style="color:#f92672">=</span> <span style="color:#ae81ff">.</span>(discrete_dose, death)]
+
+<span style="color:#75715e"># Select the stuff we need into a wide format</span>
+dt_3 <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">cbind</span>(dt_2[death <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">.</span>(deaths <span style="color:#f92672">=</span> N, dose <span style="color:#f92672">=</span> V2), ], 
+              dt_2[death <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">.</span>(survived <span style="color:#f92672">=</span> N), ])
+
+<span style="color:#75715e"># Compute the prop_dead in the simulated model and the empirical logit (see later)</span>
+dt_3[, prop_dead <span style="color:#f92672">:=</span> deaths <span style="color:#f92672">/</span> (deaths <span style="color:#f92672">+</span> survived)]
+dt_3[, elogit <span style="color:#f92672">:=</span> <span style="color:#66d9ef">log</span>(prop_dead<span style="color:#f92672">/</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>prop_dead)) ]
+
+<span style="color:#75715e"># Empirical comparison</span>
+ggplot(data <span style="color:#f92672">=</span> bliss, aes(x <span style="color:#f92672">=</span> dose, y <span style="color:#f92672">=</span> prop_dead)) <span style="color:#f92672">+</span> 
+  geom_point() <span style="color:#f92672">+</span> 
+  geom_point(data <span style="color:#f92672">=</span> dt_3, aes(x <span style="color:#f92672">=</span> dose, y <span style="color:#f92672">=</span> prop_dead), colour <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;red&#34;</span>) <span style="color:#f92672">+</span>
+  ylab(<span style="color:#e6db74">&#34;Proportion Dead&#34;</span>) <span style="color:#f92672">+</span> xlab(<span style="color:#e6db74">&#34;Dosage&#34;</span>)
+
+<span style="color:#75715e"># Model in long form</span>
+<span style="color:#66d9ef">summary</span>(lm2 <span style="color:#f92672">&lt;-</span> glm(death <span style="color:#f92672">~</span> dose, data <span style="color:#f92672">=</span> dt_1, family <span style="color:#f92672">=</span> binomial))</code></pre></div>
+
+<p>Here&rsquo;s a look at the original <code>bliss</code> data and the aggregated form of the long dataset <code>dt_1</code>. The red dots are from our simulated data. The new data has slightly different dose categories but roughly the same overall curve. Note that from hereon in, I am only working with the simulated data.</p>
+
+<p><img src="/media/fig_scatter_beetledeath_compare.png" alt="" /></p>
+
+<p>While we intend logistic regression as our method of choice we haven&rsquo;t deliberated on the appropriateness of this model. If we have a single predictor then a fundamental assumption is that the logit (the log odds) is linear, that is we assume:</p>
+
+<p>$$
+\text{logit}(death = 1 | \text{dosage}) = \beta_0 + \beta_1 \text{dosage}
+$$</p>
+
+<p>Fortunately, empirically, our simulated data aligns with the linearity assumption:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">ggplot(data <span style="color:#f92672">=</span> dt_3, aes(x <span style="color:#f92672">=</span> dose, y <span style="color:#f92672">=</span> elogit)) <span style="color:#f92672">+</span> 
+  geom_point() <span style="color:#f92672">+</span> 
+  geom_smooth(se <span style="color:#f92672">=</span> F, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lm&#34;</span>) <span style="color:#f92672">+</span>
+  ylab(<span style="color:#e6db74">&#34;Empirical logit: log(p/(1-p))&#34;</span>) <span style="color:#f92672">+</span> xlab(<span style="color:#e6db74">&#34;Dosage&#34;</span>)</code></pre></div>
+
+<p><img src="/media/fig_scatter_elogit.png" alt="" /></p>
+
+<p>Inspecting the results from the regression models we can see that <code>lm1</code> and <code>lm2</code> give similar parameter estimates (different degrees of freedom obviously). And, whichever way you cut it, the exponentiated parameter estimate gives an odds ratio for dosage of about $1.27$. In other words, for a unit increase in dosage the odds of death increases by a factor of 1.3. But who understands odds-ratios, right? Another way to look at the results is to estimate the probability of death, which increases from 10% at a dose of 50, 55% at a dose of 60 and is around 94% at a dose of 70 units. However, the best way to understand what the model is saying is to simply draw a picture, shown below. We see the the instances of death as a function of dosage and the model predicted probability of death for an average beetle.</p>
+
+<p><img src="/media/fig_scatter_beetledeath.png" alt="" /></p>
+
+<h2 id="sensitivity-and-specificity">Sensitivity and specificity</h2>
+
+<p>In order to understand the ROC curve, you need to have a working idea of <em>sensitivity</em> and <em>specificity</em>. Sensitivity gives us the proportion of deaths that were predicted as deaths and specificity gives the proportion of beetles that we predicted would live that actually lived. These are sometimes called the true positive and true negative rate. We will also encounter another related concept - the false positive rate = 1 - specificity. To cement these ideas, let&rsquo;s say that we decide that we are going to say that if a beetle is given a dose of 65 then we predict that it will die (corresponding to a probability threshold of 0.76). We can easily see how right/wrong we are by updating our data with a <code>predict death</code>  field.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">dt_1[, predict_death_1 <span style="color:#f92672">:=</span> dose <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">65</span>]
+
+<span style="color:#75715e"># Or equivalently work out the corresponding threshold probability</span>
+<span style="color:#75715e"># from our model and do:</span>
+<span style="color:#75715e"># dt_1[, predict_death := dose&gt;=threshold]</span>
+
+<span style="color:#66d9ef">with</span>(dt_1, <span style="color:#66d9ef">table</span>(death, predict_death_1))</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th align="center">Predicted</th>
+<th align="center">Death (No)</th>
+<th align="center">Death (Yes)</th>
+<th align="left"></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">Predicted (No)</td>
+<td align="center">150</td>
+<td align="center">87</td>
+<td align="left">237</td>
+</tr>
+
+<tr>
+<td align="center">Predicted (Yes)</td>
+<td align="center">17</td>
+<td align="center">227</td>
+<td align="left">244</td>
+</tr>
+
+<tr>
+<td align="center"></td>
+<td align="center">167</td>
+<td align="center">314</td>
+<td align="left">481</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table: Threshold poison to predict death: 65 units</p>
+
+<p>The sensitivity is $\frac{227}{314} = 0.72$, the specificity is $\frac{150}{167} = 0.90$. However, if we chose to make our decision on a dose of 50 units of poison we would different. For example, if the threshold poisson dose was 55 units (analogously a probability threshold of 0.23)  the sensitivity increases to $\frac{302}{314} = 0.96$, the specificity falls to $\frac{69}{167} = 0.41$.</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">Predicted</th>
+<th align="center">Death (No)</th>
+<th align="center">Death (Yes)</th>
+<th align="left"></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">Predicted (No)</td>
+<td align="center">69</td>
+<td align="center">12</td>
+<td align="left">81</td>
+</tr>
+
+<tr>
+<td align="center">Predicted (Yes)</td>
+<td align="center">98</td>
+<td align="center">302</td>
+<td align="left">400</td>
+</tr>
+
+<tr>
+<td align="center"></td>
+<td align="center">167</td>
+<td align="center">314</td>
+<td align="left">481</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table: Threshold poison to predict death: 55 units</p>
+
+<p>If we do this on all the possible thresholds for our data then we can plot a receiver operator charactistic (ROC) curve.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">ggplot(dt_1, aes(d <span style="color:#f92672">=</span> death, m <span style="color:#f92672">=</span> prob_death)) <span style="color:#f92672">+</span> 
+  geom_roc(cutoffs.at <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">0.76</span>, <span style="color:#ae81ff">0.23</span>), labelround <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span>
+  scale_x_continuous(breaks <span style="color:#f92672">=</span> <span style="color:#66d9ef">seq</span>(from <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, to <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, by <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>)) <span style="color:#f92672">+</span>
+  scale_y_continuous(breaks <span style="color:#f92672">=</span> <span style="color:#66d9ef">seq</span>(from <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, to <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, by <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>)) <span style="color:#f92672">+</span>
+  ylab(<span style="color:#e6db74">&#34;True +ve Fraction (sensitivity)&#34;</span>) <span style="color:#f92672">+</span> xlab(<span style="color:#e6db74">&#34;False +ve Fraction (1-specificity)&#34;</span>)</code></pre></div>
+
+<p><img src="/media/fig_roc_beetledeath.png" alt="" /></p>
+
+<p>When presenting a ROC curve you should always add the thresholds (probability here) as shown above. If you neglect to do this then your curve is largely meaningless. We can verify our manual calcs (roughly) by looking at the threshold labels and seeing what the sensitivity and specificity are on the axes. In the case of a threshold of 0.76 the sensitivity and specificity are around 0.7 and 0.9 respectively (false positive fraction $1 - 0.9 = 0.1$) as we computed earlier. Similarly, the 0.23 threshold gives a sensitivity of around 0.95 and a specificity of about 0.4. Yay :)</p>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/roc">ROC</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/auc">AUC</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/simulation">simulation</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/inversecdfrand/">Inverse transform sampling</a></li>
+    
+    <li><a href="/post/data01-cancer/">Simulating Lung Cancer Incidence data in R</a></li>
+    
+    <li><a href="/post/competingrisk01/">Competing Risks in R</a></li>
+    
+    <li><a href="/post/rethinking01/">Statistical Rethinking - Introduction and Sampling</a></li>
+    
+    <li><a href="/post/apply01/">Using apply functions in R</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

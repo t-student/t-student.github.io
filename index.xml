@@ -11,6 +11,394 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Receiver Operator Characteristic Curves</title>
+      <link>https://t-student.github.io/post/receiver_operator_char_curve/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/receiver_operator_char_curve/</guid>
+      <description>
+
+&lt;h2 id=&#34;context&#34;&gt;Context&lt;/h2&gt;
+
+&lt;p&gt;Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you  need to specify the threshold probability that demarcates outcomes.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;SMPracticals&lt;/code&gt; &lt;strong&gt;R&lt;/strong&gt; package contains &lt;code&gt;bliss&lt;/code&gt;, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are &lt;em&gt;died&lt;/em&gt; versus &lt;em&gt;lived&lt;/em&gt;, with &lt;em&gt;died&lt;/em&gt; as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials. So, let&amp;rsquo;s fit a logistic regression model to the &lt;code&gt;bliss&lt;/code&gt; data and then simulate bernoulli trials from the resulting model using &lt;code&gt;simstudy&lt;/code&gt;. If nothing else, it is fun and somewhat educational.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pacman&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;p_load(SMPracticals, 
+               simstudy,
+               tidyverse)
+
+data(bliss)
+bliss&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;prop_dead &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bliss&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;r &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; bliss&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;m
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(&lt;span style=&#34;color:#66d9ef&#34;&gt;cbind&lt;/span&gt;(r, m&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;r) &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dose, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bliss, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; binomial))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Simulate based on the above parameter estimates&lt;/span&gt;
+n_obs &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;sum&lt;/span&gt;(bliss&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;m)
+def &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; defData(varname &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;dose&amp;#34;&lt;/span&gt;, dist &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uniform&amp;#34;&lt;/span&gt;, formula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;50;80&amp;#34;&lt;/span&gt;)
+def &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; defData(def, varname &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;death&amp;#34;&lt;/span&gt;, dist &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;binary&amp;#34;&lt;/span&gt;, formula &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-14.8084 + 0.2492 * dose&amp;#34;&lt;/span&gt;, link &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;logit&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;555&lt;/span&gt;)
+dt_1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; genData(n_obs, def)
+dt_1
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Add a categorical treatment exposure&lt;/span&gt;
+dt_1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;discrete_dose &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;cut&lt;/span&gt;(dt_1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;dose, &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Aggregate by dosage and death&lt;/span&gt;
+dt_2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; dt_1[, &lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;N, &lt;span style=&#34;color:#66d9ef&#34;&gt;mean&lt;/span&gt;(dose)), keyby &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;(discrete_dose, death)]
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Select the stuff we need into a wide format&lt;/span&gt;
+dt_3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;cbind&lt;/span&gt;(dt_2[death &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;(deaths &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; N, dose &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; V2), ], 
+              dt_2[death &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;.&lt;/span&gt;(survived &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; N), ])
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Compute the prop_dead in the simulated model and the empirical logit (see later)&lt;/span&gt;
+dt_3[, prop_dead &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; deaths &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (deaths &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; survived)]
+dt_3[, elogit &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;log&lt;/span&gt;(prop_dead&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;prop_dead)) ]
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Empirical comparison&lt;/span&gt;
+ggplot(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bliss, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dose, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; prop_dead)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+  geom_point() &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+  geom_point(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dt_3, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dose, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; prop_dead), colour &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;red&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  ylab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Proportion Dead&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; xlab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Dosage&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Model in long form&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;summary&lt;/span&gt;(lm2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; glm(death &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; dose, data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dt_1, family &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; binomial))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here&amp;rsquo;s a look at the original &lt;code&gt;bliss&lt;/code&gt; data and the aggregated form of the long dataset &lt;code&gt;dt_1&lt;/code&gt;. The red dots are from our simulated data. The new data has slightly different dose categories but roughly the same overall curve. Note that from hereon in, I am only working with the simulated data.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/fig_scatter_beetledeath_compare.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;While we intend logistic regression as our method of choice we haven&amp;rsquo;t deliberated on the appropriateness of this model. If we have a single predictor then a fundamental assumption is that the logit (the log odds) is linear, that is we assume:&lt;/p&gt;
+
+&lt;p&gt;$$
+\text{logit}(death = 1 | \text{dosage}) = \beta_0 + \beta_1 \text{dosage}
+$$&lt;/p&gt;
+
+&lt;p&gt;Fortunately, empirically, our simulated data aligns with the linearity assumption:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggplot(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dt_3, aes(x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dose, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; elogit)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+  geom_point() &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+  geom_smooth(se &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F, method &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;lm&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  ylab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Empirical logit: log(p/(1-p))&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; xlab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Dosage&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/fig_scatter_elogit.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Inspecting the results from the regression models we can see that &lt;code&gt;lm1&lt;/code&gt; and &lt;code&gt;lm2&lt;/code&gt; give similar parameter estimates (different degrees of freedom obviously). And, whichever way you cut it, the exponentiated parameter estimate gives an odds ratio for dosage of about $1.27$. In other words, for a unit increase in dosage the odds of death increases by a factor of 1.3. But who understands odds-ratios, right? Another way to look at the results is to estimate the probability of death, which increases from 10% at a dose of 50, 55% at a dose of 60 and is around 94% at a dose of 70 units. However, the best way to understand what the model is saying is to simply draw a picture, shown below. We see the the instances of death as a function of dosage and the model predicted probability of death for an average beetle.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/fig_scatter_beetledeath.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;sensitivity-and-specificity&#34;&gt;Sensitivity and specificity&lt;/h2&gt;
+
+&lt;p&gt;In order to understand the ROC curve, you need to have a working idea of &lt;em&gt;sensitivity&lt;/em&gt; and &lt;em&gt;specificity&lt;/em&gt;. Sensitivity gives us the proportion of deaths that were predicted as deaths and specificity gives the proportion of beetles that we predicted would live that actually lived. These are sometimes called the true positive and true negative rate. We will also encounter another related concept - the false positive rate = 1 - specificity. To cement these ideas, let&amp;rsquo;s say that we decide that we are going to say that if a beetle is given a dose of 65 then we predict that it will die (corresponding to a probability threshold of 0.76). We can easily see how right/wrong we are by updating our data with a &lt;code&gt;predict death&lt;/code&gt;  field.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;dt_1[, predict_death_1 &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; dose &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;65&lt;/span&gt;]
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Or equivalently work out the corresponding threshold probability&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# from our model and do:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# dt_1[, predict_death := dose&amp;gt;=threshold]&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt;(dt_1, &lt;span style=&#34;color:#66d9ef&#34;&gt;table&lt;/span&gt;(death, predict_death_1))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Predicted&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Death (No)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Death (Yes)&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Predicted (No)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;150&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;87&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;237&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Predicted (Yes)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;227&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;244&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;167&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;314&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;481&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Table: Threshold poison to predict death: 65 units&lt;/p&gt;
+
+&lt;p&gt;The sensitivity is $\frac{227}{314} = 0.72$, the specificity is $\frac{150}{167} = 0.90$. However, if we chose to make our decision on a dose of 50 units of poison we would different. For example, if the threshold poisson dose was 55 units (analogously a probability threshold of 0.23)  the sensitivity increases to $\frac{302}{314} = 0.96$, the specificity falls to $\frac{69}{167} = 0.41$.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Predicted&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Death (No)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Death (Yes)&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Predicted (No)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;69&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;81&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Predicted (Yes)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;98&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;302&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;400&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;167&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;314&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;481&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Table: Threshold poison to predict death: 55 units&lt;/p&gt;
+
+&lt;p&gt;If we do this on all the possible thresholds for our data then we can plot a receiver operator charactistic (ROC) curve.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggplot(dt_1, aes(d &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; death, m &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; prob_death)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
+  geom_roc(cutoffs.at &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.76&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.23&lt;/span&gt;), labelround &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_x_continuous(breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, by &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  scale_y_continuous(breaks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;seq&lt;/span&gt;(from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, by &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
+  ylab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;True +ve Fraction (sensitivity)&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; xlab(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;False +ve Fraction (1-specificity)&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/fig_roc_beetledeath.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When presenting a ROC curve you should always add the thresholds (probability here) as shown above. If you neglect to do this then your curve is largely meaningless. We can verify our manual calcs (roughly) by looking at the threshold labels and seeing what the sensitivity and specificity are on the axes. In the case of a threshold of 0.76 the sensitivity and specificity are around 0.7 and 0.9 respectively (false positive fraction $1 - 0.9 = 0.1$) as we computed earlier. Similarly, the 0.23 threshold gives a sensitivity of around 0.95 and a specificity of about 0.4. Yay :)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Competing Risks in R</title>
+      <link>https://t-student.github.io/post/competingrisk01/</link>
+      <pubDate>Mon, 16 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/competingrisk01/</guid>
+      <description>
+
+&lt;p&gt;Competing risk happen when you have multiple risks that can distort your analysis of some measure. For example, if you are trying to estimate the time to relapse of a disease some patients will be censored by loss to follow up or the study ending, others may die. Time to relapse and death are competing risks.&lt;/p&gt;
+
+&lt;p&gt;When analysing CR we use cumulative incidence. Cumulative incidence is just the probability of an event by a particular time. You shouldn&amp;rsquo;t use the Kaplan-Meier estimate of survival for each event because it will over estimate the incidence rates.&lt;/p&gt;
+
+&lt;p&gt;One approach applied to competing risks is to model the cause-specific hazard (rates). The hazard rate is just the instantaneous risk of the event. Assuming we have two competing events &amp;ndash; call them $A$ and $B$ &amp;ndash; the cumulative incidence of $A$ is the probability of it happening before a given point in time and is computed from the cause specific hazards and the overall survival function&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. Modelling  cause-specific hazards leads to a complex nonlinear relationship for cumulative incidence for whic it is difficult to summarise the covariate effects and the time varying effect.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;timereg&lt;/code&gt; and &lt;code&gt;cmprsk&lt;/code&gt; packages let you estimate the cumulative incidence curve.&lt;/p&gt;
+
+&lt;p&gt;I find the &lt;a href=&#34;http://xcelab.net/rm/statistical-rethinking/&#34; target=&#34;_blank&#34;&gt;Statistical Rethinking&lt;/a&gt; text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.&lt;/p&gt;
+
+&lt;h2 id=&#34;ok-bayesian-analysis&#34;&gt;OK, Bayesian Analysis?&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of. Bayesian analysis is a fairly snappy way to go about this task.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/pirahna.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s get serious and work up to laying down some definitions and notation. First, the breed of inference we are interested in here is &lt;a href=&#34;https://en.wikipedia.org/wiki/Statistical_inference&#34; target=&#34;_blank&#34;&gt;statistical inference&lt;/a&gt;. Statistical inference involves using observations in a framework of presupposition and statistical models that aim at a logical conclusions. Generally we want to be able to make some statements about a scientific question relating to a population of interest.&lt;/p&gt;
+
+&lt;p&gt;Examples - we flip a coin obtained from the local mint 10 times and it produces 7 heads. Should we believe the coin is fair? What about the other coins produced by the mint? We measure the heights of 10 men that play for a professional basket ball team. What does this tell us about the height of all men? &lt;strong&gt;Bayesian analysis&lt;/strong&gt; gives us a formal method to combine what we already know with new evidence and characterises the remaining uncertainty in probability.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-standard-zombie-example-of-bayesian-inference&#34;&gt;The Standard (Zombie) Example of Bayesian Inference&lt;/h2&gt;
+
+&lt;p&gt;In a bayesian analysis we characterise uncertainty using a small bag of tools. Let&amp;rsquo;s introduce a few&amp;hellip;&lt;/p&gt;
+
+&lt;h3 id=&#34;a-prior&#34;&gt;A Prior&lt;/h3&gt;
+
+&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesprior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I generated that snappy curve from a &lt;a href=&#34;https://en.wikipedia.org/wiki/Beta_distribution&#34; target=&#34;_blank&#34;&gt;Beta distribution&lt;/a&gt; by using paramter values equal to 1 and 27. In a more mathy bent we say:&lt;/p&gt;
+
+&lt;p&gt;$$
+\theta \sim Beta(1, 27)
+$$&lt;/p&gt;
+
+&lt;p&gt;In words - theta is distributed as a random variable originated from a beta distribution with shape parameters 1 and 27 - you can see why we favour the mathy version.&lt;/p&gt;
+
+&lt;h3 id=&#34;likelihood&#34;&gt;Likelihood&lt;/h3&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s go to the mall and pick out 20 people at random under the assumption that all individuals have the same probability of being a zombie. However, not one of the people in the sample tries to even take a nimble at us and so we conclude (with perhaps undue certainty) that the sample we picked contained no zombies. We can, again, make this more formal by saying that the data generating process was a &lt;a href=&#34;https://en.wikipedia.org/wiki/Binomial_distribution&#34; target=&#34;_blank&#34;&gt;Binomial distribution&lt;/a&gt; where one of the parameters is our sample size and the other parameter represents the probability that a randomly selected individual is a zombie. Mathematically, we have:&lt;/p&gt;
+
+&lt;p&gt;$$
+y|\theta \sim Bin(20, \theta)
+$$&lt;/p&gt;
+
+&lt;p&gt;and therefore conditional on $\theta$ any given sample of mall people stands a chance of containing a zombie.&lt;/p&gt;
+
+&lt;h3 id=&#34;posterior&#34;&gt;Posterior&lt;/h3&gt;
+
+&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior[^2]. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability[^3] and has the form:&lt;/p&gt;
+
+&lt;p&gt;$$
+Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
+$$&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;average likelihood&lt;/em&gt; bit is computed over all the possible values of the parameter $\theta$ - the proportion of zombies which must be somewhere between zero to 1. Fortunately, we don&amp;rsquo;t have to know how to work out the above directly because the product of a Beta prior and a Binomial likelihood is well known. Specifically, it is another Beta distribution but with different parameters based on the the data we observed and the prior parameters. The first parameter of the posterior beta distribution is $a + y$ and the second is $b + n - y$. In our case, a = 1, y = 0, b = 27 and n = 20 so we have the posterior is:&lt;/p&gt;
+
+&lt;p&gt;$$
+Pr(\theta|y) \sim Beta(1, 47)
+$$&lt;/p&gt;
+
+&lt;p&gt;If we were to draw another graph of the (new) relative strength of beliefs it would look something like the following (new beliefs in red):&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesposterior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So whereas initially we were 90% certain that less than 8.5% of the population are zombies, now we are 90% certain that less than 5% of the population are zombies. We have reduced our uncertainty by leveraging our existing beliefs and our sample observations.&lt;/p&gt;
+
+&lt;h2 id=&#34;grid-approximation&#34;&gt;Grid Approximation&lt;/h2&gt;
+
+&lt;p&gt;Unfortunately, the calculations are rarely this simple - we rarely have &lt;a href=&#34;https://en.wikipedia.org/wiki/Conjugate_prior&#34; target=&#34;_blank&#34;&gt;conjugate&lt;/a&gt; pairs of priors and likelihood like I contrived in the above example. However, we can get around this using sampling. In its simplest form we can use a &lt;em&gt;grid approximation&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;In R the following code shows how this might play out. We first set up a posterior distribution and then we sample with replacement to get an approximation of the posterior distribution.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# This is the range of parameter values and defines the precision
+# to which we can estimate the parameter of interest. 
+mygrid &amp;lt;- seq(0, 1, length.out = 1000)
+# Defines our prior beliefs
+prior &amp;lt;- dbeta(mygrid, 1, 27)
+# Defines the relative likelihood of the data (zero zombies out of 20) 
+# across all the possible parameter values
+likelihood &amp;lt;- dbinom(0, size = 20, prob = mygrid)
+# Compute the posterior and normalise it
+posterior &amp;lt;- likelihood * prior 
+posterior &amp;lt;- posterior / sum(posterior)
+
+# This is analytic posterior - generally we don&#39;t have the
+# luxury of knowing this.
+analyticpost &amp;lt;- dbeta(mygrid, 1, 47)
+
+# Sample from the posterior distribution
+myposteriorsample &amp;lt;- sample(mygrid, prob = posterior, size = 1e4, replace = T)
+
+# Plot the samples
+plot(myposteriorsample, type = &amp;quot;p&amp;quot;, 
+     xlab = &amp;quot;Sample index&amp;quot;,
+     ylab = &amp;quot;Proportion of zombies&amp;quot;)
+
+# Plot the analytical and the sampled posterior distribution 
+x.idx &amp;lt;- density(myposteriorsample)$x
+y.den &amp;lt;- density(myposteriorsample)$y
+
+plot(mygrid, analyticpost, type = &amp;quot;l&amp;quot;,
+     xlab = &amp;quot;Proportion of zombies&amp;quot;,
+     ylab = &amp;quot;Relative likelihood&amp;quot;, xlim = c(0, 0.3))
+lines(x.idx, y.den, col = &amp;quot;red&amp;quot;)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Samples from posterior&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Analytic and sampled posterior (red) probability density&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesamples.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesmcmc.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Clearly the relatively likelihood at approximately zero is underestimated by the sampling approach but this is to do with the available precision and could be improved by increasing the resolution of the grid.&lt;/p&gt;
+
+&lt;p&gt;The grid approximation is useful to get some understanding into the mechanics but does not scale well to more complex problems where we would more commonly use Markov Chain Monte Carlo &lt;a href=&#34;https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo&#34; target=&#34;_blank&#34;&gt;MCMC&lt;/a&gt; simulations.&lt;/p&gt;
+
+&lt;h2 id=&#34;posterior-summaries&#34;&gt;Posterior Summaries&lt;/h2&gt;
+
+&lt;p&gt;It is interesting to consider (moreso if you are a bit nerdy) how you might summarise our new state of knowledge inherent in the posterior distribution. There are a few options to condense what it is telling us into a 10 second soundbite for people without patience or interest.&lt;/p&gt;
+
+&lt;p&gt;First, we can compute a 95% credible interval as below, which tells us that there is a 95% probability that the proportion of zombies in the community is between zero and 7.5%. A similar interval is the Highest Posterior Density Interval, but this interval is the narrowest interval that contains the specified probability mass. For this example it turns out to be about the same as the credible interval but that won&amp;rsquo;t always be the case. We can obtain the point estimates of the mean, median and mode, which turn out to be 2.1%, 1.4% and 0.37%.&lt;/p&gt;
+
+&lt;p&gt;All of these approaches are effectively &lt;a href=&#34;https://en.wikipedia.org/wiki/Data_reduction&#34; target=&#34;_blank&#34;&gt;data reduction techniques&lt;/a&gt; - we have reduced the posterior probability distribution to a one or two numbers in order to make what it is telling us more digestable.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Credible interval
+quantile(myposteriorsample, c(0.025, 0.975))
+rethinking::PI(myposteriorsample, 0.95)
+
+# HPDI
+rethinking::HPDI(myposteriorsample, 0.975)
+
+# Measures of centrality
+mean(myposteriorsample)
+median(myposteriorsample)
+
+# Mode
+rethinking::chainmode(myposteriorsample)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another thing we can do is define a &lt;strong&gt;loss function&lt;/strong&gt; and characterise the cost of adopting a particular summary under given conditions. This mostly comes into play when we want to make a &lt;a href=&#34;https://en.wikipedia.org/wiki/Decision_theory&#34; target=&#34;_blank&#34;&gt;decision&lt;/a&gt; such as whether we should go to the shops or not. Different loss functions imply different point estimates and a common loss function is to assume that the loss is proportional to the absolute difference between your decision and the correct answer. We can compute the loss over the entire parameter range using the following code, which gives us an value of 1.4%, identical to the median computed previous. In reality the loss function would need more thought and we might make the cost function penalise being wrong more harshly as might be well advised since encountering a zombie has stark &lt;a href=&#34;https://en.wikipedia.org/wiki/Metaphysics&#34; target=&#34;_blank&#34;&gt;metaphyscial&lt;/a&gt; implications.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;loss &amp;lt;- sapply(mygrid, function(d) sum(analyticpost * abs(d - mygrid)))
+mygrid[which.min(loss)]loss &amp;lt;- sapply()
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;model-checking&#34;&gt;Model Checking&lt;/h2&gt;
+
+&lt;p&gt;I know I have been banging for a bit now, but this last bit is important so stick with it. Here is the thing - all Bayesian models are generative so once you have a posterior distribution of the parameter of interest you can simulate new data. Ideally the predictions we make should contain both uncertainty in the distribution associated with a parameter and the uncertainty about the parameter itself. For example, if we use $\theta = 0.05$ or $\theta = 0.1$ we get a distribution of zombies like the figures below. So if there is a 5% probability that an individual is a zombie we would expect to zero or one zombies most of the time. However, if there was a 10% probability that an individual is a zombie we would mostly expect to see 1 or 2 in a sample of 20. In a nutshell, when $\theta = 0.05$ we expect to see a zero count of zombies more often than we do if $\theta = 0.1$.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;Proportion of zombies 5%&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;10%&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Now, the thing is, $\theta$ also has uncertainty as we have described by the posterior distribution and ideally we want to propagate this uncertainty into our predictions. To do this we average all of the prediction distributions together using the posterior of each value of $\theta$. This gives us a &lt;a href=&#34;https://en.wikipedia.org/wiki/Posterior_predictive_distribution&#34; target=&#34;_blank&#34;&gt;posterior predictive distribution&lt;/a&gt;, which is actually a lot easier to produce than to explain, the following gets us to where we want to be.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Distribution of observed zombies theta = 0.05
+z1 &amp;lt;- rbinom(1e4, size = 20, prob = 0.05)
+# Distribution of observed zombies averaged across the posterior distribution
+z2 &amp;lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim3.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case we can be quite conforted by the fact that the posterior predictive aligns fairly well with what we observed since it looks like we generally encounter small numbers (0 or 1) zombies in our daily trip to the shops.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;Which is actually the exponentiated negative sum of all the cause-specific hazards.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Statistical Rethinking - Introduction and Sampling</title>
       <link>https://t-student.github.io/post/rethinking01/</link>
       <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
@@ -685,7 +1073,7 @@ $$&lt;/p&gt;
 
 &lt;h2 id=&#34;estimating-the-propensity-score&#34;&gt;Estimating the Propensity Score&lt;/h2&gt;
 
-&lt;p&gt;In an RCT the $Pr(trt = 1| X) = Pr(trt = 0| X) = 0.5$ but in an observational study we do not know what $Pr(trt = 1| X)$ is. However, we observe both $trt$ and we observe $X$ so theoretically we should be able to estimate the propensity score?&lt;/p&gt;
+&lt;p&gt;In an RCT the $Pr(trt = 1| X) = Pr(trt = 0| X) = 0.5$ but in an observational study we do not know what $Pr(trt = 1| X)$ is. However, we observe the treatment status ($trt$) and we observe the covariates ($X$) so theoretically we should be able to estimate the propensity score?&lt;/p&gt;
 
 &lt;p&gt;We start by treating the $trt$ as the response and we identify a suitable method for estimating the probability of $trt$. Typically/commonly logistic regression is used but you can choose any method that gives us a probability of $trt$ for each subject.&lt;/p&gt;
 
@@ -1525,470 +1913,6 @@ shinyApp(ui = ui, server = server)
 &lt;/blockquote&gt;
 
 &lt;p&gt;Thanks for reading!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Shiny Stage 3 - UI customisation</title>
-      <link>https://t-student.github.io/post/shiny01-stage3/</link>
-      <pubDate>Mon, 09 Apr 2018 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/post/shiny01-stage3/</guid>
-      <description>
-
-&lt;p&gt;OK, so we have gone over the basic setup and dug a bit more into the reactivity functionality. Now we are going to look at UI extensions aka html5 and css.&lt;/p&gt;
-
-&lt;h2 id=&#34;working-with-the-html&#34;&gt;Working with the HTML&lt;/h2&gt;
-
-&lt;p&gt;The functions in the UI create HTML. So why don&amp;rsquo;t we add some static content? Shiny comes with a series of &lt;code&gt;tags&lt;/code&gt; functions that will create HTML for you. Here is an example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;library(shiny)
-
-ui &amp;lt;- fluidPage(
-  
-  # a tag is an anchor
-  tags$h1(&amp;quot;Title 1&amp;quot;),
-  tags$a(href = &amp;quot;www.rstudio.com&amp;quot;, &amp;quot;RStudio&amp;quot;),
-  tags$p(&amp;quot;This is my app para 1.&amp;quot;),
-  tags$p(&amp;quot;This is my app para &amp;quot;, tags$strong(&amp;quot;2!!&amp;quot;)),
-  tags$br(), # Page break
-  tags$p(style = &amp;quot;font-family:Impact&amp;quot;, &amp;quot;This is my app para 3 with a custom style!!!&amp;quot;),
-  tags$hr(), # Horizontal rule
-  tags$code(&amp;quot;This is my app&amp;quot;),
-  tags$br(), # Page break
-  # To use your own media create a www folder and chuck your
-  # media in there then reference as follows:
-  tags$img(height = 100, width = 250, src = &amp;quot;shinyzombie.jpg&amp;quot;),
-  tags$br(), # Page break
-  tags$br(), # Page break
-  
-  HTML(&amp;quot;&amp;lt;h2&amp;gt;Just for completeness we can write raw HTML if we want to!!!&amp;lt;/h2&amp;gt;&amp;quot;),
-  
-  actionButton(inputId = &amp;quot;clicks&amp;quot;,
-               label = &amp;quot;Click me&amp;quot;)
-  
-)
-server &amp;lt;- function(input, output){
-  observeEvent(input$clicks, {
-    print(as.numeric(input$clicks))
-  })
-}
-shinyApp(ui = ui, server = server)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;messing-with-the-layout&#34;&gt;Messing with the Layout&lt;/h2&gt;
-
-&lt;p&gt;We can place the UI elements wherever we want to. The main functions that we use to do this are &lt;code&gt;fluidRow()&lt;/code&gt; and &lt;code&gt;column&lt;/code&gt; which both insert &lt;code&gt;div&lt;/code&gt;s. &lt;code&gt;fluidRow()&lt;/code&gt; will divide you app into rows creating as many as you want. Next you can create (up to 12) columns within a row specifying both the width and offset of each column like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;  fluidRow(column(3),  # Takes up 3 units of width
-           column(5)), # Takes up 5 units of width
-  fluidRow(
-           column(4, offset = 8) # Offset the start of the column
-           )
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now, if you actually want to see something you pass it to the row or column function like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;library(shiny)
-
-ui &amp;lt;- fluidPage(
-  
-  fluidRow(column(3, tags$p(&amp;quot;Hi!!! :)&amp;quot;)),  # Takes up 3 units of width
-           column(5, 
-                  sliderInput(inputId = &amp;quot;num&amp;quot;,
-                              label = &amp;quot;Choose a number please&amp;quot;,
-                              value = 25, min = 1, max = 100))), 
-  fluidRow(
-    column(6, offset = 1, 
-           plotOutput(&amp;quot;hist&amp;quot;)) 
-  )
-)
-server &amp;lt;- function(input, output){
-  output$hist &amp;lt;- renderPlot({
-    n &amp;lt;- input$num
-    hist(rnorm(n))
-  })
-}
-
-shinyApp(ui = ui, server = server)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;stacking-layouts&#34;&gt;Stacking Layouts&lt;/h2&gt;
-
-&lt;p&gt;Panels are the basic UI aggregate element. To place a series of elements together into a panel we wrap them with the &lt;code&gt;wellPanel&lt;/code&gt; function. In total there are 12 types of panels supported by shiny:&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;left&#34;&gt;Function&lt;/th&gt;
-&lt;th align=&#34;left&#34;&gt;Description&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;absolutePanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Rigid&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;conditionalPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Determines whether a panel is visible&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;fixedPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Does not scroll&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;headerPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Panel for title - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;inputPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;A grouping panel&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;mainPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Displaying output - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;navlistPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Stacking&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;sidebarPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Sidebar of inputs - use with &lt;code&gt;pageWithSidebar()&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Stackable&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;tabsetPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Multiple stacked&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;titlePanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Apps title&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;code&gt;wellPanel()&lt;/code&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Panel with grey background&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;If you want to stack things on top of each other start with &lt;code&gt;tabPanel()&lt;/code&gt;. This is a small UI of its own and is a convenient way to break up the various elements of your app. These functions are designed to work in conjunction with &lt;code&gt;tabsetPanel()&lt;/code&gt;, &lt;code&gt;navlistPanel&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Here is a quick example.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;library(shiny)
-
-ui &amp;lt;- fluidPage(
-  
-  tabsetPanel(
-    tabPanel(&amp;quot;tab 1&amp;quot;, 
-             sliderInput(inputId = &amp;quot;num&amp;quot;,
-                                  label = &amp;quot;Choose a number please&amp;quot;,
-                                  value = 25, min = 1, max = 100)
-             ),
-    tabPanel(&amp;quot;tab 1&amp;quot;, 
-             plotOutput(&amp;quot;hist&amp;quot;)
-             )
-  )
-)
-server &amp;lt;- function(input, output){
-  output$hist &amp;lt;- renderPlot({
-    n &amp;lt;- input$num
-    hist(rnorm(n))
-  })
-}
-
-
-shinyApp(ui = ui, server = server)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/shinytabpanel.png&#34; alt=&#34;Shiny `tabPanel` Output&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now &lt;code&gt;navlistPanel()&lt;/code&gt; is analogous to the &lt;code&gt;tabsetPanel()&lt;/code&gt; except it creates your navigation in a sidebar.&lt;/p&gt;
-
-&lt;h2 id=&#34;precanned-layouts&#34;&gt;Precanned Layouts&lt;/h2&gt;
-
-&lt;p&gt;We should have talked about this first&amp;hellip; Anyway, nevermind. These are convenience wrappers that let you put together a layout very quickly. The most common is &lt;code&gt;sidebarLayout()&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;library(shiny)
-
-ui &amp;lt;- fluidPage(
-  
-  sidebarLayout(
-    sidebarPanel(sliderInput(inputId = &amp;quot;num&amp;quot;,
-                             label = &amp;quot;Choose a number please&amp;quot;,
-                             value = 25, min = 1, max = 100)),
-    mainPanel(plotOutput(&amp;quot;hist&amp;quot;))
-    
-  )
-)
-server &amp;lt;- function(input, output){
-  output$hist &amp;lt;- renderPlot({
-    n &amp;lt;- input$num
-    hist(rnorm(n))
-  })
-}
-shinyApp(ui = ui, server = server)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Other options are &lt;code&gt;fixedPage&lt;/code&gt; and &lt;code&gt;navbarPage()&lt;/code&gt;. Note when you use &lt;code&gt;navbarPage()&lt;/code&gt; you do so by replace the &lt;code&gt;fluidPage()&lt;/code&gt; call. You can use the &lt;code&gt;navbarPage()&lt;/code&gt; with &lt;code&gt;navbarMenu()&lt;/code&gt; to give you drop down lists in the tabs. We can go further, but there is a tutorial on more advanced dashboards &lt;a href=&#34;https://www.rstudio.com/resources/webinars/dynamic-dashboards-with-shiny/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;css&#34;&gt;CSS&lt;/h2&gt;
-
-&lt;p&gt;Shiny enables us to stylise our site with our own branding. The way that we do this is to link with a CSS file, writing a global CSS header or write the CSS into a tags style attribute. We can then apply CSS to tags, or classes or ids. This forms a hierarchy that we can use to automatically deal with various aspects of the site overriding the bits that we want to have different.&lt;/p&gt;
-
-&lt;p&gt;Shiny makes use of the Bootstrap 3 CSS framework, see &lt;a href=&#34;https://getbootstrap.com/&#34; target=&#34;_blank&#34;&gt;https://getbootstrap.com/&lt;/a&gt;. To use this we can create a &lt;code&gt;fluidPage()&lt;/code&gt; function that contains &lt;code&gt;&amp;lt;div class=&amp;quot;container-fluid&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt;. Alternatively we could specify our own CSS file using the following:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ui &amp;lt;- fluidPage(
-  tags$head(
-    tags$link(
-        rel = &amp;quot;stylesheet&amp;quot;,
-        type = &amp;quot;text/css&amp;quot;
-        href = &amp;quot;myfile.css&amp;quot;
-      )
-    )
-  
-)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or you can even just call &lt;code&gt;includeCSS(&amp;quot;myfile.css&amp;quot;)&lt;/code&gt; which will copy a CSS into every page. To learn more about CSS there is a free tutorial at &lt;a href=&#34;https://www.codecademy.com/tracks/web&#34; target=&#34;_blank&#34;&gt;https://www.codecademy.com/tracks/web&lt;/a&gt; which covers both HTML and CSS in about 7 hours.&lt;/p&gt;
-
-&lt;h2 id=&#34;google-analytics-and-things-to-come&#34;&gt;Google Analytics and Things to Come..&lt;/h2&gt;
-
-&lt;p&gt;A final note, you can incorporate the google analytics into your application pretty easily if you want to have it, see &lt;a href=&#34;https://shiny.rstudio.com/articles/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Things in development:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;DT interactive tables that can accept user input.&lt;/li&gt;
-&lt;li&gt;leaflet - interaction with maps&lt;/li&gt;
-&lt;li&gt;working on interaction with graphics&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&#34;what-now&#34;&gt;What Now?&lt;/h2&gt;
-
-&lt;p&gt;Build an app!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Bayesian Zombies 101</title>
-      <link>https://t-student.github.io/post/basicbayesian/</link>
-      <pubDate>Sun, 08 Apr 2018 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/post/basicbayesian/</guid>
-      <description>
-
-&lt;p&gt;I find the &lt;a href=&#34;http://xcelab.net/rm/statistical-rethinking/&#34; target=&#34;_blank&#34;&gt;Statistical Rethinking&lt;/a&gt; text very helpful in conveying Bayesian concepts. Here I simply try to condense some of the introductory material. The text is supported with R and Python implementations and there is a youtube lecture series on which the text is based.&lt;/p&gt;
-
-&lt;h2 id=&#34;ok-bayesian-analysis&#34;&gt;OK, Bayesian Analysis?&lt;/h2&gt;
-
-&lt;p&gt;Let&amp;rsquo;s start with inference. What we are talking about here is about using the information available to you in order to arrive at rational conclusions that your mum still won&amp;rsquo;t have a bar of. Bayesian analysis is a fairly snappy way to go about this task.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/pirahna.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now, let&amp;rsquo;s get serious and work up to laying down some definitions and notation. First, the breed of inference we are interested in here is &lt;a href=&#34;https://en.wikipedia.org/wiki/Statistical_inference&#34; target=&#34;_blank&#34;&gt;statistical inference&lt;/a&gt;. Statistical inference involves using observations in a framework of presupposition and statistical models that aim at a logical conclusions. Generally we want to be able to make some statements about a scientific question relating to a population of interest.&lt;/p&gt;
-
-&lt;p&gt;Examples - we flip a coin obtained from the local mint 10 times and it produces 7 heads. Should we believe the coin is fair? What about the other coins produced by the mint? We measure the heights of 10 men that play for a professional basket ball team. What does this tell us about the height of all men? &lt;strong&gt;Bayesian analysis&lt;/strong&gt; gives us a formal method to combine what we already know with new evidence and characterises the remaining uncertainty in probability.&lt;/p&gt;
-
-&lt;h2 id=&#34;the-standard-zombie-example-of-bayesian-inference&#34;&gt;The Standard (Zombie) Example of Bayesian Inference&lt;/h2&gt;
-
-&lt;p&gt;In a bayesian analysis we characterise uncertainty using a small bag of tools. Let&amp;rsquo;s introduce a few&amp;hellip;&lt;/p&gt;
-
-&lt;h3 id=&#34;a-prior&#34;&gt;A Prior&lt;/h3&gt;
-
-&lt;p&gt;The Bayesian framework places our existing knowledge in a probability distribution and a probability distribution simply captures how likely a variable of interest is across its possible range. For example, the proportion of zombies hanging around the local shopping mall must be somewhere between zero and 100%&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; of all the individuals there. Now, perhaps we are sceptical, but not entirely calm, about the notion that zombies exist. So let&amp;rsquo;s start this off and believe that we believe that the most likely situation is that there are no-need-for-tears-at-bedtime zero zombies. However, because we subscribe to the philosophy of the belt and braces brigade, let&amp;rsquo;s assume that it could be the case that up to 30% of the individuals in the mall are of the zombie variety. If we had to draw a picture our relative belief we might produce something like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesprior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;I generated that snappy curve from a &lt;a href=&#34;https://en.wikipedia.org/wiki/Beta_distribution&#34; target=&#34;_blank&#34;&gt;Beta distribution&lt;/a&gt; by using paramter values equal to 1 and 27. In a more mathy bent we say:&lt;/p&gt;
-
-&lt;p&gt;$$
-\theta \sim Beta(1, 27)
-$$&lt;/p&gt;
-
-&lt;p&gt;In words - theta is distributed as a random variable originated from a beta distribution with shape parameters 1 and 27 - you can see why we favour the mathy version.&lt;/p&gt;
-
-&lt;h3 id=&#34;likelihood&#34;&gt;Likelihood&lt;/h3&gt;
-
-&lt;p&gt;Now, let&amp;rsquo;s go to the mall and pick out 20 people at random under the assumption that all individuals have the same probability of being a zombie. However, not one of the people in the sample tries to even take a nimble at us and so we conclude (with perhaps undue certainty) that the sample we picked contained no zombies. We can, again, make this more formal by saying that the data generating process was a &lt;a href=&#34;https://en.wikipedia.org/wiki/Binomial_distribution&#34; target=&#34;_blank&#34;&gt;Binomial distribution&lt;/a&gt; where one of the parameters is our sample size and the other parameter represents the probability that a randomly selected individual is a zombie. Mathematically, we have:&lt;/p&gt;
-
-&lt;p&gt;$$
-y|\theta \sim Bin(20, \theta)
-$$&lt;/p&gt;
-
-&lt;p&gt;and therefore conditional on $\theta$ any given sample of mall people stands a chance of containing a zombie.&lt;/p&gt;
-
-&lt;h3 id=&#34;posterior&#34;&gt;Posterior&lt;/h3&gt;
-
-&lt;p&gt;In light of our sample data our state of belief has changed and we maybe feeling a bit better about going to the shops. Anyway, in the Bayesian world, a simple relationship allows us to characterise our new knowledge, again in terms of a probability distribution known as the posterior&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. The relationship between the posterior, prior and likelihood is derived as a consequence of the laws of probability&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; and has the form:&lt;/p&gt;
-
-&lt;p&gt;$$
-Posterior = \frac{Likelihood \times Prior}{Average \ Likelihood}
-$$&lt;/p&gt;
-
-&lt;p&gt;The &lt;em&gt;average likelihood&lt;/em&gt; bit is computed over all the possible values of the parameter $\theta$ - the proportion of zombies which must be somewhere between zero to 1. Fortunately, we don&amp;rsquo;t have to know how to work out the above directly because the product of a Beta prior and a Binomial likelihood is well known. Specifically, it is another Beta distribution but with different parameters based on the the data we observed and the prior parameters. The first parameter of the posterior beta distribution is $a + y$ and the second is $b + n - y$. In our case, a = 1, y = 0, b = 27 and n = 20 so we have the posterior is:&lt;/p&gt;
-
-&lt;p&gt;$$
-Pr(\theta|y) \sim Beta(1, 47)
-$$&lt;/p&gt;
-
-&lt;p&gt;If we were to draw another graph of the (new) relative strength of beliefs it would look something like the following (new beliefs in red):&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesposterior.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;So whereas initially we were 90% certain that less than 8.5% of the population are zombies, now we are 90% certain that less than 5% of the population are zombies. We have reduced our uncertainty by leveraging our existing beliefs and our sample observations.&lt;/p&gt;
-
-&lt;h2 id=&#34;grid-approximation&#34;&gt;Grid Approximation&lt;/h2&gt;
-
-&lt;p&gt;Unfortunately, the calculations are rarely this simple - we rarely have &lt;a href=&#34;https://en.wikipedia.org/wiki/Conjugate_prior&#34; target=&#34;_blank&#34;&gt;conjugate&lt;/a&gt; pairs of priors and likelihood like I contrived in the above example. However, we can get around this using sampling. In its simplest form we can use a &lt;em&gt;grid approximation&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;In R the following code shows how this might play out. We first set up a posterior distribution and then we sample with replacement to get an approximation of the posterior distribution.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# This is the range of parameter values and defines the precision
-# to which we can estimate the parameter of interest. 
-mygrid &amp;lt;- seq(0, 1, length.out = 1000)
-# Defines our prior beliefs
-prior &amp;lt;- dbeta(mygrid, 1, 27)
-# Defines the relative likelihood of the data (zero zombies out of 20) 
-# across all the possible parameter values
-likelihood &amp;lt;- dbinom(0, size = 20, prob = mygrid)
-# Compute the posterior and normalise it
-posterior &amp;lt;- likelihood * prior 
-posterior &amp;lt;- posterior / sum(posterior)
-
-# This is analytic posterior - generally we don&#39;t have the
-# luxury of knowing this.
-analyticpost &amp;lt;- dbeta(mygrid, 1, 47)
-
-# Sample from the posterior distribution
-myposteriorsample &amp;lt;- sample(mygrid, prob = posterior, size = 1e4, replace = T)
-
-# Plot the samples
-plot(myposteriorsample, type = &amp;quot;p&amp;quot;, 
-     xlab = &amp;quot;Sample index&amp;quot;,
-     ylab = &amp;quot;Proportion of zombies&amp;quot;)
-
-# Plot the analytical and the sampled posterior distribution 
-x.idx &amp;lt;- density(myposteriorsample)$x
-y.den &amp;lt;- density(myposteriorsample)$y
-
-plot(mygrid, analyticpost, type = &amp;quot;l&amp;quot;,
-     xlab = &amp;quot;Proportion of zombies&amp;quot;,
-     ylab = &amp;quot;Relative likelihood&amp;quot;, xlim = c(0, 0.3))
-lines(x.idx, y.den, col = &amp;quot;red&amp;quot;)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Samples from posterior&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Analytic and sampled posterior (red) probability density&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesamples.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesmcmc.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Clearly the relatively likelihood at approximately zero is underestimated by the sampling approach but this is to do with the available precision and could be improved by increasing the resolution of the grid.&lt;/p&gt;
-
-&lt;p&gt;The grid approximation is useful to get some understanding into the mechanics but does not scale well to more complex problems where we would more commonly use Markov Chain Monte Carlo &lt;a href=&#34;https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo&#34; target=&#34;_blank&#34;&gt;MCMC&lt;/a&gt; simulations.&lt;/p&gt;
-
-&lt;h2 id=&#34;posterior-summaries&#34;&gt;Posterior Summaries&lt;/h2&gt;
-
-&lt;p&gt;It is interesting to consider (moreso if you are a bit nerdy) how you might summarise our new state of knowledge inherent in the posterior distribution. There are a few options to condense what it is telling us into a 10 second soundbite for people without patience or interest.&lt;/p&gt;
-
-&lt;p&gt;First, we can compute a 95% credible interval as below, which tells us that there is a 95% probability that the proportion of zombies in the community is between zero and 7.5%. A similar interval is the Highest Posterior Density Interval, but this interval is the narrowest interval that contains the specified probability mass. For this example it turns out to be about the same as the credible interval but that won&amp;rsquo;t always be the case. We can obtain the point estimates of the mean, median and mode, which turn out to be 2.1%, 1.4% and 0.37%.&lt;/p&gt;
-
-&lt;p&gt;All of these approaches are effectively &lt;a href=&#34;https://en.wikipedia.org/wiki/Data_reduction&#34; target=&#34;_blank&#34;&gt;data reduction techniques&lt;/a&gt; - we have reduced the posterior probability distribution to a one or two numbers in order to make what it is telling us more digestable.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# Credible interval
-quantile(myposteriorsample, c(0.025, 0.975))
-rethinking::PI(myposteriorsample, 0.95)
-
-# HPDI
-rethinking::HPDI(myposteriorsample, 0.975)
-
-# Measures of centrality
-mean(myposteriorsample)
-median(myposteriorsample)
-
-# Mode
-rethinking::chainmode(myposteriorsample)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Another thing we can do is define a &lt;strong&gt;loss function&lt;/strong&gt; and characterise the cost of adopting a particular summary under given conditions. This mostly comes into play when we want to make a &lt;a href=&#34;https://en.wikipedia.org/wiki/Decision_theory&#34; target=&#34;_blank&#34;&gt;decision&lt;/a&gt; such as whether we should go to the shops or not. Different loss functions imply different point estimates and a common loss function is to assume that the loss is proportional to the absolute difference between your decision and the correct answer. We can compute the loss over the entire parameter range using the following code, which gives us an value of 1.4%, identical to the median computed previous. In reality the loss function would need more thought and we might make the cost function penalise being wrong more harshly as might be well advised since encountering a zombie has stark &lt;a href=&#34;https://en.wikipedia.org/wiki/Metaphysics&#34; target=&#34;_blank&#34;&gt;metaphyscial&lt;/a&gt; implications.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;loss &amp;lt;- sapply(mygrid, function(d) sum(analyticpost * abs(d - mygrid)))
-mygrid[which.min(loss)]loss &amp;lt;- sapply()
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;model-checking&#34;&gt;Model Checking&lt;/h2&gt;
-
-&lt;p&gt;I know I have been banging for a bit now, but this last bit is important so stick with it. Here is the thing - all Bayesian models are generative so once you have a posterior distribution of the parameter of interest you can simulate new data. Ideally the predictions we make should contain both uncertainty in the distribution associated with a parameter and the uncertainty about the parameter itself. For example, if we use $\theta = 0.05$ or $\theta = 0.1$ we get a distribution of zombies like the figures below. So if there is a 5% probability that an individual is a zombie we would expect to zero or one zombies most of the time. However, if there was a 10% probability that an individual is a zombie we would mostly expect to see 1 or 2 in a sample of 20. In a nutshell, when $\theta = 0.05$ we expect to see a zero count of zombies more often than we do if $\theta = 0.1$.&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Proportion of zombies 5%&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;10%&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim1.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim2.png&#34; alt=&#34;&#34; /&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Now, the thing is, $\theta$ also has uncertainty as we have described by the posterior distribution and ideally we want to propagate this uncertainty into our predictions. To do this we average all of the prediction distributions together using the posterior of each value of $\theta$. This gives us a &lt;a href=&#34;https://en.wikipedia.org/wiki/Posterior_predictive_distribution&#34; target=&#34;_blank&#34;&gt;posterior predictive distribution&lt;/a&gt;, which is actually a lot easier to produce than to explain, the following gets us to where we want to be.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# Distribution of observed zombies theta = 0.05
-z1 &amp;lt;- rbinom(1e4, size = 20, prob = 0.05)
-# Distribution of observed zombies averaged across the posterior distribution
-z2 &amp;lt;- rbinom(1e4, size = 20, prob = myposteriorsample)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://t-student.github.io/media/zombiesim3.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this case we can be quite conforted by the fact that the posterior predictive aligns fairly well with what we observed since it looks like we generally encounter small numbers (0 or 1) zombies in our daily trip to the shops.&lt;/p&gt;
-&lt;div class=&#34;footnotes&#34;&gt;
-
-&lt;hr /&gt;
-
-&lt;ol&gt;
-&lt;li id=&#34;fn:1&#34;&gt;OK, maybe more than 100% if you live in Jesmond.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:2&#34;&gt;If you are starting to think that everything is uncertain in a Bayesian world then you may be onto something.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:3&#34;&gt;That I refuse to go into right now.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:3&#34;&gt;&lt;sup&gt;^&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
 </description>
     </item>
     

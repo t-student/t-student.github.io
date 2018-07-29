@@ -22,20 +22,20 @@
     </item>
     
     <item>
+      <title>AUC</title>
+      <link>https://t-student.github.io/tags/auc/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/auc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Apply</title>
       <link>https://t-student.github.io/tags/apply/</link>
       <pubDate>Tue, 22 May 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/apply/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian</title>
-      <link>https://t-student.github.io/tags/bayesian/</link>
-      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
-      
-      <guid>https://t-student.github.io/tags/bayesian/</guid>
       <description></description>
     </item>
     
@@ -49,11 +49,29 @@
     </item>
     
     <item>
+      <title>Bayesian</title>
+      <link>https://t-student.github.io/tags/bayesian/</link>
+      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Binomial</title>
       <link>https://t-student.github.io/tags/binomial/</link>
       <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/binomial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Competing risk</title>
+      <link>https://t-student.github.io/tags/competing-risk/</link>
+      <pubDate>Mon, 16 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/competing-risk/</guid>
       <description></description>
     </item>
     
@@ -168,9 +186,18 @@
     <item>
       <title>R</title>
       <link>https://t-student.github.io/tags/r/</link>
-      <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ROC</title>
+      <link>https://t-student.github.io/tags/roc/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/roc/</guid>
       <description></description>
     </item>
     
@@ -195,7 +222,7 @@
     <item>
       <title>Simulation</title>
       <link>https://t-student.github.io/tags/simulation/</link>
-      <pubDate>Wed, 11 Apr 2018 00:00:00 +1000</pubDate>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/simulation/</guid>
       <description></description>
@@ -216,6 +243,15 @@
       <pubDate>Tue, 10 Apr 2018 00:00:00 +1000</pubDate>
       
       <guid>https://t-student.github.io/tags/stata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Survival</title>
+      <link>https://t-student.github.io/tags/survival/</link>
+      <pubDate>Mon, 16 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/tags/survival/</guid>
       <description></description>
     </item>
     

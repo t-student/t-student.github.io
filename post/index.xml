@@ -13,6 +13,26 @@
     
     
     <item>
+      <title>Receiver Operator Characteristic Curves</title>
+      <link>https://t-student.github.io/post/receiver_operator_char_curve/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/receiver_operator_char_curve/</guid>
+      <description>Context Logistic regression can be used as a classifier for a dichotomous outcomes (live/die), but ultimately you need to specify the threshold probability that demarcates outcomes.
+The SMPracticals R package contains bliss, a dataset detailing the number of adult flour beetles which died following a 5-hour exposure to gaseous carbon disulphide. Here the outcomes are died versus lived, with died as the success evemt. The data is aggregated showing number of beetles that died at a given dose, but we the individual trials.</description>
+    </item>
+    
+    <item>
+      <title>Competing Risks in R</title>
+      <link>https://t-student.github.io/post/competingrisk01/</link>
+      <pubDate>Mon, 16 Jul 2018 00:00:00 +1000</pubDate>
+      
+      <guid>https://t-student.github.io/post/competingrisk01/</guid>
+      <description>Competing risk happen when you have multiple risks that can distort your analysis of some measure. For example, if you are trying to estimate the time to relapse of a disease some patients will be censored by loss to follow up or the study ending, others may die. Time to relapse and death are competing risks.
+When analysing CR we use cumulative incidence. Cumulative incidence is just the probability of an event by a particular time.</description>
+    </item>
+    
+    <item>
       <title>Statistical Rethinking - Introduction and Sampling</title>
       <link>https://t-student.github.io/post/rethinking01/</link>
       <pubDate>Sat, 26 May 2018 00:00:00 +1000</pubDate>
